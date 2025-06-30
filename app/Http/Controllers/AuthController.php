@@ -258,6 +258,7 @@ class AuthController extends Controller
     /* dashboard */
         public function dashboard()
         {
+            $data = [];
             $title                                  = 'Dashboard';
             $page_name                              = 'dashboard';
             $data = $this->siteAuthService->admin_after_login_layout($title, $page_name, $data);
