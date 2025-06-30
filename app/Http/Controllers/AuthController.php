@@ -14,8 +14,6 @@ use App\Models\EmailLog;
 use App\Models\User;
 use App\Models\GeneralSetting;
 use App\Models\UserActivity;
-use App\Models\Company;
-use App\Models\Industry;
 use App\Helpers\Helper;
 use Carbon\Carbon;
 use Session;
@@ -260,18 +258,6 @@ class AuthController extends Controller
     /* dashboard */
         public function dashboard()
         {
-            $data['company_count']              = Company::where('status', '!=', 3)->count();
-            $data['industry_count']             = Industry::where('status', '!=', 3)->count();
-            $data['companies']                  = DB::table('companies')
-                                                            ->join('company_subcriptions', 'companies.id', '=', 'company_subcriptions.company_id')
-                                                            ->join('packages', 'company_subcriptions.package_id', '=', 'packages.id')
-                                                            ->join('industries', 'companies.industry_id', '=', 'industries.id')
-                                                            ->select('companies.*', 'company_subcriptions.licence_no', 'company_subcriptions.start_date', 'company_subcriptions.end_date', 'packages.name as package_name', 'industries.name as industry_name')
-                                                            ->where('company_subcriptions.status', '=', 1)
-                                                            ->where('companies.status', '!=', 3)
-                                                            ->orderBy('company_subcriptions.end_date', 'DESC')
-                                                            ->get();
-
             $title                                  = 'Dashboard';
             $page_name                              = 'dashboard';
             $data = $this->siteAuthService->admin_after_login_layout($title, $page_name, $data);
