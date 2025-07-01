@@ -28,9 +28,6 @@ class TableController extends Controller
         $query = DB::table($table);
 
         // JOINs (PostgreSQL-safe with CAST)
-        if ($table === 'companies') {
-            $query->leftJoin('industries', DB::raw("$table.industry_id"), '=', DB::raw("industries.id"));
-        }
         if ($table === 'faq_sub_categories') {
             $query->leftJoin('faq_categories', DB::raw("$table.faq_category_id"), '=', DB::raw("faq_categories.id"));
         }
@@ -44,9 +41,6 @@ class TableController extends Controller
 
         // Aliased select columns
         $columns = array_map(function ($col) use ($table) {
-            if ($table === 'companies' && $col === 'industry_id') {
-                return 'industries.name as industry_name';
-            }
             if ($table === 'faq_sub_categories' && $col === 'faq_category_id') {
                 return 'faq_categories.name as faq_category_name';
             }
