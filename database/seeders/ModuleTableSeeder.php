@@ -47,6 +47,9 @@ class ModuleTableSeeder extends Seeder
             [
                 'name' => 'Login Logs'
             ],
+            [
+                'name' => 'User Activity Logs'
+            ],
         ]);
     }
 }
