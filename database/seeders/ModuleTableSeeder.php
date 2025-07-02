@@ -50,6 +50,30 @@ class ModuleTableSeeder extends Seeder
             [
                 'name' => 'User Activity Logs'
             ],
+            [
+                'name' => 'Country'
+            ],
+            [
+                'name' => 'State'
+            ],
+            [
+                'name' => 'City'
+            ],
+            [
+                'name' => 'Campaign Type'
+            ],
+            [
+                'name' => 'Campaign'
+            ],
+            [
+                'name' => 'Source'
+            ],
+            [
+                'name' => 'Leader Header'
+            ],
+            [
+                'name' => 'Lead Status'
+            ],
         ]);
     }
 }

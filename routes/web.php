@@ -9,9 +9,14 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\FaqCategoryController;
 use App\Http\Controllers\FaqSubCategoryController;
 use App\Http\Controllers\FaqController;
-use App\Http\Controllers\PackageController;
-use App\Http\Controllers\IndustryController;
-use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CountryController;
+use App\Http\Controllers\StateController;
+use App\Http\Controllers\CityController;
+use App\Http\Controllers\CampaignTypeController;
+use App\Http\Controllers\CampaignController;
+use App\Http\Controllers\SourceController;
+use App\Http\Controllers\LeadHeaderController;
+use App\Http\Controllers\LeadStatusController;
 use App\Http\Controllers\PageController;
 
 // Route::get('/', function () {
@@ -78,21 +83,65 @@ Route::middleware(['auth'])->group(function () {
             Route::get('admin-user/change-status/{id}', [AdminUserController::class, 'change_status']);
         /* admin users */
     /* access & permission */
-    /* industry */
-        Route::get('industry/list', [IndustryController::class, 'list']);
-        Route::match(['get', 'post'], 'industry/add', [IndustryController::class, 'add']);
-        Route::match(['get', 'post'], 'industry/edit/{id}', [IndustryController::class, 'edit']);
-        Route::get('industry/delete/{id}', [IndustryController::class, 'delete']);
-        Route::get('industry/change-status/{id}', [IndustryController::class, 'change_status']);
-    /* industry */
-    /* company */
-        Route::get('company/list', [CompanyController::class, 'list']);
-        Route::match(['get', 'post'], 'company/add', [CompanyController::class, 'add']);
-        Route::match(['get', 'post'], 'company/edit/{id}', [CompanyController::class, 'edit']);
-        Route::get('company/delete/{id}', [CompanyController::class, 'delete']);
-        Route::get('company/change-status/{id}', [CompanyController::class, 'change_status']);
-        Route::match(['get', 'post'], 'company/subcriptions/{id}', [CompanyController::class, 'subcriptions']);
-    /* company */
+    /* Masters */
+        /* country */
+            Route::get('country/list', [CountryController::class, 'list']);
+            Route::match(['get', 'post'], 'country/add', [CountryController::class, 'add']);
+            Route::match(['get', 'post'], 'country/edit/{id}', [CountryController::class, 'edit']);
+            Route::get('country/delete/{id}', [CountryController::class, 'delete']);
+            Route::get('country/change-status/{id}', [CountryController::class, 'change_status']);
+        /* country */
+        /* state */
+            Route::get('state/list', [StateController::class, 'list']);
+            Route::match(['get', 'post'], 'state/add', [StateController::class, 'add']);
+            Route::match(['get', 'post'], 'state/edit/{id}', [StateController::class, 'edit']);
+            Route::get('state/delete/{id}', [StateController::class, 'delete']);
+            Route::get('state/change-status/{id}', [StateController::class, 'change_status']);
+        /* state */
+        /* city */
+            Route::get('city/list', [CityController::class, 'list']);
+            Route::match(['get', 'post'], 'city/add', [CityController::class, 'add']);
+            Route::match(['get', 'post'], 'city/edit/{id}', [CityController::class, 'edit']);
+            Route::get('city/delete/{id}', [CityController::class, 'delete']);
+            Route::get('city/change-status/{id}', [CityController::class, 'change_status']);
+            Route::get('/states/{country_id}', [CityController::class, 'getStatesByCountry'])->name('getStatesByCountry');
+        /* city */
+        /* campaign type */
+            Route::get('campaign-type/list', [CampaignTypeController::class, 'list']);
+            Route::match(['get', 'post'], 'campaign-type/add', [CampaignTypeController::class, 'add']);
+            Route::match(['get', 'post'], 'campaign-type/edit/{id}', [CampaignTypeController::class, 'edit']);
+            Route::get('campaign-type/delete/{id}', [CampaignTypeController::class, 'delete']);
+            Route::get('campaign-type/change-status/{id}', [CampaignTypeController::class, 'change_status']);
+        /* campaign type */
+        /* campaign */
+            Route::get('campaign/list', [CampaignController::class, 'list']);
+            Route::match(['get', 'post'], 'campaign/add', [CampaignController::class, 'add']);
+            Route::match(['get', 'post'], 'campaign/edit/{id}', [CampaignController::class, 'edit']);
+            Route::get('campaign/delete/{id}', [CampaignController::class, 'delete']);
+            Route::get('campaign/change-status/{id}', [CampaignController::class, 'change_status']);
+        /* campaign */
+        /* source */
+            Route::get('source/list', [SourceController::class, 'list']);
+            Route::match(['get', 'post'], 'source/add', [SourceController::class, 'add']);
+            Route::match(['get', 'post'], 'source/edit/{id}', [SourceController::class, 'edit']);
+            Route::get('source/delete/{id}', [SourceController::class, 'delete']);
+            Route::get('source/change-status/{id}', [SourceController::class, 'change_status']);
+        /* source */
+        /* lead header */
+            Route::get('lead-header/list', [LeadHeaderController::class, 'list']);
+            Route::match(['get', 'post'], 'lead-header/add', [LeadHeaderController::class, 'add']);
+            Route::match(['get', 'post'], 'lead-header/edit/{id}', [LeadHeaderController::class, 'edit']);
+            Route::get('lead-header/delete/{id}', [LeadHeaderController::class, 'delete']);
+            Route::get('lead-header/change-status/{id}', [LeadHeaderController::class, 'change_status']);
+        /* lead header */
+        /* lead status */
+            Route::get('lead-status/list', [LeadStatusController::class, 'list']);
+            Route::match(['get', 'post'], 'lead-status/add', [LeadStatusController::class, 'add']);
+            Route::match(['get', 'post'], 'lead-status/edit/{id}', [LeadStatusController::class, 'edit']);
+            Route::get('lead-status/delete/{id}', [LeadStatusController::class, 'delete']);
+            Route::get('lead-status/change-status/{id}', [LeadStatusController::class, 'change_status']);
+        /* lead status */
+    /* Masters */
     /* FAQs */
         /* faq category */
             Route::get('faq-category/list', [FaqCategoryController::class, 'list']);
@@ -116,13 +165,6 @@ Route::middleware(['auth'])->group(function () {
             Route::get('faq/change-status/{id}', [FaqController::class, 'change_status']);
         /* faq */
     /* FAQs */
-    /* package */
-        Route::get('package/list', [PackageController::class, 'list']);
-        Route::match(['get', 'post'], 'package/add', [PackageController::class, 'add']);
-        Route::match(['get', 'post'], 'package/edit/{id}', [PackageController::class, 'edit']);
-        Route::get('package/delete/{id}', [PackageController::class, 'delete']);
-        Route::get('package/change-status/{id}', [PackageController::class, 'change_status']);
-    /* package */
     /* page */
         Route::get('page/list', [PageController::class, 'list']);
         Route::match(['get', 'post'], 'page/add', [PageController::class, 'add']);

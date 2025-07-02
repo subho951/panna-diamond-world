@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug');
             $table->enum('input_type', ['TEXTBOX','TEXTAREA','DROPDOWN','CHECKBOX', 'RADIO','DATE','TIME'])->nullable();
             $table->integer('rank');
-            $table->tinyInteger('is_visible_in_lead_list');
+            $table->enum('is_visible_in_lead_list', ['YES','NO'])->nullable();
             $table->tinyInteger('status')->default(1);
             $table->integer('created_by')->default(1);
             $table->integer('updated_by')->default(1);
