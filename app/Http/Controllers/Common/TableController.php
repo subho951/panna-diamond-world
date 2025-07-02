@@ -28,6 +28,16 @@ class TableController extends Controller
         $query = DB::table($table);
 
         // JOINs (PostgreSQL-safe with CAST)
+        if ($table === 'states') {
+            $query->leftJoin('countries', DB::raw("$table.country_id"), '=', DB::raw("countries.id"));
+        }
+        if ($table === 'cities') {
+            $query->leftJoin('countries', DB::raw("$table.country_id"), '=', DB::raw("countries.id"));
+            $query->leftJoin('states', DB::raw("$table.state_id"), '=', DB::raw("states.id"));
+        }
+        if ($table === 'campaigns') {
+            $query->leftJoin('campaign_types', DB::raw("$table.campaign_type_id"), '=', DB::raw("campaign_types.id"));
+        }
         if ($table === 'faq_sub_categories') {
             $query->leftJoin('faq_categories', DB::raw("$table.faq_category_id"), '=', DB::raw("faq_categories.id"));
         }
@@ -38,9 +48,28 @@ class TableController extends Controller
         if ($table === 'users') {
             $query->leftJoin('roles', DB::raw("$table.role_id"), '=', DB::raw("roles.id"));
         }
+        if ($table == 'lead_statuses') {
+            $query->leftJoin('lead_statuses as parent', DB::raw("$table.parent_id"), '=', DB::raw("parent.id"));
+            // $query->leftJoin('lead_statuses as parent', 'lead_statuses.parent_id', '=', 'parent.id')
+            //     ->addSelect('parent.name as parent_name');
+        }
 
         // Aliased select columns
         $columns = array_map(function ($col) use ($table) {
+            if ($table === 'states' && $col === 'country_id') {
+                return 'countries.name as country_name';
+            }
+            if ($table === 'cities') {
+                if ($col === 'country_id') {
+                    return 'countries.name as country_name';
+                }
+                if ($col === 'state_id') {
+                    return 'states.name as state_name';
+                }
+            }
+            if ($table === 'campaigns' && $col === 'campaign_type_id') {
+                return 'campaign_types.name as campaign_type_name';
+            }
             if ($table === 'faq_sub_categories' && $col === 'faq_category_id') {
                 return 'faq_categories.name as faq_category_name';
             }
@@ -54,6 +83,9 @@ class TableController extends Controller
             }
             if ($table === 'users' && $col === 'role_id') {
                 return 'roles.role_name as role_name';
+            }
+            if ($table === 'lead_statuses' && $col === 'parent_id') {
+                return 'parent.name as parent_name';
             }
             return str_contains($col, '.') ? $col : "$table.$col";
         }, $rawColumns);

@@ -32,7 +32,7 @@ use App\Helpers\Helper;
     <button type="submit" class="btn btn-primary d-grid w-100">Send Reset Link</button>
   </form>
   <div class="mb-2 mb-md-0">
-    © <script>document.write(new Date().getFullYear())</script>, Developed & maintained by <a href="https://keylines.net/" target="_blank" class="footer-link fw-medium">Keylines Digitech Pvt. Ltd.</a>
+    © <script>document.write(new Date().getFullYear())</script>, Developed & maintained by <a href="https://keylines.net/" target="_blank" class="footer-link fw-medium">Keylines</a>
   </div>
   <div class="text-center">
     <a href="<?=url('/')?>" class="d-flex align-items-center justify-content-center">

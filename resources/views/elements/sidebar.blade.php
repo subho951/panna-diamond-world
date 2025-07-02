@@ -89,6 +89,81 @@ $role_id      = (($user)?$user->role_id:0);
       </ul>
     </li>
   <?php }?>
+
+  <?php if(in_array(13, $moduleIds) || in_array(14, $moduleIds) || in_array(15, $moduleIds) || in_array(16, $moduleIds) || in_array(17, $moduleIds) || in_array(18, $moduleIds) || in_array(19, $moduleIds) || in_array(20, $moduleIds)){?>
+    <!-- Masters -->
+    <li class="menu-item active <?=(($pageSegment == 'country' || $pageSegment == 'state' || $pageSegment == 'city' || $pageSegment == 'campaign-type' || $pageSegment == 'campaign' || $pageSegment == 'source' || $pageSegment == 'lead-header' || $pageSegment == 'lead-status')?'open':'')?>">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon fa-solid fa-database"></i>
+        <div data-i18n="Masters">Masters</div>
+      </a>
+      <ul class="menu-sub">
+        <?php if(in_array(13, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'country')?'active':'')?>">
+            <a href="<?=url('/country/list')?>" class="menu-link">
+              <div data-i18n="Countries"><i class="fa-solid fa-arrow-right"></i> Countries</div>
+            </a>
+          </li>
+        <?php }?>
+        
+        <?php if(in_array(14, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'state')?'active':'')?>">
+            <a href="<?=url('/state/list')?>" class="menu-link">
+              <div data-i18n="States"><i class="fa-solid fa-arrow-right"></i> States</div>
+            </a>
+          </li>
+        <?php }?>
+        
+        <?php if(in_array(15, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'city')?'active':'')?>">
+            <a href="<?=url('/city/list')?>" class="menu-link">
+              <div data-i18n="Cities"><i class="fa-solid fa-arrow-right"></i> Cities</div>
+            </a>
+          </li>
+        <?php }?>
+        
+        <?php if(in_array(16, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'campaign-type')?'active':'')?>">
+            <a href="<?=url('/campaign-type/list')?>" class="menu-link">
+              <div data-i18n="Campaign Types"><i class="fa-solid fa-arrow-right"></i> Campaign Types</div>
+            </a>
+          </li>
+        <?php }?>
+
+        <?php if(in_array(17, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'campaign')?'active':'')?>">
+            <a href="<?=url('/campaign/list')?>" class="menu-link">
+              <div data-i18n="Campaigns"><i class="fa-solid fa-arrow-right"></i> Campaigns</div>
+            </a>
+          </li>
+        <?php }?>
+
+        <?php if(in_array(18, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'source')?'active':'')?>">
+            <a href="<?=url('/source/list')?>" class="menu-link">
+              <div data-i18n="Sources"><i class="fa-solid fa-arrow-right"></i> Sources</div>
+            </a>
+          </li>
+        <?php }?>
+
+        <?php if(in_array(19, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'lead-header')?'active':'')?>">
+            <a href="<?=url('/lead-header/list')?>" class="menu-link">
+              <div data-i18n="Lead Headers"><i class="fa-solid fa-arrow-right"></i> Lead Headers</div>
+            </a>
+          </li>
+        <?php }?>
+
+        <?php if(in_array(20, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'lead-status')?'active':'')?>">
+            <a href="<?=url('/lead-status/list')?>" class="menu-link">
+              <div data-i18n="Lead Status"><i class="fa-solid fa-arrow-right"></i> Lead Status</div>
+            </a>
+          </li>
+        <?php }?>
+      </ul>
+    </li>
+  <?php }?>
   
   <?php if(in_array(5, $moduleIds) || in_array(6, $moduleIds) || in_array(7, $moduleIds)){?>
     <!-- FAQs -->
