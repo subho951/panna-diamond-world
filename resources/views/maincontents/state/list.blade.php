@@ -38,19 +38,27 @@ $controllerRoute = $module['controller_route'];
                 @include('components.table', [
                   'containerId' => 'table1',
                   'searchId' => 'search1',
-                  'table' => 'pages',
-                  'columns' => ['page_name', 'created_at', 'status'],
-                  'visibleColumns' => ['page_name', 'created_at'],    // used for rendering
-                  'headers' => ['#', 'Name', 'Created At'],
-                  'filename' => "Page",
+                  'table' => 'states',
+                  'columns' => ['country_id', 'name', 'created_at', 'states.status'],
+                  'visibleColumns' => ['country_name', 'name', 'created_at'],
+                  'headers' => ['#', 'Country Name', 'Name', 'Created At'],
+                  'filename' => "State",
                   'orderBy' => 'id',
                   'orderType' => 'desc',
                   'conditions' => [
-                    ['column' => 'status', 'operator' => '!=', 'value' => 3]
+                    ['column' => 'states.status', 'operator' => '!=', 'value' => 3]
                   ],
-                  'routePrefix' => 'page',
+                  'routePrefix' => 'state',
                   'showActions' => true, // set to false to hide actions
-                  'statusColumn' => 'status', // optional, defaults to 'is_active'
+                  'statusColumn' => 'status', // optional, defaults to 'is_active',
+                  'joins' => [
+                     [
+                        'table' => 'countries',
+                        'localKey' => 'country_id',
+                        'foreignKey' => 'id',
+                        'select' => ['name as country_name']
+                     ]
+                  ]
                 ])
             </div>
         </div>

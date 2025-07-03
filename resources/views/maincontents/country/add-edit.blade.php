@@ -32,11 +32,17 @@ $controllerRoute = $module['controller_route'];
          <div class="card mb-4">
             <?php
             if($row){
-                $name           = $row->name;
-                $status         = $row->status;
+                $name                       = $row->name;
+                $short_code                 = $row->short_code;
+                $phone_code                 = $row->phone_code;
+                $currency_code              = $row->currency_code;
+                $status                     = $row->status;
             } else {
-                $name           = '';
-                $status         = '';
+                $name                       = '';
+                $short_code                 = '';
+                $phone_code                 = '';
+                $currency_code              = '';
+                $status                     = '';
             }
             ?>
             <div class="card-body">
@@ -48,6 +54,19 @@ $controllerRoute = $module['controller_route'];
                             <input class="form-control" type="text" id="name" name="name" value="<?=$name?>" required placeholder="Name" autofocus />
                         </div>
                         <div class="col-md-6">
+                            <label for="short_code" class="form-label">Short Code <small class="text-danger">*</small></label>
+                            <input class="form-control" type="text" id="short_code" name="short_code" value="<?=$short_code?>" required placeholder="Short Code" />
+                        </div>
+
+                        <div class="col-md-4 mt-3">
+                            <label for="phone_code" class="form-label">Phone Code <small class="text-danger">*</small></label>
+                            <input class="form-control" type="text" id="phone_code" name="phone_code" value="<?=$phone_code?>" required placeholder="Phone Code" />
+                        </div>
+                        <div class="col-md-4 mt-3">
+                            <label for="currency_code" class="form-label">Currency Code <small class="text-danger">*</small></label>
+                            <input class="form-control" type="text" id="currency_code" name="currency_code" value="<?=$currency_code?>" required placeholder="Currency Code" />
+                        </div>
+                        <div class="col-md-4 mt-3">
                             <label for="status" class="form-label d-block">Status <small class="text-danger">*</small></label>
                             <div class="form-check form-switch mt-0 ">
                                 <input class="form-check-input" type="checkbox" name="status" role="switch" id="status" <?=(($status == 1)?'checked':'')?>>

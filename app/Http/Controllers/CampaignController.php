@@ -6,7 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Models\GeneralSetting;
-use App\Models\Industry;
+use App\Models\CampaignType;
+use App\Models\Campaign;
 use App\Models\UserActivity;
 use App\Services\SiteAuthService;
 use App\Helpers\Helper;
@@ -15,25 +16,25 @@ use Session;
 use Hash;
 use DB;
 
-class IndustryController extends Controller
+class CampaignController extends Controller
 {
     protected $siteAuthService;
     public function __construct()
     {
         $this->siteAuthService = new SiteAuthService();
         $this->data = array(
-            'title'             => 'Industry',
-            'controller'        => 'IndustryController',
-            'controller_route'  => 'industry',
+            'title'             => 'Campaign',
+            'controller'        => 'CampaignController',
+            'controller_route'  => 'campaign',
             'primary_key'       => 'id',
-            'table_name'        => 'industries',
+            'table_name'        => 'campaigns',
         );
     }
     /* list */
         public function list(){
             $data['module']                 = $this->data;
             $title                          = $this->data['title'].' List';
-            $page_name                      = 'industry.list';
+            $page_name                      = 'campaign.list';
             $data                           = $this->siteAuthService ->admin_after_login_layout($title,$page_name,$data);
             return view('maincontents.' . $page_name, $data);
         }
@@ -44,7 +45,9 @@ class IndustryController extends Controller
             if($request->isMethod('post')){
                 $postData = $request->all();
                 $rules = [
-                    'name'           => 'required',
+                    'campaign_type_id'          => 'required',
+                    'name'                      => 'required',
+                    'year'                      => 'required',
                 ];
                 if($this->validate($request, $rules)){
                     /* user activity */
@@ -60,10 +63,13 @@ class IndustryController extends Controller
                         UserActivity::insert($activityData);
                     /* user activity */
                     $fields = [
-                        'name'              => strip_tags($postData['name']),
-                        'status'            => ((array_key_exists("status",$postData))?1:0),
+                        'campaign_type_id'              => strip_tags($postData['campaign_type_id']),
+                        'name'                          => strtoupper(strip_tags($postData['name'])),
+                        'year'                          => strip_tags($postData['year']),
+                        'slug'                          => strtolower(Helper::clean(strip_tags($postData['name']))),
+                        'status'                        => ((array_key_exists("status",$postData))?1:0),
                     ];
-                    Industry::insert($fields);
+                    Campaign::insert($fields);
                     return redirect($this->data['controller_route'] . "/list")->with('success_message', $this->data['title'].' Inserted Successfully !!!');
                 } else {
                     return redirect()->back()->with('error_message', 'All Fields Required !!!');
@@ -71,8 +77,9 @@ class IndustryController extends Controller
             }
             $data['module']                 = $this->data;
             $title                          = $this->data['title'].' Add';
-            $page_name                      = 'industry.add-edit';
+            $page_name                      = 'campaign.add-edit';
             $data['row']                    = [];
+            $data['camTypes']               = CampaignType::select('id', 'name')->where('status', '=', 1)->orderBy('name', 'ASC')->get();
             $data                           = $this->siteAuthService ->admin_after_login_layout($title,$page_name,$data);
             return view('maincontents.' . $page_name, $data);
         }
@@ -82,19 +89,25 @@ class IndustryController extends Controller
             $data['module']                 = $this->data;
             $id                             = Helper::decoded($id);
             $title                          = $this->data['title'].' Update';
-            $page_name                      = 'industry.add-edit';
-            $data['row']                    = Industry::where('id', '=', $id)->first();
+            $page_name                      = 'campaign.add-edit';
+            $data['row']                    = Campaign::where('id', '=', $id)->first();
+            $data['camTypes']               = CampaignType::select('id', 'name')->where('status', '=', 1)->orderBy('name', 'ASC')->get();
             if($request->isMethod('post')){
                 $postData = $request->all();
                 $rules = [
-                    'name'           => 'required',
+                    'campaign_type_id'          => 'required',
+                    'name'                      => 'required',
+                    'year'                      => 'required',
                 ];
                 if($this->validate($request, $rules)){
                     $fields = [
-                        'name'              => strip_tags($postData['name']),
-                        'status'            => ((array_key_exists("status",$postData))?1:0),
+                        'campaign_type_id'              => strip_tags($postData['campaign_type_id']),
+                        'name'                          => strtoupper(strip_tags($postData['name'])),
+                        'year'                          => strip_tags($postData['year']),
+                        'slug'                          => strtolower(Helper::clean(strip_tags($postData['name']))),
+                        'status'                        => ((array_key_exists("status",$postData))?1:0),
                     ];
-                    Industry::where($this->data['primary_key'], '=', $id)->update($fields);
+                    Campaign::where($this->data['primary_key'], '=', $id)->update($fields);
                     /* user activity */
                         $activityData = [
                             'user_email'        => session('user_data')['email'],
@@ -119,12 +132,12 @@ class IndustryController extends Controller
     /* delete */
         public function delete(Request $request, $id){
             $id                             = Helper::decoded($id);
-            $model                          = Industry::find($id);
+            $model                          = Campaign::find($id);
             $fields = [
                 'status'             => 3,
                 'deleted_at'         => date('Y-m-d H:i:s'),
             ];
-            Industry::where($this->data['primary_key'], '=', $id)->update($fields);
+            Campaign::where($this->data['primary_key'], '=', $id)->update($fields);
             /* user activity */
                 $activityData = [
                     'user_email'        => session('user_data')['email'],
@@ -143,7 +156,7 @@ class IndustryController extends Controller
     /* change status */
         public function change_status(Request $request, $id){
             $id                             = Helper::decoded($id);
-            $model                          = Industry::find($id);
+            $model                          = Campaign::find($id);
             if ($model->status == 1)
             {
                 $model->status  = 0;

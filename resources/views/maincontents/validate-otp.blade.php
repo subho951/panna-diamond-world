@@ -48,7 +48,7 @@ use App\Helpers\Helper;
     </div>
   </form>
   <div class="mb-2 mb-md-0">
-    © <script>document.write(new Date().getFullYear())</script>, Developed & maintained by <a href="https://keylines.net/" target="_blank" class="footer-link fw-medium">Keylines Digitech Pvt. Ltd.</a>
+    © <script>document.write(new Date().getFullYear())</script>, Developed & maintained by <a href="https://keylines.net/" target="_blank" class="footer-link fw-medium">Keylines</a>
   </div>
 </div>
 @endsection

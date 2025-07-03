@@ -38,19 +38,27 @@ $controllerRoute = $module['controller_route'];
                 @include('components.table', [
                   'containerId' => 'table1',
                   'searchId' => 'search1',
-                  'table' => 'pages',
-                  'columns' => ['page_name', 'created_at', 'status'],
-                  'visibleColumns' => ['page_name', 'created_at'],    // used for rendering
-                  'headers' => ['#', 'Name', 'Created At'],
-                  'filename' => "Page",
+                  'table' => 'campaigns',
+                  'columns' => ['campaign_type_id', 'name', 'year', 'created_at', 'campaigns.status'],
+                  'visibleColumns' => ['campaign_type_name', 'name', 'year', 'created_at'],
+                  'headers' => ['#', 'Campaign Type Name', 'Name', 'Year', 'Created At'],
+                  'filename' => "Campaign",
                   'orderBy' => 'id',
                   'orderType' => 'desc',
                   'conditions' => [
-                    ['column' => 'status', 'operator' => '!=', 'value' => 3]
+                    ['column' => 'campaigns.status', 'operator' => '!=', 'value' => 3]
                   ],
-                  'routePrefix' => 'page',
+                  'routePrefix' => 'campaign',
                   'showActions' => true, // set to false to hide actions
-                  'statusColumn' => 'status', // optional, defaults to 'is_active'
+                  'statusColumn' => 'status', // optional, defaults to 'is_active',
+                  'joins' => [
+                     [
+                        'table' => 'campaign_types',
+                        'localKey' => 'campaign_type_id',
+                        'foreignKey' => 'id',
+                        'select' => ['name as campaign_type_name']
+                     ]
+                  ]
                 ])
             </div>
         </div>

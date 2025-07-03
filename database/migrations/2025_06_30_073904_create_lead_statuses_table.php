@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('rank');
             $table->longText('short_description');
-            $table->tinyInteger('is_registered')->default(0);
+            $table->enum('is_registered', ['YES','NO'])->nullable();
             $table->tinyInteger('status')->default(1);
             $table->integer('created_by')->default(1);
             $table->integer('updated_by')->default(1);

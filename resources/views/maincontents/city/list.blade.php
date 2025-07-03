@@ -36,21 +36,35 @@ $controllerRoute = $module['controller_route'];
                   Fetching data. Please wait <span id="dot-animation">.</span>
                </div>
                 @include('components.table', [
-                'containerId' => 'table1',
-                'searchId' => 'search1',
-                'table' => 'industries',
-                'columns' => ['name', 'created_at', 'status'],
-                'visibleColumns' => ['name', 'created_at'],    // used for rendering
-                'headers' => ['#', 'Name', 'Created At'],
-                'filename' => "Industry",
-                'orderBy' => 'id',
-                'orderType' => 'desc',
-                'conditions' => [
-                    ['column' => 'status', 'operator' => '!=', 'value' => 3]
-                ],
-                'routePrefix' => 'industry',
-                'showActions' => true, // set to false to hide actions
-                'statusColumn' => 'status' // optional, defaults to 'is_active'
+                  'containerId' => 'table1',
+                  'searchId' => 'search1',
+                  'table' => 'cities',
+                  'columns' => ['country_id', 'state_id', 'name', 'created_at', 'cities.status'],
+                  'visibleColumns' => ['country_name', 'state_name', 'name', 'created_at'],
+                  'headers' => ['#', 'Country Name', 'State Name', 'Name', 'Created At'],
+                  'filename' => "City",
+                  'orderBy' => 'id',
+                  'orderType' => 'desc',
+                  'conditions' => [
+                    ['column' => 'cities.status', 'operator' => '!=', 'value' => 3]
+                  ],
+                  'routePrefix' => 'city',
+                  'showActions' => true, // set to false to hide actions
+                  'statusColumn' => 'status', // optional, defaults to 'is_active',
+                  'joins' => [
+                     [
+                        'table' => 'countries',
+                        'localKey' => 'country_id',
+                        'foreignKey' => 'id',
+                        'select' => ['name as country_name']
+                     ],
+                     [
+                        'table' => 'states',
+                        'localKey' => 'state_id',
+                        'foreignKey' => 'id',
+                        'select' => ['name as state_name']
+                     ]
+                  ]
                 ])
             </div>
         </div>

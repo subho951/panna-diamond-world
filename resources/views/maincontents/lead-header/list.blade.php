@@ -36,21 +36,21 @@ $controllerRoute = $module['controller_route'];
                   Fetching data. Please wait <span id="dot-animation">.</span>
                </div>
                 @include('components.table', [
-                  'containerId' => 'table1',
-                  'searchId' => 'search1',
-                  'table' => 'pages',
-                  'columns' => ['page_name', 'created_at', 'status'],
-                  'visibleColumns' => ['page_name', 'created_at'],    // used for rendering
-                  'headers' => ['#', 'Name', 'Created At'],
-                  'filename' => "Page",
-                  'orderBy' => 'id',
-                  'orderType' => 'desc',
-                  'conditions' => [
+                'containerId' => 'table1',
+                'searchId' => 'search1',
+                'table' => 'lead_headers',
+                'columns' => ['name', 'input_type', 'rank', 'is_visible_in_lead_list', 'created_at', 'status'],
+                'visibleColumns' => ['name', 'input_type', 'rank', 'is_visible_in_lead_list', 'created_at'],    // used for rendering
+                'headers' => ['#', 'Name', 'Input Type', 'Rank', 'Is Visible In Lead List', 'Created At'],
+                'filename' => "Lead_Header",
+                'orderBy' => 'id',
+                'orderType' => 'desc',
+                'conditions' => [
                     ['column' => 'status', 'operator' => '!=', 'value' => 3]
-                  ],
-                  'routePrefix' => 'page',
-                  'showActions' => true, // set to false to hide actions
-                  'statusColumn' => 'status', // optional, defaults to 'is_active'
+                ],
+                'routePrefix' => 'lead-header',
+                'showActions' => true, // set to false to hide actions
+                'statusColumn' => 'status' // optional, defaults to 'is_active'
                 ])
             </div>
         </div>

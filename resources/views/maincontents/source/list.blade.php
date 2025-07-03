@@ -36,21 +36,21 @@ $controllerRoute = $module['controller_route'];
                   Fetching data. Please wait <span id="dot-animation">.</span>
                </div>
                 @include('components.table', [
-                  'containerId' => 'table1',
-                  'searchId' => 'search1',
-                  'table' => 'pages',
-                  'columns' => ['page_name', 'created_at', 'status'],
-                  'visibleColumns' => ['page_name', 'created_at'],    // used for rendering
-                  'headers' => ['#', 'Name', 'Created At'],
-                  'filename' => "Page",
-                  'orderBy' => 'id',
-                  'orderType' => 'desc',
-                  'conditions' => [
+                'containerId' => 'table1',
+                'searchId' => 'search1',
+                'table' => 'sources',
+                'columns' => ['name', 'created_at', 'status'],
+                'visibleColumns' => ['name', 'created_at'],    // used for rendering
+                'headers' => ['#', 'Name', 'Created At'],
+                'filename' => "Source",
+                'orderBy' => 'id',
+                'orderType' => 'desc',
+                'conditions' => [
                     ['column' => 'status', 'operator' => '!=', 'value' => 3]
-                  ],
-                  'routePrefix' => 'page',
-                  'showActions' => true, // set to false to hide actions
-                  'statusColumn' => 'status', // optional, defaults to 'is_active'
+                ],
+                'routePrefix' => 'source',
+                'showActions' => true, // set to false to hide actions
+                'statusColumn' => 'status' // optional, defaults to 'is_active'
                 ])
             </div>
         </div>
