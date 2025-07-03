@@ -17,6 +17,7 @@ use Hash;
 class ModuleController extends Controller
 {
     protected $siteAuthService;
+    // protected $data;
     public function __construct()
     {
         $this->siteAuthService = new SiteAuthService();
@@ -178,3 +179,6 @@ class ModuleController extends Controller
         }
     /* change status */
 }
+
+
+
