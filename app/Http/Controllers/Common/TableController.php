@@ -47,6 +47,7 @@ class TableController extends Controller
         }
         if ($table === 'users') {
             $query->leftJoin('roles', DB::raw("$table.role_id"), '=', DB::raw("roles.id"));
+            $query->leftJoin('branches', DB::raw("$table.branch_id"), '=', DB::raw("branches.id"));
         }
         if ($table == 'lead_statuses') {
             $query->leftJoin('lead_statuses as parent', DB::raw("$table.parent_id"), '=', DB::raw("parent.id"));
@@ -81,9 +82,16 @@ class TableController extends Controller
                     return 'faq_sub_categories.name as faq_sub_category_name';
                 }
             }
-            if ($table === 'users' && $col === 'role_id') {
-                return 'roles.role_name as role_name';
+            if ($table === 'users')
+            {
+                if($col === 'role_id') {
+                    return 'roles.role_name as role_name';
+                }
+                if($col === 'branch_id'){
+                    return 'branches.name as branch_name';
+                }
             }
+
             if ($table === 'lead_statuses' && $col === 'parent_id') {
                 return 'parent.name as parent_name';
             }

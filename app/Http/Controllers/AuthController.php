@@ -22,6 +22,7 @@ use DB;
 class AuthController extends Controller
 {
     protected $siteAuthService;
+    protected $data;
     function __construct()
     {
         $this->siteAuthService = new SiteAuthService();

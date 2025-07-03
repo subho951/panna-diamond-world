@@ -34,6 +34,7 @@ $controllerRoute = $module['controller_route'];
             if($row){
                 $id                 = $row->id;
                 $role_id            = $row->role_id;
+                $branch_id          = $row->branch_id;
                 $first_name         = $row->first_name;
                 $last_name          = $row->last_name;
                 $email              = $row->email;
@@ -43,6 +44,7 @@ $controllerRoute = $module['controller_route'];
             } else {
                 $id                 = '';
                 $role_id            = '';
+                $branch_id          = '';
                 $first_name         = '';
                 $last_name          = '';
                 $email              = '';
@@ -64,6 +66,7 @@ $controllerRoute = $module['controller_route'];
                                 <?php } }?>
                             </select>
                         </div>
+                        
                         <div class="col-md-6 mb-3">
                             <label for="status" class="form-label d-block">Status <small class="text-danger">*</small></label>
                             <div class="form-check form-switch mt-0 ">
@@ -71,6 +74,16 @@ $controllerRoute = $module['controller_route'];
                                 <label class="form-check-label" for="status">Active</label>
                             </div>
                         </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label for="branch_id" class="form-label">Branch <small class="text-danger">*</small></label>
+                            <select class="form-control" type="text" id="branch_id" name="branch_id"  required>
+                                <option value="" selected>Select Branch</option>
+                                <?php if($branches){ foreach($branches as $branch){?>
+                                    <option value="<?=$branch->id?>" <?=(($branch->id === $branch_id)? 'selected':'')?>><?=$branch->name?></option>
+                                <?php } }?>
+                            </select>
+                        </div>                        
 
                         <div class="col-md-6 mb-3">
                             <label for="first_name" class="form-label">First Name <small class="text-danger">*</small></label>

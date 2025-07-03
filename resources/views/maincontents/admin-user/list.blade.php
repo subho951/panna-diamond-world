@@ -40,14 +40,14 @@ $controllerRoute = $module['controller_route'];
                   'containerId' => 'table1',
                   'searchId' => 'search1',
                   'table' => 'users',
-                  'columns' => ['role_id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'users.status'],
-                  'visibleColumns' => ['role_name', 'first_name', 'last_name', 'email', 'country_code', 'phone'],
-                  'headers' => ['#', 'Role', 'First Name', 'Last Name', 'Email', 'Country Code', 'Phone'],
+                  'columns' => ['role_id', 'branch_id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'users.status'],
+                  'visibleColumns' => ['role_name', 'branch_name', 'first_name', 'last_name', 'email', 'country_code', 'phone'],
+                  'headers' => ['#', 'Role', 'Branch', 'First Name', 'Last Name', 'Email', 'Country Code', 'Phone'],
                   'filename' => "Admin_User",
                   'orderBy' => 'id',
                   'orderType' => 'desc',
                   'conditions' => [
-                    ['column' => 'users.role_id', 'operator' => '=', 'value' => 4]
+                    ['column' => 'users.status', 'operator' => '!=', 'value' => 3]
                   ],
                   'routePrefix' => 'admin-user',
                   'showActions' => true, // set to false to hide actions
@@ -58,6 +58,12 @@ $controllerRoute = $module['controller_route'];
                         'localKey' => 'role_id',
                         'foreignKey' => 'id',
                         'select' => ['role_name as role_name']
+            ],
+                     [
+                        'table' => 'branches',
+                        'localKey' => 'branch_id',
+                        'foreignKey' => 'id',
+                        'select' => ['name as branch_name']
                      ]
                   ]
                 ])

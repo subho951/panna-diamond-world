@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Common\TableController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\BranchController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\FaqCategoryController;
 use App\Http\Controllers\FaqSubCategoryController;
@@ -75,6 +76,9 @@ Route::middleware(['auth'])->group(function () {
             Route::get('role/delete/{id}', [RoleController::class, 'delete']);
             Route::get('role/change-status/{id}', [RoleController::class, 'change_status']);
         /* roles */
+        /* branch */
+            Route::match(['get', 'post'], 'branch/add', [BranchController::class, 'add']);
+        /* branch */
         /* admin users */
             Route::get('admin-user/list', [AdminUserController::class, 'list']);
             Route::match(['get', 'post'], 'admin-user/add', [AdminUserController::class, 'add']);

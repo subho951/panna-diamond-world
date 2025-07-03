@@ -19,5 +19,6 @@ use DB;
 class UserController extends Controller
 {
     protected $siteAuthService;
+    protected $data;
     
 }

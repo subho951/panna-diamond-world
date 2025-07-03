@@ -18,6 +18,7 @@ use DB;
 class PageController extends Controller
 {
     protected $siteAuthService;
+    protected $data;
     public function __construct()
     {
         $this->siteAuthService = new SiteAuthService();
