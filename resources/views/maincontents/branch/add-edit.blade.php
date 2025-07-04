@@ -32,7 +32,6 @@ $controllerRoute = $module['controller_route'];
          <div class="card mb-4">
             <?php
             if($row){
-                $id                 = $row->id;
                 $name               = $row->name;
                 $email              = $row->email;
                 $phone_code         = $row->phone_code;
@@ -41,7 +40,6 @@ $controllerRoute = $module['controller_route'];
                 $pincode            = $row->pincode;
                 $status             = $row->status;
             } else {
-                $id                 = '';
                 $name               = '';
                 $email              = '';
                 $phone_code         = '';
@@ -49,7 +47,6 @@ $controllerRoute = $module['controller_route'];
                 $address            = '';
                 $pincode            = '';
                 $status             = '';
-               
             }
             ?>
             <div class="card-body">

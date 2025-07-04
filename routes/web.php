@@ -77,7 +77,11 @@ Route::middleware(['auth'])->group(function () {
             Route::get('role/change-status/{id}', [RoleController::class, 'change_status']);
         /* roles */
         /* branch */
+            Route::get('branch/list', [BranchController::class, 'list']);
             Route::match(['get', 'post'], 'branch/add', [BranchController::class, 'add']);
+            Route::match(['get', 'post'], 'branch/edit/{id}', [BranchController::class, 'edit']);
+            Route::get('branch/delete/{id}', [BranchController::class, 'delete']);
+            Route::get('branch/change-status/{id}', [BranchController::class, 'change_status']);
         /* branch */
         /* admin users */
             Route::get('admin-user/list', [AdminUserController::class, 'list']);
