@@ -244,7 +244,7 @@ $role_id      = (($user)?$user->role_id:0);
   <?php if(in_array(21, $moduleIds)){?>
     <!-- Branch -->
     <li class="menu-item <?=(($pageSegment == 'branch')?'active':'')?>">
-      <a href="<?=url('branch/list') ?>" class="menu-link">
+      <a href="<?=url('/branch/list') ?>" class="menu-link">
         <i class="menu-icon fa-solid fa-chart-line"></i>
         <div data-i18n="Branch">Branch</div>
       </a>
