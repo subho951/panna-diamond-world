@@ -17,6 +17,7 @@ use Hash;
 class ModuleController extends Controller
 {
     protected $siteAuthService;
+    protected $data;
     public function __construct()
     {
         $this->siteAuthService = new SiteAuthService();
@@ -116,7 +117,7 @@ class ModuleController extends Controller
     /* delete */
         public function delete(Request $request, $id){
             $id                             = Helper::decoded($id);
-            $model                          = JobCategory::find($id);
+            $model                          = Module::find($id);
             $fields = [
                 'status'             => 3,
                 'deleted_at'         => date('Y-m-d H:i:s'),
@@ -178,3 +179,6 @@ class ModuleController extends Controller
         }
     /* change status */
 }
+
+
+

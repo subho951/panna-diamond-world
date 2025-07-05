@@ -19,6 +19,7 @@ use Hash;
 class FaqController extends Controller
 {
     protected $siteAuthService;
+    protected $data;
     public function __construct()
     {
         $this->siteAuthService = new SiteAuthService();

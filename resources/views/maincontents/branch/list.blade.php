@@ -39,33 +39,19 @@ $controllerRoute = $module['controller_route'];
                 @include('components.table', [
                   'containerId' => 'table1',
                   'searchId' => 'search1',
-                  'table' => 'users',
-                  'columns' => ['role_id', 'branch_id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'users.status'],
-                  'visibleColumns' => ['role_name', 'branch_name', 'first_name', 'last_name', 'email', 'country_code', 'phone'],
-                  'headers' => ['#', 'Role', 'Branch', 'First Name', 'Last Name', 'Email', 'Country Code', 'Phone'],
-                  'filename' => "Admin_User",
+                  'table' => 'branches',
+                  'columns' => ['name', 'email', 'phone_code', 'phone',  'address', 'pincode', 'status'],
+                  'visibleColumns' => ['name', 'email', 'phone_code', 'phone' , 'address', 'pincode'],
+                  'headers' => ['#',  'Name', 'Email', 'Country Code', 'Phone' , 'Address', 'Pincode'],
+                  'filename' => "Branch",
                   'orderBy' => 'id',
                   'orderType' => 'desc',
                   'conditions' => [
-                    ['column' => 'users.status', 'operator' => '!=', 'value' => 3]
+                    ['column' => 'branches.status', 'operator' => '!=', 'value' => 3]
                   ],
-                  'routePrefix' => 'admin-user',
+                  'routePrefix' => 'branch',
                   'showActions' => true, // set to false to hide actions
                   'statusColumn' => 'status', // optional, defaults to 'is_active',
-                  'joins' => [
-                     [
-                        'table' => 'roles',
-                        'localKey' => 'role_id',
-                        'foreignKey' => 'id',
-                        'select' => ['role_name as role_name']
-            ],
-                     [
-                        'table' => 'branches',
-                        'localKey' => 'branch_id',
-                        'foreignKey' => 'id',
-                        'select' => ['name as branch_name']
-                     ]
-                  ]
                 ])
             </div>
         </div>

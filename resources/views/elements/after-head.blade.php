@@ -13,6 +13,7 @@ use App\Helpers\Helper;
 <meta name="keywords" content="<?=Helper::getSettingValue('meta_keywords')?>">
 <meta name="base-url" content="<?=url('public/')?>">
 <meta name="baseurl" content="{{ url('/') }}">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <!-- Favicon -->
 <link rel="icon" type="image/x-icon" href="<?=((Helper::getSettingValue('site_favicon') != '')?config('constants.app_url') . config('constants.uploads_url_path') . Helper::getSettingValue('site_favicon'):config('constants.no_image'))?>" />
 

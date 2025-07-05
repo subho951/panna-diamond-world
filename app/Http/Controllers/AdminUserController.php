@@ -8,6 +8,7 @@ use Illuminate\Validation\Rule;
 use App\Models\GeneralSetting;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Branch;
 use App\Models\UserActivity;
 use App\Services\SiteAuthService;
 use App\Helpers\Helper;
@@ -18,6 +19,7 @@ use Hash;
 class AdminUserController extends Controller
 {
     protected $siteAuthService;
+    protected $data;
     public function __construct()
     {
         $this->siteAuthService = new SiteAuthService();
@@ -45,6 +47,7 @@ class AdminUserController extends Controller
                 $postData = $request->all();
                 $rules = [
                     'role_id'               => 'required',
+                    'branch_id'             => 'required',
                     'first_name'            => 'required',
                     'last_name'             => 'required',
                     'email'                 => 'required',
@@ -67,6 +70,7 @@ class AdminUserController extends Controller
                     /* user activity */
                     $fields = [
                         'role_id'               => strip_tags($postData['role_id']),
+                        'branch_id'             => strip_tags($postData['branch_id']),
                         'first_name'            => strip_tags($postData['first_name']),
                         'last_name'             => strip_tags($postData['last_name']),
                         'email'                 => strip_tags($postData['email']),
@@ -86,6 +90,7 @@ class AdminUserController extends Controller
             $page_name                      = 'admin-user.add-edit';
             $data['row']                    = [];
             $data['roles']                  = Role::select('id', 'role_name')->where('status', '=', 1)->get();
+            $data['branches']               = Branch::select('id', 'name')->where('status', '=', 1)->get();
             $data                           = $this->siteAuthService ->admin_after_login_layout($title,$page_name,$data);
             return view('maincontents.' . $page_name, $data);
         }
@@ -98,11 +103,13 @@ class AdminUserController extends Controller
             $page_name                      = 'admin-user.add-edit';
             $data['row']                    = User::where($this->data['primary_key'], '=', $id)->first();
             $data['roles']                  = Role::select('id', 'role_name')->where('status', '=', 1)->get();
+            $data['branches']               = Branch::select('id', 'name')->where('status', '=', 1)->get();
 
             if($request->isMethod('post')){
                 $postData = $request->all();
                 $rules = [
                     'role_id'               => 'required',
+                    'branch_id'             => 'required',
                     'first_name'            => 'required',
                     'last_name'             => 'required',
                     'email'                 => 'required',
@@ -113,6 +120,7 @@ class AdminUserController extends Controller
                     if($postData['password'] != ''){
                         $fields = [
                             'role_id'               => strip_tags($postData['role_id']),
+                            'branch_id'             => strip_tags($postData['branch_id']),
                             'first_name'            => strip_tags($postData['first_name']),
                             'last_name'             => strip_tags($postData['last_name']),
                             'email'                 => strip_tags($postData['email']),
@@ -124,6 +132,7 @@ class AdminUserController extends Controller
                     } else {
                         $fields = [
                             'role_id'               => strip_tags($postData['role_id']),
+                            'branch_id'             => strip_tags($postData['branch_id']),
                             'first_name'            => strip_tags($postData['first_name']),
                             'last_name'             => strip_tags($postData['last_name']),
                             'email'                 => strip_tags($postData['email']),

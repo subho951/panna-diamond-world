@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Common\TableController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\BranchController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\FaqCategoryController;
 use App\Http\Controllers\FaqSubCategoryController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\SourceController;
 use App\Http\Controllers\LeadHeaderController;
 use App\Http\Controllers\LeadStatusController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\UploadLeadController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -172,4 +174,16 @@ Route::middleware(['auth'])->group(function () {
         Route::get('page/delete/{id}', [PageController::class, 'delete']);
         Route::get('page/change-status/{id}', [PageController::class, 'change_status']);
     /* page */
+    /* branch */
+        Route::get('branch/list', [BranchController::class, 'list']);
+        Route::match(['get', 'post'], 'branch/add', [BranchController::class, 'add']);
+        Route::match(['get', 'post'], 'branch/edit/{id}', [BranchController::class, 'edit']);
+        Route::get('branch/delete/{id}', [BranchController::class, 'delete']);
+        Route::get('branch/change-status/{id}', [BranchController::class, 'change_status']);
+    /* branch */
+    /* Upload  Lead */
+        Route::match(['get', 'post'], 'upload-lead', [UploadLeadController::class, 'upload']);
+        Route::post( 'upload-lead/fetch-telecaller', [UploadLeadController::class, 'fetchTelecaller']);
+        Route::post( 'upload-lead/fetch-campaign', [UploadLeadController::class, 'fetchCampaign']);
+    /* Upload  Lead */
 });
