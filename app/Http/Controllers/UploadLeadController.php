@@ -35,8 +35,8 @@ class UploadLeadController extends Controller
         );
     }
 
-    /* add */
-    public function add(Request $request){
+    /* upload */
+    public function upload(Request $request){
         $data['module']           = $this->data;
         if($request->isMethod('post')){
             $postData = $request->all();
@@ -74,23 +74,23 @@ class UploadLeadController extends Controller
         $data                           = $this->siteAuthService ->admin_after_login_layout($title,$page_name,$data);
         return view('maincontents.' . $page_name, $data);
     }
-    /* add */
+    /* upload */
 
     public function fetchTelecaller(Request $request){
         if($request->isMethod('post'))
         {
             $branch_id = $request->branch_id;
-            $telecaller = User::where('branch_id', '=', $branch_id)->where('role_id', '=',3)->get();
+            $telecaller = User::where('branch_id', '=', $branch_id)->where('role_id', '=',3)->where('status', '=',1)->get();
             return response()->json($telecaller);
         }
     }
     public function fetchCampaign(Request $request){
-        if($request->isMethod('post'))
-        {
+       if($request->isMethod('post'))
+       {
             $campaign_type_id = $request->campaign_type_id;
-            $campaign = Campaign::where('campaign_type_id', '=',$campaign_type_id)->where('role_id', '=',3)->get();
+            $campaign = Campaign::where('campaign_type_id', '=', $campaign_type_id)->where('status', '=',1)->get();
             return response()->json($campaign);
-        }
+       }
     }
 
 }

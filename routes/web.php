@@ -182,7 +182,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('branch/change-status/{id}', [BranchController::class, 'change_status']);
     /* branch */
     /* Upload  Lead */
-        Route::match(['get', 'post'], 'upload-lead/add', [UploadLeadController::class, 'add']);
+        Route::match(['get', 'post'], 'upload-lead', [UploadLeadController::class, 'upload']);
         Route::post( 'upload-lead/fetch-telecaller', [UploadLeadController::class, 'fetchTelecaller']);
         Route::post( 'upload-lead/fetch-campaign', [UploadLeadController::class, 'fetchCampaign']);
     /* Upload  Lead */
