@@ -4,7 +4,12 @@ $controllerRoute = $module['controller_route'];
 ?>
 @extends('layouts.main')
 @section('content')
-
+<style>
+        
+    .select2-container {
+        width: 100% !important;
+    }
+</style>
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row g-6">
             <h4><?= $page_header ?></h4>
