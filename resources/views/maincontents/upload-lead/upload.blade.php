@@ -34,18 +34,12 @@ $controllerRoute = $module['controller_route'];
                 </div>
                 <?php }?>
                 <div class="card mb-4">
-                    {{-- <?php
-                    if ($row) {
-                    } else {
-                    }
-                    ?> --}}
                     <div class="card-body">
                         <form id="formAccountSettings" action="" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <label for="branch_id" class="form-label">Branch <small
-                                            class="text-danger">*</small></label>
+                                <div class="col-md-3 mb-3">
+                                    <label for="branch_id" class="form-label">Branch <small class="text-danger">*</small></label>
                                     <select class="form-control" type="text" id="branch_id" name="branch_id" autofocus
                                         required>
                                         <option value="" selected disabled>Select Branch</option>
@@ -54,81 +48,49 @@ $controllerRoute = $module['controller_route'];
                                         <?php } }?>
                                     </select>
                                 </div>
-                                <div class="col-md-4 mb-3">
-                                    <label for="telecaller_id" class="form-label">Telecaller <small
-                                            class="text-danger">*</small></label>
-                                    <select class="form-control select2" id="telecaller_id" name="telecaller_id[]" required
-                                        multiple>
-                                        <option value="" selected disabled>Select Telecaller</option>
-
+                                <div class="col-md-3 mb-3">
+                                    <label for="telecaller_id" class="form-label">Telecaller <small class="text-danger">*</small></label>
+                                    <select class="select2" id="telecaller_id" name="telecaller_id[]" required multiple>
+                                        
                                     </select>
                                 </div>
-                                <div class="col-md-4 mb-3">
-                                    <label for="lead_title" class="form-label">Lead Title <small
-                                            class="text-danger">*</small></label>
-                                    <input class="form-control" type="text" id="lead_title" name="lead_title"
-                                        value="" required placeholder="Lead Title" />
-                                </div>
-
                                 <div class="col-md-6 mb-3">
-                                    <label for="lead_date" class="form-label">Lead Date <small
-                                            class="text-danger">*</small></label>
-                                    <input class="form-control" type="date" id="lead_date" name="lead_date"
-                                        value="" required />
+                                    <label for="lead_title" class="form-label">Lead Title <small class="text-danger">*</small></label>
+                                    <input class="form-control" type="text" id="lead_title" name="lead_title" required placeholder="Lead Title" />
                                 </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label for="lead_file" class="form-label">
-                                        Lead File <small class="text-danger">*</small>
-                                        <small class="text-danger">(Only csv file are allowed to upload)</small>
-                                        <a href="#" class="text-primary" target="_blank">Sample File</a>
-                                    </label>
-                                    <input class="form-control" type="file" id="lead_file" name="lead_file"
-                                        accept=".csv" required />
-                                </div>
-
-
-
 
                                 <div class="col-md-6 mb-3">
                                     <label for="campaign_type_id" class="form-label">Campaign Type</label>
-                                    <select class="form-control" type="text" id="campaign_type_id"
-                                        name="campaign_type_id">
+                                    <select class="form-control" type="text" id="campaign_type_id" name="campaign_type_id">
                                         <option value="" selected disabled>Select Campaign Type</option>
                                         <?php if($campaign_types){ foreach($campaign_types as $campaign_type){?>
-                                        <option value="<?= $campaign_type->id ?>"><?= $campaign_type->name ?></option>
+                                            <option value="<?= $campaign_type->id ?>"><?= $campaign_type->name ?></option>
                                         <?php } }?>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="campaign_id" class="form-label">Campaign <small class="text-danger campaign_star"></small></label>
+                                    <select class="form-control" type="text" id="campaign_id" name="campaign_id">
+                                        <option value="" selected disabled>Select Campaign</option>
                                     </select>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
-                                    <label for="campaign_id" class="form-label">Campaign <small
-                                            class="text-danger campaign_star"></small></label>
-                                    <select class="form-control" type="text" id="campaign_id" name="campaign_id">
-                                        <option value="" selected disabled>Select Campaign</option>
-
-                                    </select>
+                                    <label for="lead_date" class="form-label">Lead Date <small class="text-danger">*</small></label>
+                                    <input class="form-control" type="date" id="lead_date" name="lead_date"
+                                        value="" required />
                                 </div>
-
-
-
-
-
-
-
-                                {{-- <div class="col-md-6 mb-3">
-                            <label for="status" class="form-label d-block">Status <small class="text-danger">*</small></label>
-                            <div class="form-check form-switch mt-0 ">
-                                <input class="form-check-input" type="checkbox" name="status" role="switch" id="status" <?= $status == 1 ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="status">Active</label>
-                            </div>
-                        </div>  --}}
-
+                                <div class="col-md-6 mb-3">
+                                    <label for="lead_file" class="form-label">Lead File <small class="text-danger">*</small>
+                                        <small class="text-danger">(Only csv file are allowed to upload)</small>
+                                        <a href="#" class="text-primary" target="_blank">Sample File</a>
+                                    </label>
+                                    <input class="form-control" type="file" id="lead_file" name="lead_file" accept=".csv" required />
+                                </div>
                             </div>
                             <div class="mt-2">
-                                <button type="submit" class="btn btn-primary btn-sm me-2">Save Changes</button>
-                                <a href="<?= url($controllerRoute . '/list/') ?>"
-                                    class="btn btn-label-secondary btn-sm">Cancel</a>
+                                <button type="submit" class="btn btn-primary btn-sm me-2">Upload Leads</button>
+                                <a href="<?= url($controllerRoute . '/list/') ?>" class="btn btn-label-secondary btn-sm">Cancel</a>
                             </div>
                         </form>
                     </div>
