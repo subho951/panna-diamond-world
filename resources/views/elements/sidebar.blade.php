@@ -245,8 +245,18 @@ $role_id      = (($user)?$user->role_id:0);
     <!-- Branch -->
     <li class="menu-item <?=(($pageSegment == 'branch')?'active':'')?>">
       <a href="<?=url('/branch/list') ?>" class="menu-link">
-        <i class="menu-icon fa-solid fa-chart-line"></i>
+        <i class="menu-icon fa-solid fas fa-sitemap"></i>
         <div data-i18n="Branch">Branch</div>
+      </a>
+    </li>
+  <?php }?>
+
+  <?php if(in_array(22, $moduleIds)){?>
+    <!-- Upload Lead -->
+    <li class="menu-item <?=(($pageSegment == 'upload-lead')?'active':'')?>">
+      <a href="<?=url('/upload-lead') ?>" class="menu-link">
+        <i class="menu-icon fa-solid fas fa-upload"></i>
+        <div data-i18n="Upload Lead">Upload Lead</div>
       </a>
     </li>
   <?php }?>
