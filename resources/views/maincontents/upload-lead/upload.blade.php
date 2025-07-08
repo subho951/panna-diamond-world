@@ -4,12 +4,11 @@ $controllerRoute = $module['controller_route'];
 ?>
 @extends('layouts.main')
 @section('content')
-<style>
-        
-    .select2-container {
-        width: 100% !important;
-    }
-</style>
+    <style>
+        .select2-container {
+            width: 100% !important;
+        }
+    </style>
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row g-6">
             <h4><?= $page_header ?></h4>
@@ -37,16 +36,14 @@ $controllerRoute = $module['controller_route'];
                 <div class="card mb-4">
                     {{-- <?php
                     if ($row) {
-                        
                     } else {
-                        
                     }
                     ?> --}}
                     <div class="card-body">
                         <form id="formAccountSettings" action="" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label for="branch_id" class="form-label">Branch <small
                                             class="text-danger">*</small></label>
                                     <select class="form-control" type="text" id="branch_id" name="branch_id" autofocus
@@ -57,18 +54,41 @@ $controllerRoute = $module['controller_route'];
                                         <?php } }?>
                                     </select>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label for="telecaller_id" class="form-label">Telecaller <small
                                             class="text-danger">*</small></label>
-                                    <select class="form-control select2" id="telecaller_id" name="telecaller_id[]"
-                                        required multiple>
-                                        <option value="" selected disabled>Select Telecaller</option>                                       
+                                    <select class="form-control select2" id="telecaller_id" name="telecaller_id[]" required
+                                        multiple>
+                                        <option value="" selected disabled>Select Telecaller</option>
 
                                     </select>
                                 </div>
-                                
-                                
-                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="lead_title" class="form-label">Lead Title <small
+                                            class="text-danger">*</small></label>
+                                    <input class="form-control" type="text" id="lead_title" name="lead_title"
+                                        value="" required placeholder="Lead Title" />
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="lead_date" class="form-label">Lead Date <small
+                                            class="text-danger">*</small></label>
+                                    <input class="form-control" type="date" id="lead_date" name="lead_date"
+                                        value="" required />
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="lead_file" class="form-label">
+                                        Lead File <small class="text-danger">*</small>
+                                        <small class="text-danger">(Only csv file are allowed to upload)</small>
+                                        <a href="#" class="text-primary" target="_blank">Sample File</a>
+                                    </label>
+                                    <input class="form-control" type="file" id="lead_file" name="lead_file"
+                                        accept=".csv" required />
+                                </div>
+
+
+
 
                                 <div class="col-md-6 mb-3">
                                     <label for="campaign_type_id" class="form-label">Campaign Type</label>
@@ -80,21 +100,21 @@ $controllerRoute = $module['controller_route'];
                                         <?php } }?>
                                     </select>
                                 </div>
-                                
+
                                 <div class="col-md-6 mb-3">
                                     <label for="campaign_id" class="form-label">Campaign <small
                                             class="text-danger campaign_star"></small></label>
                                     <select class="form-control" type="text" id="campaign_id" name="campaign_id">
                                         <option value="" selected disabled>Select Campaign</option>
-                                       
+
                                     </select>
                                 </div>
 
-                              
-                                
-                                 
-                                
-                                
+
+
+
+
+
 
                                 {{-- <div class="col-md-6 mb-3">
                             <label for="status" class="form-label d-block">Status <small class="text-danger">*</small></label>
@@ -119,5 +139,5 @@ $controllerRoute = $module['controller_route'];
 @endsection
 
 @section('scripts')
-<script src="<?=config('constants.admin_assets_url')?>assets/js/upload-lead.js"></script>
+    <script src="<?= config('constants.admin_assets_url') ?>assets/js/upload-lead.js"></script>
 @endsection
