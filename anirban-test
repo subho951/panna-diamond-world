@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Telecaller Select2 Multiple</title>
+
+  
+    <style>
+        
+        .select2-container {
+            width: 100% !important;
+        }
+    </style>
+</head>
+<body>
+
+    
+       
+            <div class="col-md-6 mb-3"> 
+                <label for="telecaller_id" class="form-label">
+                    Telecaller <small class="text-danger">*</small>
+                </label>
+                <select class="form-control select2" id="telecaller_id" name="telecaller_id[]" required multiple>
+                    <!-- Disabled placeholder for Select2 -->
+                    <option value="" disabled>Select Telecaller</option>
+                    <option value="1">Telecaller 1</option>
+                    <option value="2">Telecaller 2</option>
+                    <option value="3">Telecaller 3</option>
+                    <option value="4">Telecaller 4</option>
+                </select>
+            </div>
+        
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#telecaller_id').select2({
+                placeholder: "Select Telecaller",
+                allowClear: true
+            });
+        });
+    </script>
+    
+    
+</body>
+</html>

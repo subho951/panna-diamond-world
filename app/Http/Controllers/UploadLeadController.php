@@ -67,7 +67,7 @@ class UploadLeadController extends Controller
         }
         $data['module']                 = $this->data;
         $title                          = $this->data['title'];
-        $page_name                      = 'upload-lead.add-edit';
+        $page_name                      = 'upload-lead.upload';
         $data['row']                    = [];
         $data['branches']               = Branch::where('status', '=',1)->get();
         $data['campaign_types']         = CampaignType::where('status', '=',1)->get();
