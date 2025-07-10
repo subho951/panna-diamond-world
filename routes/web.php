@@ -20,6 +20,7 @@ use App\Http\Controllers\LeadHeaderController;
 use App\Http\Controllers\LeadStatusController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\UploadLeadController;
+use App\Http\Controllers\LeadListController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -186,4 +187,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post( 'upload-lead/fetch-telecaller', [UploadLeadController::class, 'fetchTelecaller']);
         Route::post( 'upload-lead/fetch-campaign', [UploadLeadController::class, 'fetchCampaign']);
     /* Upload  Lead */
+    /* Lead List */
+        Route::get('lead-list', [LeadListController::class, 'list']);
+    /* Lead List */
 });
