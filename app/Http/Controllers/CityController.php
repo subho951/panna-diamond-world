@@ -67,7 +67,7 @@ class CityController extends Controller
                     $fields = [
                         'country_id'            => strip_tags($postData['country_id']),
                         'state_id'              => strip_tags($postData['state_id']),
-                        'name'                  => strtoupper(strip_tags($postData['name'])),
+                        'name'                  => ucwords(strtolower(strip_tags($postData['name']))),
                         'status'                => ((array_key_exists("status",$postData))?1:0),
                     ];
                     City::insert($fields);
@@ -107,7 +107,7 @@ class CityController extends Controller
                     $fields = [
                         'country_id'            => strip_tags($postData['country_id']),
                         'state_id'              => strip_tags($postData['state_id']),
-                        'name'                  => strtoupper(strip_tags($postData['name'])),
+                        'name'                  => ucwords(strtolower(strip_tags($postData['name']))),
                         'status'                => ((array_key_exists("status",$postData))?1:0),
                     ];
                     City::where($this->data['primary_key'], '=', $id)->update($fields);

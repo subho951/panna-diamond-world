@@ -34,11 +34,6 @@ $controllerRoute = $module['controller_route'];
                 </div>
                 <?php }?>
                 <div class="card mb-4">
-                    {{-- <?php
-                    if ($row) {
-                    } else {
-                    }
-                    ?> --}}
                     <div class="card-body">
                         <form id="formAccountSettings" action="" method="POST" enctype="multipart/form-data">
                             @csrf
@@ -60,7 +55,7 @@ $controllerRoute = $module['controller_route'];
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="lead_title" class="form-label">Lead Title <small class="text-danger">*</small></label>
-                                    <input class="form-control" type="text" id="lead_title" name="lead_title" value="" required placeholder="Lead Title" />
+                                    <input class="form-control" type="text" id="lead_title" name="lead_title" required placeholder="Lead Title" />
                                 </div>
 
                                 <div class="col-md-6 mb-3">
@@ -81,12 +76,12 @@ $controllerRoute = $module['controller_route'];
 
                                 <div class="col-md-6 mb-3">
                                     <label for="lead_date" class="form-label">Lead Date <small class="text-danger">*</small></label>
-                                    <input class="form-control" type="date" id="lead_date" name="lead_date" value="" required />
+                                    <input class="form-control" type="date" id="lead_date" name="lead_date" min="<?=date('Y-m-d')?>" required />
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="lead_file" class="form-label">Lead File <small class="text-danger">*</small>
                                         <small class="text-danger">(Only csv file are allowed to upload)</small>
-                                        <a href="#" class="text-primary" target="_blank">Sample File</a>
+                                        <a href="sample-lead-file.csv" class="text-primary" target="_blank">Sample File</a>
                                     </label>
                                     <input class="form-control" type="file" id="lead_file" name="lead_file" accept=".csv" required />
                                 </div>
@@ -96,6 +91,41 @@ $controllerRoute = $module['controller_route'];
                                 <a href="<?= url($controllerRoute . '/list/') ?>" class="btn btn-label-secondary btn-sm">Cancel</a>
                             </div>
                         </form>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Branch</th>
+                                    <th>Telecallers</th>
+                                    <th>Lead Title</th>
+                                    <th>Campaign Type</th>
+                                    <th>Campaign</th>
+                                    <th>Lead Date</th>
+                                    <th>Lead File</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

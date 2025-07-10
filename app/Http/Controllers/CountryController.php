@@ -64,7 +64,7 @@ class CountryController extends Controller
                         UserActivity::insert($activityData);
                     /* user activity */
                     $fields = [
-                        'name'                  => strtoupper(strip_tags($postData['name'])),
+                        'name'                  => ucwords(strtolower(strip_tags($postData['name']))),
                         'short_code'            => strtoupper(strip_tags($postData['short_code'])),
                         'phone_code'            => strip_tags($postData['phone_code']),
                         'currency_code'         => strtoupper(strip_tags($postData['currency_code'])),
@@ -101,7 +101,7 @@ class CountryController extends Controller
                 ];
                 if($this->validate($request, $rules)){
                     $fields = [
-                        'name'                  => strtoupper(strip_tags($postData['name'])),
+                        'name'                  => ucwords(strtolower(strip_tags($postData['name']))),
                         'short_code'            => strtoupper(strip_tags($postData['short_code'])),
                         'phone_code'            => strip_tags($postData['phone_code']),
                         'currency_code'         => strtoupper(strip_tags($postData['currency_code'])),
