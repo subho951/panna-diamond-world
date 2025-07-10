@@ -51,7 +51,7 @@ $controllerRoute = $module['controller_route'];
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="country_id" class="form-label">Country <small class="text-danger">*</small></label>
-                            <select class="form-control" type="text" id="country_id" name="country_id" required>
+                            <select class="select2 form-select" type="text" id="country_id" name="country_id" required>
                                 <option value="" selected>Select Country</option>
                                 <?php if($couns){ foreach($couns as $coun){?>
                                     <option value="<?=$coun->id?>" <?=(($coun->id == $country_id)?'selected':'')?>><?=$coun->name?></option>
@@ -60,7 +60,7 @@ $controllerRoute = $module['controller_route'];
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="state_id" class="form-label">State <small class="text-danger">*</small></label>
-                            <select class="form-control" type="text" id="state_id" name="state_id" required>
+                            <select class="select2 form-select" type="text" id="state_id" name="state_id" required>
                                 @if(isset($sts) && count($sts) > 0)
                                     @foreach($sts as $state)
                                         <option value="{{ $state->id }}" {{ (old('state_id', $state_id ?? '') == $state->id) ? 'selected' : '' }}>

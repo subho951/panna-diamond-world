@@ -22,15 +22,11 @@ $(document).ready(function () {
                     branch_id: branch_id,
                 },
                 success: function (res) {
-
                     $('#telecaller_id').empty();
-                    $('#telecaller_id').append(`
-                  <option value="" selected disabled>Select Telecaller</option>
-                `);
                     res.forEach(telecaller => {
                         $('#telecaller_id').append(`
-                    <option value="${telecaller.id}">${telecaller.first_name} ${telecaller.last_name}</option>
-                `);
+                            <option value="${telecaller.id}">${telecaller.first_name} ${telecaller.last_name}</option>
+                        `);
                     });
 
                 },

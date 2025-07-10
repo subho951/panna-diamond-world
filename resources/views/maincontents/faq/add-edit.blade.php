@@ -53,7 +53,7 @@ $controllerRoute = $module['controller_route'];
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label for="faq_category_id" class="form-label">FAQ Category <small class="text-danger">*</small></label>
-                            <select class="form-control" type="text" id="faq_category_id" name="faq_category_id" required>
+                            <select class="select2 form-select" type="text" id="faq_category_id" name="faq_category_id" required>
                                 <option value="" selected>Select FAQ Category</option>
                                 <?php if($cats){ foreach($cats as $cat){?>
                                     <option value="<?=$cat->id?>" <?=(($cat->id == $faq_category_id)?'selected':'')?>><?=$cat->name?></option>
@@ -62,7 +62,7 @@ $controllerRoute = $module['controller_route'];
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="faq_sub_category_id" class="form-label">FAQ Sub Category <small class="text-danger">*</small></label>
-                            <select class="form-control" type="text" id="faq_sub_category_id" name="faq_sub_category_id" required>
+                            <select class="select2 form-select" type="text" id="faq_sub_category_id" name="faq_sub_category_id" required>
                                 <option value="" selected>Select FAQ Sub Category</option>
                                 <?php if($sub_cats){ foreach($sub_cats as $sub_cat){?>
                                     <option class="faqsubcat faqcat-<?=$sub_cat->faq_category_id?>" value="<?=$sub_cat->id?>" <?=(($sub_cat->id == $faq_sub_category_id)?'selected':'')?>><?=$sub_cat->name?></option>

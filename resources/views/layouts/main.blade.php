@@ -75,6 +75,7 @@
     <!-- endbuild -->
 
     <!-- Vendors JS -->
+    <script src="{{ config('constants.admin_assets_url') }}assets/vendor/libs/select2/select2.js"></script>
     <script src="{{ config('constants.admin_assets_url') }}assets/vendor/libs/apex-charts/apexcharts.js"></script>
     <script src="{{ config('constants.admin_assets_url') }}assets/vendor/libs/swiper/swiper.js"></script>
     <script src="{{ config('constants.admin_assets_url') }}assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
@@ -83,6 +84,7 @@
     <script src="{{ config('constants.admin_assets_url') }}assets/js/main.js"></script>
 
     <!-- Page JS -->
+    <script src="{{ config('constants.admin_assets_url') }}assets/js/forms-selects.js"></script>
     <script src="{{ config('constants.admin_assets_url') }}assets/js/dashboards-analytics.js"></script>
     <script type="text/javascript">
       $(function(){
@@ -183,8 +185,7 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/lightbox2@2.11.4/dist/js/lightbox.min.js"></script>
 
-    <!-- Select2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
     @yield('scripts')
     
   </body>

@@ -40,8 +40,13 @@ class UploadLeadController extends Controller
         $data['module']           = $this->data;
         if($request->isMethod('post')){
             $postData = $request->all();
+            Helper::pr($postData);
             $rules = [
-                'name'           => 'required',
+                'branch_id'             => 'required',
+                'telecaller_id'         => 'required',
+                'lead_title'            => 'required',
+                'lead_date'             => 'required',
+                'lead_file'             => 'required',
             ];
             if($this->validate($request, $rules)){
                 /* user activity */
@@ -51,14 +56,34 @@ class UploadLeadController extends Controller
                         'user_type'         => 'ADMIN',
                         'ip_address'        => $request->ip(),
                         'activity_type'     => 3,
-                        'activity_details'  => $postData['name'] . ' ' . $this->data['title'] . ' Added',
+                        'activity_details'  => $postData['lead_title'] . ' ' . $this->data['title'] . ' Added',
                         'platform_type'     => 'WEB',
                     ];
                     UserActivity::insert($activityData);
                 /* user activity */
+                /* lead file */
+                    $upload_folder = 'lead';
+                    $imageFile      = $request->file('lead_file');
+                    if($imageFile != ''){
+                        $imageName      = $imageFile->getClientOriginalName();
+                        $uploadedFile   = $this->upload_single_file('lead_file', $imageName, $upload_folder, 'csv');
+                        if($uploadedFile['status']){
+                            $lead_file = $uploadedFile['newFilename'];
+                        } else {
+                            return redirect()->back()->with(['error_message' => $uploadedFile['message']]);
+                        }
+                    } else {
+                        return redirect()->back()->with(['error_message' => 'Please Upload ' . $this->data['title'] . ' File']);
+                    }
+                /* lead file */
                 $fields = [
-                    'name'         => strip_tags($postData['name']),
+                    'branch_id'             => strip_tags($postData['branch_id']),
+                    'telecaller_id'         => json_encode($postData['telecaller_id']),
+                    'lead_title'            => strip_tags($postData['lead_title']),
+                    'lead_date'             => date_format(date_create(strip_tags($postData['lead_date'])), "Y-m-d"),
+                    'lead_file'             => strip_tags($postData['lead_file']),
                 ];
+                Helper::pr($fields);
                 UploadLead::insert($fields);
                 return redirect($this->data['controller_route'] . "/list")->with('success_message', $this->data['title'].' Inserted Successfully !!!');
             } else {

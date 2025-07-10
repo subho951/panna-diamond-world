@@ -64,7 +64,7 @@ class StateController extends Controller
                     /* user activity */
                     $fields = [
                         'country_id'            => strip_tags($postData['country_id']),
-                        'name'                  => strtoupper(strip_tags($postData['name'])),
+                        'name'                  => ucwords(strtolower(strip_tags($postData['name']))),
                         'status'                => ((array_key_exists("status",$postData))?1:0),
                     ];
                     State::insert($fields);
@@ -99,7 +99,7 @@ class StateController extends Controller
                 if($this->validate($request, $rules)){
                     $fields = [
                         'country_id'            => strip_tags($postData['country_id']),
-                        'name'                  => strtoupper(strip_tags($postData['name'])),
+                        'name'                  => ucwords(strtolower(strip_tags($postData['name']))),
                         'status'                => ((array_key_exists("status",$postData))?1:0),
                     ];
                     State::where($this->data['primary_key'], '=', $id)->update($fields);

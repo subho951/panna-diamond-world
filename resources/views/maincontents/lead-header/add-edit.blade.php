@@ -55,7 +55,7 @@ $controllerRoute = $module['controller_route'];
                         </div>
                         <div class="col-md-4">
                             <label for="input_type" class="form-label">Input Type <small class="text-danger">*</small></label>
-                            <select class="form-control" type="text" id="input_type" name="input_type" required>
+                            <select class="select2 form-select" type="text" id="input_type" name="input_type" required>
                                 <option value="" selected>Select Input Type</option>
                                 <option value="TEXTBOX" <?=(($input_type == 'TEXTBOX')?'selected':'')?>>TEXTBOX</option>
                                 <option value="TEXTAREA" <?=(($input_type == 'TEXTAREA')?'selected':'')?>>TEXTAREA</option>
@@ -68,7 +68,7 @@ $controllerRoute = $module['controller_route'];
                         </div>
                         <div class="col-md-4">
                             <label for="rank" class="form-label">Rank <small class="text-danger">*</small></label>
-                            <select class="form-control" type="text" id="rank" name="rank" required>
+                            <select class="select2 form-select" type="text" id="rank" name="rank" required>
                                 <option value="" selected>Select Rank</option>
                                 <?php for($y=1; $y<=20; $y++){?>
                                     <option value="<?=$y?>" <?=(($y == $rank)?'selected':'')?>><?=$y?></option>
