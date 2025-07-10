@@ -51,7 +51,7 @@ $controllerRoute = $module['controller_route'];
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="campaign_type_id" class="form-label">Campaign Type <small class="text-danger">*</small></label>
-                            <select class="form-control" type="text" id="campaign_type_id" name="campaign_type_id" required>
+                            <select class="select2 form-select" type="text" id="campaign_type_id" name="campaign_type_id" required>
                                 <option value="" selected>Select Campaign Type</option>
                                 <?php if($camTypes){ foreach($camTypes as $camType){?>
                                     <option value="<?=$camType->id?>" <?=(($camType->id == $campaign_type_id)?'selected':'')?>><?=$camType->name?></option>
@@ -65,7 +65,7 @@ $controllerRoute = $module['controller_route'];
 
                         <div class="col-md-6 mt-3">
                             <label for="year" class="form-label">Year <small class="text-danger">*</small></label>
-                            <select class="form-control" type="text" id="year" name="year" required>
+                            <select class="select2 form-select" type="text" id="year" name="year" required>
                                 <option value="" selected>Select Year</option>
                                 <?php for($y=date('Y'); $y<=2100; $y++){?>
                                     <option value="<?=$y?>" <?=(($y == $year)?'selected':'')?>><?=$y?></option>

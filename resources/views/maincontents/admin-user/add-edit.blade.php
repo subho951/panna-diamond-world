@@ -59,7 +59,7 @@ $controllerRoute = $module['controller_route'];
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="role_id" class="form-label">Role <small class="text-danger">*</small></label>
-                            <select class="form-control" type="text" id="role_id" name="role_id" autofocus required>
+                            <select class="select2 form-select" type="text" id="role_id" name="role_id" autofocus required>
                                 <option value="" selected>Select Role</option>
                                 <?php if($roles){ foreach($roles as $role){?>
                                     <option value="<?=$role->id?>" <?=(($role->id == $role_id)?'selected':'')?>><?=$role->role_name?></option>
@@ -77,7 +77,7 @@ $controllerRoute = $module['controller_route'];
                         
                         <div class="col-md-12 mb-3">
                             <label for="branch_id" class="form-label">Branch <small class="text-danger">*</small></label>
-                            <select class="form-control" type="text" id="branch_id" name="branch_id"  required>
+                            <select class="select2 form-select" type="text" id="branch_id" name="branch_id"  required>
                                 <option value="" selected>Select Branch</option>
                                 <?php if($branches){ foreach($branches as $branch){?>
                                     <option value="<?=$branch->id?>" <?=(($branch->id === $branch_id)? 'selected':'')?>><?=$branch->name?></option>

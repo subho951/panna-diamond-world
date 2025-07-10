@@ -49,7 +49,7 @@ $controllerRoute = $module['controller_route'];
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label for="country_id" class="form-label">Country <small class="text-danger">*</small></label>
-                            <select class="form-control" type="text" id="country_id" name="country_id" required>
+                            <select class="select2 form-select" type="text" id="country_id" name="country_id" required>
                                 <option value="" selected>Select Country</option>
                                 <?php if($couns){ foreach($couns as $coun){?>
                                     <option value="<?=$coun->id?>" <?=(($coun->id == $country_id)?'selected':'')?>><?=$coun->name?></option>
