@@ -86,10 +86,10 @@ $controllerRoute = $module['controller_route'];
                         </form>
 
 
-                        <div class="card">
-                            <h5 class="card-header fw-bold text-success">Lead List</h5>
+                        <div class="card p-3">
+                            <h5 class="card-header fw-bold text-success p-2">Lead List</h5>
                             <div class="table-responsive text-nowrap">
-                                <table class="table table-striped table-bordered">
+                                <table class="table table-striped">
                                     <thead>
                                         <tr>
                                             <th><input type="checkbox" name="" id=""></th>
@@ -99,7 +99,7 @@ $controllerRoute = $module['controller_route'];
                                             <th>Last Activity</th>
                                             <th>Scheduled Date | Time </th>
                                             <th>Assigned User</th>
-                                            <th>Actions</th>
+                                            <th style="text-align: center">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody class="table-border-bottom-0">
@@ -138,7 +138,7 @@ $controllerRoute = $module['controller_route'];
                                                     <i class="fa-solid fa-user-tie"></i>
                                                 </span> <span>Ganesh Gaitonde</span>
                                             </td>
-                                            <td>
+                                            <td style="text-align: center">
                                                 <button class="btn btn-sm bg-label-primary mb-1" data-bs-toggle="modal"
                                                     data-bs-target="#callModal" title="Call">
                                                     <i class="fa-solid fa-headset"></i>&nbsp;<span>Call</span>
