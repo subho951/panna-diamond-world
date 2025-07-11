@@ -67,24 +67,24 @@ $controllerRoute = $module['controller_route'];
                                 </div>
                             </div>
                         </form>
-                     
+
                         <h6 class="card-title">Transfer Lead To</h6>
                         <form class="mb-5">
-                          <div class="row">
-                            <div class="col-md-4 mb-2">
-                              <select id="" class="select2 form-select" data-allow-clear="true" required>
-                                <option value="" disable selected>Select User</option>
+                            <div class="row">
+                                <div class="col-md-4 mb-2">
+                                    <select id="" class="select2 form-select" data-allow-clear="true" required>
+                                        <option value="" disable selected>Select User</option>
 
-                            </select>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <button type="button" class="btn btn-label-primary rounded-pill">
+                                        <i class="fas fa-exchange-alt"></i>&nbsp;<span>Bulk Lead Transfer</span>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="col-md-4 mb-2">
-                              <button type="button" class="btn btn-label-primary rounded-pill">
-                                <i class="fas fa-exchange-alt"></i>&nbsp;<span>Bulk Lead Transfer</span>
-                              </button>
-                          </div>
-                          </div>
                         </form>
-                        
+
 
                         <div class="card">
                             <h5 class="card-header fw-bold text-success">Lead List</h5>
@@ -173,10 +173,211 @@ $controllerRoute = $module['controller_route'];
                         <div class="modal fade" id="callModal" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-lg modal-simple modal-edit-user">
                                 <div class="modal-content">
-                                    <div class="modal-body">
+                                    <div class="modal-body p-0">
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                         {{-- modal body  --}}
+                                        <h5 class="text-primary mb-4">Lead Activity : 0000768</h5>
+                                        <div class="row">
+                                            <!-- Left info side -->
+                                            <div class="col-md-12">
+                                                <!-- Lead Info and Edit -->
+                                                <div class="row mb-2">
+                                                    <div class="col-md-6 ">
+                                                        <p class="mb-1 small">Lead ID: <strong>0000768</strong></p>
+                                                        <p class="mb-1 small">Source: <strong>Plastic</strong></p>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <p class="mb-1 small">Added on: <strong>Mar 03, 2025 03:23
+                                                                PM</strong></p>
+                                                        <p class="mb-1 small">Added by: <strong>Panna Admin</strong></p>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Lead Card -->
+                                                <div id="leadDisplay"
+                                                    class="border border-primary rounded p-3 bg-label-primary text-primary mb-4">
+                                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                                        <div>
+                                                            <p class="mb-1 fw-bold"><span
+                                                                    class="badge badge-center rounded-pill bg-label-info"><i
+                                                                        class="fa-solid fa-user"></i></span> Paras</p>
+                                                            <p class="mb-1"><span
+                                                                    class="badge badge-center rounded-pill bg-label-info"><i
+                                                                        class="fa-solid fa-phone"></i></span> 9831887018
+                                                            </p>
+                                                            <p class="mb-1 text-uppercase"><span
+                                                                    class="badge badge-center rounded-pill bg-label-info"><i
+                                                                        class="fa-solid fa-building"></i></span> PRASEEDA
+                                                                EXIM LLP</p>
+                                                            <p class="mb-1">
+                                                                <a href="mailto:praseedae6@gmail.com"
+                                                                    class="text-decoration-none text-primary"><span
+                                                                        class="badge badge-center rounded-pill bg-label-info"><i
+                                                                            class="fa-solid fa-envelope"></i></span>
+                                                                    praseedae6@gmail.com</a>
+                                                            </p>
+                                                        </div>
+                                                        <button class="btn btn-sm btn-info" type="button"
+                                                            onclick="toggleEdit(true)">
+                                                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Edit Form -->
+                                                <div id="leadEdit"
+                                                    class="border-primary rounded p-3 bg-label-info text-primary mb-4 d-none">
+                                                    <form>
+                                                        <div class="input-group mb-2">
+                                                            <span class="input-group-text border-primary"><i
+                                                                    class="fa-solid fa-user"></i></span>
+                                                            <input type="text"
+                                                                class="form-control border-primary text-primary"
+                                                                value="Paras">
+                                                        </div>
+                                                        <div class="input-group mb-2">
+                                                            <span class="input-group-text border-primary"><i
+                                                                    class="fa-solid fa-phone"></i></span>
+                                                            <input type="text"
+                                                                class="form-control border-primary text-primary"
+                                                                value="9831887018">
+                                                        </div>
+                                                        <div class="input-group mb-2">
+                                                            <span class="input-group-text border-primary"><i
+                                                                    class="fa-solid fa-building"></i></span>
+                                                            <input type="text"
+                                                                class="form-control border-primary text-primary"
+                                                                value="PRASEEDA EXIM LLP">
+                                                        </div>
+                                                        <div class="input-group mb-2">
+                                                            <span class="input-group-text border-primary"><i
+                                                                    class="fa-solid fa-envelope"></i></span>
+                                                            <input type="email"
+                                                                class="form-control border-primary text-primary"
+                                                                value="praseedae6@gmail.com">
+                                                        </div>
+
+                                                        <div class="d-flex justify-content-end gap-2">
+                                                            <button class="btn btn-success btn-sm"
+                                                                type="submit">Save</button>
+                                                            <button class="btn btn-danger btn-sm" type="button"
+                                                                onclick="toggleEdit(false)">Cancel</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+
+                                                <div class="bg-label-success rounded p-3 mb-4">
+                                                    <div class="d-flex align-items-center mb-2 flex-wrap gap-2">
+                                                        <div class="d-flex align-items-center text-secondary small">
+                                                            <span
+                                                                class="badge badge-center rounded-pill bg-label-primary mb-1">
+                                                                <i class="fa-solid fa-headset"></i></span>&nbsp;<span
+                                                                class="fw-bold text-primary">Jan 10, 2025
+                                                                03:23 PM</span>
+                                                        </div>
+                                                        <span
+                                                            class="badge bg-label-primary me-1 mt-1 border border-primary">Follow
+                                                            Up</span>
+                                                        <div class="ms-auto fw-semibold text-primary">Preeti</div>
+                                                        {{-- <div class="rounded-circle bg-dark text-white d-flex justify-content-center align-items-center"
+                                                            style="width: 36px; height: 36px; font-weight: bold; font-size: 1.1rem;">
+                                                            P</div> --}}
+                                                    </div>
+                                                    <div
+                                                        class="border-top border-bottom border-secondary-subtle py-2 mb-2 small">
+                                                        <span
+                                                            class="badge badge-center rounded-pill bg-label-primary mb-1">
+                                                            <i
+                                                                class="fa-solid fa-comment-dots text-primary"></i></span>&nbsp;asked
+                                                        for
+                                                        connect on first week of March
+                                                    </div>
+                                                    <div class="text-secondary d-flex align-items-center small">
+                                                        <span
+                                                            class="badge badge-center rounded-pill bg-label-primary mb-1">
+                                                            <i class="fa-solid fa-clock-rotate-left"></i></span>&nbsp;<span
+                                                            class="mb-1 small">Next Schedule: <strong>Mar 03, 2025
+                                                                03:23 PM</strong> </span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Update Status Form -->
+                                                <div
+                                                    class="border border-warning rounded p-3 bg-label-warning text-primary">
+                                                    <form>
+                                                        <div
+                                                            class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+                                                            <small class="text-danger fst-italic">* (Star) Marks Fields Are
+                                                                Mandatory</small>
+                                                        </div>
+
+                                                        <div class="mb-6">
+                                                            <label for="leadStatus" class="form-label fw-bold">Update Lead
+                                                                Status <span class="text-danger">*</span></label>
+                                                            <select id="leadStatus"
+                                                                class="select2 form-select border-primary text-primary"
+                                                                required>
+                                                                <option value="" selected disabled>Select Status
+                                                                </option>
+                                                                <option value="NOT QUALIFIED [DUMP]">NOT QUALIFIED [DUMP]
+                                                                </option>
+                                                                <option value="WRONG NUMBER [DUMP]">WRONG NUMBER [DUMP]
+                                                                </option>
+                                                                <option value="NOT INTERESTED [DUMP]">NOT INTERESTED [DUMP]
+                                                                </option>
+                                                                <option value="NO ENQUIRY [DUMP]">NO ENQUIRY [DUMP]
+                                                                </option>
+                                                                <option value="FOLLOW UP [LEADS]">FOLLOW UP [LEADS]
+                                                                </option>
+                                                                <option value="CALL LATER [LEADS]">CALL LATER [LEADS]
+                                                                </option>
+                                                                <option value="DID NOT PICKUP [LEADS]">DID NOT PICKUP
+                                                                    [LEADS]</option>
+                                                                <option value="PHONE NOT CONNECTED [LEADS]">PHONE NOT
+                                                                    CONNECTED [LEADS]</option>
+                                                                <option value="INTERESTED [QUALIFIED]">INTERESTED
+                                                                    [QUALIFIED]</option>
+                                                                <option value="PROSPECT LEADS [QUALIFIED]">PROSPECT LEADS
+                                                                    [QUALIFIED]</option>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="row g-3 mb-3">
+                                                            <div class="col-sm-6">
+                                                                <label for="nextFollowUpDate" class="form-label">Next
+                                                                    Follow Up Date</label>
+                                                                <input type="date" id="nextFollowUpDate"
+                                                                    class="form-control border-primary text-primary"
+                                                                    placeholder="mm/dd/yyyy" />
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <label for="nextFollowUpTime" class="form-label">Next
+                                                                    Follow Up Time</label>
+                                                                <input type="time" id="nextFollowUpTime"
+                                                                    class="form-control border-primary text-primary"
+                                                                    placeholder="--:-- --" />
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="specialComment" class="form-label">Special
+                                                                Comment</label>
+                                                            <textarea id="specialComment" class="form-control border-primary text-primary" rows="3"
+                                                                placeholder="Special Comment"></textarea>
+                                                        </div>
+
+                                                        <button type="submit" class="btn btn-primary">Save
+                                                            Changes</button>
+                                                    </form>
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+
                                     </div>
                                 </div>
                             </div>
@@ -188,6 +389,12 @@ $controllerRoute = $module['controller_route'];
             </div>
         </div>
     </div>
+    <script>
+        function toggleEdit(showEdit) {
+            document.getElementById('leadDisplay').classList.toggle('d-none', showEdit);
+            document.getElementById('leadEdit').classList.toggle('d-none', !showEdit);
+        }
+    </script>
 @endsection
 @section('scripts')
     <script src="<?= config('constants.admin_assets_url') ?>assets/js/table.js"></script>

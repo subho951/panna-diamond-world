@@ -274,11 +274,11 @@ $role_id      = (($user)?$user->role_id:0);
    <!-- Lead List -->
    <li class="menu-item <?=(($pageSegment == 'lead-list')?'active':'')?>">
     <a href="<?=url('/lead-list')?>" class="menu-link">
-      <i class="menu-icon fa-solid fa-gear"></i>
+      <i class="menu-icon fa-solid fa-list"></i>
       <div data-i18n="Lead List">Lead List</div>
     </a>
   </li>
-
+ 
   <!-- Log Out -->
   <li class="menu-item">
     <a href="<?=url('/logout')?>" class="menu-link">
