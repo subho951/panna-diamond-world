@@ -127,3 +127,12 @@
   text-align: center;
   margin-top: 1rem;
 }
+
+
+/* admin css by surajit */
+.bg-menu-theme.menu-vertical .menu-item.active > .menu-link:not(.menu-toggle){
+  background: linear-gradient(270deg, #040707 0%, #1a1c1c 100%);
+}
+.bg-menu-theme .menu-inner .menu-item.active > .menu-link.menu-toggle{
+  background: #f1f1f1;
+}
