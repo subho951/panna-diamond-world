@@ -136,3 +136,63 @@
 .bg-menu-theme .menu-inner .menu-item.active > .menu-link.menu-toggle{
   background: #f1f1f1;
 }
+#search1{
+  border-radius: 5px;
+  border: 1px solid #040707;
+  padding: 10px 15px !important;
+  margin-bottom: 0 !important;
+}
+
+/* table design css */
+table thead th{
+  background: #040707 !important;
+  border-bottom: 1px solid #fff;
+  color: #fff !important;
+}
+table tbody td{
+  padding: 8px 10px !important;
+  border: none;
+  transition: all .3s ease-in-out;
+}
+table tbody tr,
+table.table-striped tbody tr,
+table.table-striped tbody th{
+  transition: all .3s ease-in-out;
+}
+table.table-striped tbody tr:hover,
+table tbody tr:hover{
+  background: #d3d3d3 !important;
+  box-shadow: none !important;
+  color: #000 !important
+}
+table.table-striped tbody tr:hover td,
+table.table-striped tbody tr:hover th{
+  background: #d3d3d3 !important;
+  box-shadow: none !important;
+  color: #000 !important
+}
+table thead th:first-child{
+  border-top-left-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+}
+table thead th:last-child{
+  border-top-right-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
+}
+table.table-striped tbody tr{
+  border-top-left-radius: 5px !important;
+}
+table.table-striped tbody td:first-child{
+  border-top-left-radius: 5px !important;
+  border-bottom-left-radius: 5px !important;
+}
+table.table-striped tbody td:last-child{
+  border-top-right-radius: 5px !important;
+  border-bottom-right-radius: 5px !important;
+}
+
+.blue_badge{
+  background-color: #79a1c92b !important;
+  border: 1px solid #123456;
+  color: #123456;
+}
