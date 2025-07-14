@@ -250,3 +250,18 @@ html:not([dir=rtl]) .select2-container--default .select2-selection--multiple .se
 #leadEdit .input-group-text{
   width: 43px;
 }
+
+@media(max-width: 767px) {
+  .main_heading {
+    line-height: 1;
+    font-size: 22px;
+  }
+  #search1{
+    padding: 7px 8px !important;
+  }
+}
+@media(max-width: 575px) {
+  .main_heading {
+    font-size: 18px;
+  }
+}
