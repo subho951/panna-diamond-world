@@ -18,7 +18,7 @@ return new class extends Migration
             $table->bigInteger('branch_id');
             $table->bigInteger('campaign_type_id');
             $table->bigInteger('campaign_id');
-            $table->bigInteger('telecaller_id');
+            $table->longText('telecaller_id')->default(null);
             $table->longText('filename');
             $table->tinyInteger('status')->default(1);
             $table->integer('created_by')->default(1);
