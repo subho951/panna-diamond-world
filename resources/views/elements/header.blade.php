@@ -3,7 +3,7 @@ $role_id = (($user)?$user->role_id:0);
 ?>
 <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
   <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
-    <i class="ti ti-menu-2 ti-md"></i>
+    <i class="fa fa-bars ti-menu-2 ti-md"></i>
   </a>
 </div>
 
@@ -12,7 +12,7 @@ $role_id = (($user)?$user->role_id:0);
   <div class="navbar-nav align-items-center">
     <div class="nav-item navbar-search-wrapper mb-0">
       <a class="nav-item nav-link search-toggler d-flex align-items-center px-0" href="javascript:void(0);">
-        <i class="ti ti-search ti-md me-2 me-lg-4 ti-lg"></i>
+        <i class="fa fa-search me-2"></i>
         <span class="d-none d-md-inline-block text-muted fw-normal">Search (Ctrl+/)</span>
       </a>
     </div>

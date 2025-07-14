@@ -8,7 +8,7 @@ use App\Helpers\Helper;
 <div class="container-xxl flex-grow-1 container-p-y">
   <div class="row g-6">
     <div class="col-lg-12">
-      <h2>Welcome to <?=Helper::getSettingValue('site_name')?> masteradmin panel</h2>
+      <h3 class="mt-2">Welcome to <?=Helper::getSettingValue('site_name')?> masteradmin panel</h2>
     </div>
 
     <!-- Average Daily Sales -->
@@ -36,13 +36,13 @@ use App\Helpers\Helper;
     <!--/ Average Daily Sales -->
 
     <!-- Projects table -->
-    <div class="col-xxl-8 col-xl-8 col-md-8 col-sm-8">
+    {{-- <div class="col-xxl-8 col-xl-8 col-md-8 col-sm-8">
       <div class="card">
         <div class="card-datatable table-responsive">
           
         </div>
       </div>
-    </div>
+    </div> --}}
     <!--/ Projects table -->
   </div>
 </div>
