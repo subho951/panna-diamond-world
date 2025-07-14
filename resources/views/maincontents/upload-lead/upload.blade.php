@@ -86,9 +86,9 @@ $controllerRoute = $module['controller_route'];
                                     <input class="form-control" type="file" id="lead_file" name="lead_file" accept=".csv" required />
                                 </div>
                             </div>
-                            <div class="mt-2">
-                                <button type="submit" class="btn btn-primary btn-sm me-2">Save Changes</button>
-                                <a href="<?= url($controllerRoute . '/list/') ?>" class="btn btn-label-secondary btn-sm">Cancel</a>
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>
+                                <a href="<?= url($controllerRoute . '/list/') ?>" class="btn btn-outline-danger btn-sm">Cancel</a>
                             </div>
                         </form>
                     </div>

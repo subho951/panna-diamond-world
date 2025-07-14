@@ -56,12 +56,12 @@ $controllerRoute = $module['controller_route'];
                                     </select>
                                 </div>
                                 <div class="col-md-2 mb-2">
-                                    <button type="button" class="btn btn-label-primary">
+                                    <button type="button" class="btn btn-outline-dark">
                                         <i class="fa-solid fa-filter"></i>&nbsp;<span>Filter Leads</span>
                                     </button>
                                 </div>
                                 <div class="col-md-2 mb-2">
-                                    <button type="button" class="btn btn-label-danger">
+                                    <button type="button" class="btn btn-label-secondary">
                                         <i class="fa-solid fa-arrow-rotate-left"></i>&nbsp;<span>Reset</span>
                                     </button>
                                 </div>
@@ -78,7 +78,7 @@ $controllerRoute = $module['controller_route'];
                                     </select>
                                 </div>
                                 <div class="col-md-4 mb-2">
-                                    <button type="button" class="btn btn-label-primary rounded-pill">
+                                    <button type="button" class="btn btn-outline-dark rounded-pill">
                                         <i class="fas fa-exchange-alt"></i>&nbsp;<span>Bulk Lead Transfer</span>
                                     </button>
                                 </div>
@@ -109,37 +109,37 @@ $controllerRoute = $module['controller_route'];
                                             <td>0000768</td>
 
                                             <td>
-                                                <span class="badge badge-center rounded-pill bg-label-info mb-1">
+                                                <span class="badge badge-center rounded-pill bg-label-dark mb-1">
                                                     <i class="fa-solid fa-building"></i>
                                                 </span> <span class="fw-bold text-primary">Tsunami Technology</span>
                                                 <br>
-                                                <span class="badge badge-center rounded-pill bg-label-info mb-1">
+                                                <span class="badge badge-center rounded-pill bg-label-dark mb-1">
                                                     <i class="fa-solid fa-phone"></i>
                                                 </span> <span class="fw-bold text-primary">9887458965</span>
                                                 <br>
-                                                <span class="badge badge-center rounded-pill bg-label-info mb-1">
+                                                <span class="badge badge-center rounded-pill bg-label-dark mb-1">
                                                     <i class="fa-solid fa-envelope"></i>
                                                 </span> <span class="fw-bold text-primary">tsunami@gmail.com</span>
                                             </td>
                                             <td>
                                                 <span>April 28, 2025</span>
                                                 <br>
-                                                <span class="badge bg-label-primary me-1 mt-1">Follow Up</span>
+                                                <span class="badge bg-label-dark me-1 mt-1">Follow Up</span>
                                                 <br>
-                                                <span class="badge rounded-pill bg-label-info mt-1">1 Update</span>
+                                                <span class="badge rounded-pill bg-label-light text-dark mt-1">1 Update</span>
                                             </td>
                                             <td>
-                                                <span class="badge badge-center rounded-pill bg-label-primary">
+                                                <span class="badge badge-center rounded-pill bg-label-dark">
                                                     <i class="fa-regular fa-clock"></i>
                                                 </span> <span>Mar 03, 2025 03:23 PM</span>
                                             </td>
                                             <td>
-                                                <span class="badge badge-center rounded-pill bg-label-info">
+                                                <span class="badge badge-center rounded-pill bg-label-dark">
                                                     <i class="fa-solid fa-user-tie"></i>
                                                 </span> <span>Ganesh Gaitonde</span>
                                             </td>
                                             <td style="text-align: center">
-                                                <button class="btn btn-sm bg-label-primary mb-1" data-bs-toggle="modal"
+                                                <button class="btn btn-sm btn-outline-dark mb-1" data-bs-toggle="modal"
                                                     data-bs-target="#callModal" title="Call">
                                                     <i class="fa-solid fa-headset"></i>&nbsp;<span>Call</span>
                                                 </button>
@@ -158,7 +158,7 @@ $controllerRoute = $module['controller_route'];
                                                     onclick="return confirm('Are you sure?')" title="Delete">
                                                     <i class="fa-solid fa-trash"></i>
                                                 </a>
-                                                <a href="" class="btn btn-sm bg-label-primary mb-1"
+                                                <a href="" class="btn btn-sm btn-outline-dark mb-1"
                                                     title="Transfer Lead To Another User">
                                                     <i class="fas fa-exchange-alt"></i>
                                                 </a>
@@ -196,29 +196,29 @@ $controllerRoute = $module['controller_route'];
 
                                                 <!-- Lead Card -->
                                                 <div id="leadDisplay"
-                                                    class="border border-primary rounded p-3 bg-label-primary text-primary mb-4">
+                                                    class="border border-primary rounded p-3 bg-label-light text-primary mb-4">
                                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                                         <div>
                                                             <p class="mb-1 fw-bold"><span
-                                                                    class="badge badge-center rounded-pill bg-label-info"><i
+                                                                    class="badge badge-center rounded-pill bg-label-secondary text-dark"><i
                                                                         class="fa-solid fa-user"></i></span> Paras</p>
                                                             <p class="mb-1"><span
-                                                                    class="badge badge-center rounded-pill bg-label-info"><i
+                                                                    class="badge badge-center rounded-pill bg-label-secondary text-dark"><i
                                                                         class="fa-solid fa-phone"></i></span> 9831887018
                                                             </p>
                                                             <p class="mb-1 text-uppercase"><span
-                                                                    class="badge badge-center rounded-pill bg-label-info"><i
+                                                                    class="badge badge-center rounded-pill bg-label-secondary text-dark"><i
                                                                         class="fa-solid fa-building"></i></span> PRASEEDA
                                                                 EXIM LLP</p>
                                                             <p class="mb-1">
                                                                 <a href="mailto:praseedae6@gmail.com"
                                                                     class="text-decoration-none text-primary"><span
-                                                                        class="badge badge-center rounded-pill bg-label-info"><i
+                                                                        class="badge badge-center rounded-pill bg-label-secondary text-dark"><i
                                                                             class="fa-solid fa-envelope"></i></span>
                                                                     praseedae6@gmail.com</a>
                                                             </p>
                                                         </div>
-                                                        <button class="btn btn-sm btn-info" type="button"
+                                                        <button class="btn btn-sm btn-outline-dark" type="button"
                                                             onclick="toggleEdit(true)">
                                                             <i class="fa-solid fa-pen-to-square"></i> Edit
                                                         </button>
@@ -227,7 +227,7 @@ $controllerRoute = $module['controller_route'];
 
                                                 <!-- Edit Form -->
                                                 <div id="leadEdit"
-                                                    class="border-primary rounded p-3 bg-label-info text-primary mb-4 d-none">
+                                                    class="border-primary rounded p-3 bg-label-dark text-white mb-4 d-none">
                                                     <form>
                                                         <div class="input-group mb-2">
                                                             <span class="input-group-text border-primary"><i
@@ -258,26 +258,26 @@ $controllerRoute = $module['controller_route'];
                                                                 value="praseedae6@gmail.com">
                                                         </div>
 
-                                                        <div class="d-flex justify-content-end gap-2">
-                                                            <button class="btn btn-success btn-sm"
+                                                        <div class="d-flex justify-content-end gap-2 mt-4">
+                                                            <button class="btn btn-outline-dark btn-sm"
                                                                 type="submit">Save</button>
-                                                            <button class="btn btn-danger btn-sm" type="button"
+                                                            <button class="btn btn-outline-danger btn-sm" type="button"
                                                                 onclick="toggleEdit(false)">Cancel</button>
                                                         </div>
                                                     </form>
                                                 </div>
 
                                                 <div class="bg-label-success rounded p-3 mb-4">
-                                                    <div class="d-flex align-items-center mb-2 flex-wrap gap-2">
+                                                    <div class="d-flex align-items-center flex-wrap gap-2">
                                                         <div class="d-flex align-items-center text-secondary small">
                                                             <span
-                                                                class="badge badge-center rounded-pill bg-label-primary mb-1">
+                                                                class="badge badge-center rounded-pill bg-white text-dark">
                                                                 <i class="fa-solid fa-headset"></i></span>&nbsp;<span
                                                                 class="fw-bold text-primary">Jan 10, 2025
                                                                 03:23 PM</span>
                                                         </div>
                                                         <span
-                                                            class="badge bg-label-primary me-1 mt-1 border border-primary">Follow
+                                                            class="badge bg-dark text-white me-1 border border-primary">Follow
                                                             Up</span>
                                                         <div class="ms-auto fw-semibold text-primary">Preeti</div>
                                                         {{-- <div class="rounded-circle bg-dark text-white d-flex justify-content-center align-items-center"
@@ -285,9 +285,9 @@ $controllerRoute = $module['controller_route'];
                                                             P</div> --}}
                                                     </div>
                                                     <div
-                                                        class="border-top border-bottom border-secondary-subtle py-2 mb-2 small">
+                                                        class="border-top border-bottom border-secondary-subtle py-2 small">
                                                         <span
-                                                            class="badge badge-center rounded-pill bg-label-primary mb-1">
+                                                            class="badge badge-center rounded-pill bg-white text-dark">
                                                             <i
                                                                 class="fa-solid fa-comment-dots text-primary"></i></span>&nbsp;asked
                                                         for
@@ -295,7 +295,7 @@ $controllerRoute = $module['controller_route'];
                                                     </div>
                                                     <div class="text-secondary d-flex align-items-center small">
                                                         <span
-                                                            class="badge badge-center rounded-pill bg-label-primary mb-1">
+                                                            class="badge badge-center rounded-pill bg-white text-dark">
                                                             <i class="fa-solid fa-clock-rotate-left"></i></span>&nbsp;<span
                                                             class="mb-1 small">Next Schedule: <strong>Mar 03, 2025
                                                                 03:23 PM</strong> </span>
@@ -304,7 +304,7 @@ $controllerRoute = $module['controller_route'];
 
                                                 <!-- Update Status Form -->
                                                 <div
-                                                    class="border border-warning rounded p-3 bg-label-warning text-primary">
+                                                    class="border border-dark rounded p-3 bg-label-white text-primary">
                                                     <form>
                                                         <div
                                                             class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
@@ -367,7 +367,7 @@ $controllerRoute = $module['controller_route'];
                                                                 placeholder="Special Comment"></textarea>
                                                         </div>
 
-                                                        <button type="submit" class="btn btn-primary">Save
+                                                        <button type="submit" class="btn btn-outline-dark btn-sm">Save
                                                             Changes</button>
                                                     </form>
 

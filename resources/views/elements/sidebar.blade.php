@@ -41,8 +41,8 @@ $role_id      = (($user)?$user->role_id:0);
   </a>
 
   <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
-    <i class="ti menu-toggle-icon d-none d-xl-block align-middle"></i>
-    <i class="ti ti-x d-block d-xl-none ti-md align-middle"></i>
+    <i class="fa fa-bars d-none d-xl-block"></i>
+    <i class="fa fa-times d-xl-none align-middle"></i>
   </a>
 </div>
 

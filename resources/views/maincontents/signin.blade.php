@@ -21,7 +21,7 @@ use App\Helpers\Helper;
       </button>
     </div>
   <?php }?>
-  <h4 class="mb-1">Welcome to <?=Helper::getSettingValue('site_name')?>! 👋</h4>
+  <h4 class="mb-1">Welcome to <?=Helper::getSettingValue('site_name')?>!</h4>
   <p class="mb-6">Please sign-in to your account and start the adventure</p>
   <form class="mb-6" action="{{ route('signin') }}" method="POST">
     @csrf
@@ -36,7 +36,7 @@ use App\Helpers\Helper;
         <span class="input-group-text cursor-pointer"><i class="fa-solid fa-eye-slash"></i></span>
       </div>
     </div>
-    <button type="submit" class="btn btn-primary d-grid w-100">Sign in</button>
+    <button type="submit" class="btn btn-outline-dark d-grid w-100">Sign in</button>
     <div class="my-8">
       <div class="d-flex justify-content-between">
         <div class="form-check mb-0 ms-2">
@@ -44,13 +44,13 @@ use App\Helpers\Helper;
           <label class="form-check-label" for="remember-me"> Remember Me </label> -->
         </div>
         <a href="{{url('forgot-password')}}">
-          <p class="mb-0">Forgot Password?</p>
+          <p class="mb-0 text-dark">Forgot Password?</p>
         </a>
       </div>
     </div>
   </form>
   <div class="mb-2 mb-md-0">
-    © <script>document.write(new Date().getFullYear())</script>, Developed & maintained by <a href="https://keylines.net/" target="_blank" class="footer-link fw-medium">Keylines</a>
+    © <script>document.write(new Date().getFullYear())</script>, Developed & maintained by <a href="https://keylines.net/" target="_blank" class="footer-link fw-medium text-dark">Keylines</a>
   </div>
 </div>
 @endsection

@@ -36,7 +36,7 @@ use App\Helpers\Helper;
 <link rel="stylesheet" href="{{ config('constants.admin_assets_url') }}assets/vendor/css/rtl/core.css" />
 <link rel="stylesheet" href="{{ config('constants.admin_assets_url') }}assets/vendor/css/rtl/theme-default.css" />
 
-<link rel="stylesheet" href="{{ config('constants.admin_assets_url') }}assets/css/demo.css" />
+
 
 <!-- Vendors CSS -->
 <link rel="stylesheet" href="{{ config('constants.admin_assets_url') }}assets/vendor/libs/node-waves/node-waves.css" />
@@ -59,7 +59,7 @@ use App\Helpers\Helper;
 
 <!-- Page CSS -->
 <link rel="stylesheet" href="{{ config('constants.admin_assets_url') }}assets/vendor/css/pages/cards-advance.css" />
-
+<link rel="stylesheet" href="{{ config('constants.admin_assets_url') }}assets/css/demo.css" />
 <!-- Helpers -->
 <script src="{{ config('constants.admin_assets_url') }}assets/vendor/js/helpers.js"></script>
 <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
