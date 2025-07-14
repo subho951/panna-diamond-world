@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('upload_id');
             $table->bigInteger('sl_no');
-            $table->bigInteger('lead_no');
+            $table->text('lead_no')->default(null);
             $table->bigInteger('header_id');
             $table->longText('header_value');
             $table->tinyInteger('status')->default(1);

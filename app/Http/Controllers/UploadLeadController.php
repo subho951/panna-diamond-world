@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\LeadHeader;
 use App\Models\CampaignType;
 use App\Models\Campaign;
+use App\Models\MasterLead;
 use App\Services\SiteAuthService;
 use App\Helpers\Helper;
 
@@ -32,7 +33,7 @@ class UploadLeadController extends Controller
     {
         $this->siteAuthService = new SiteAuthService();
         $this->data = array(
-            'title'             => 'Upload Lead',
+            'title'             => 'Lead',
             'controller'        => 'UploadLeadController',
             'controller_route'  => 'upload-lead',
             'primary_key'       => 'id',
@@ -74,16 +75,16 @@ class UploadLeadController extends Controller
                     /* user activity */
 
                     $uploadLead = new UploadLead();
-                   
-                        $uploadLead->branch_id             = strip_tags($postData['branch_id']);
-                        $uploadLead->telecaller_id         = json_encode($postData['telecaller_id']);
-                        $uploadLead->title                 = strip_tags($postData['lead_title']);
-                        $uploadLead->campaign_type_id      = (isset($postData['campaign_type_id']) ? strip_tags($postData['campaign_type_id']) : 0);
-                        $uploadLead->campaign_id           = (isset($postData['campaign_id']) ? strip_tags($postData['campaign_id']) : 0);
-                        //    'lead_date'             => date_format(date_create(strip_tags($postData['lead_date'])), "Y-m-d"),
-                        $uploadLead->lead_date             = strip_tags($postData['lead_date']);
-                        $uploadLead->filename              = strip_tags($csvName);
-                    
+
+                    $uploadLead->branch_id             = strip_tags($postData['branch_id']);
+                    $uploadLead->telecaller_id         = json_encode($postData['telecaller_id']);
+                    $uploadLead->title                 = strip_tags($postData['lead_title']);
+                    $uploadLead->campaign_type_id      = (isset($postData['campaign_type_id']) ? strip_tags($postData['campaign_type_id']) : 0);
+                    $uploadLead->campaign_id           = (isset($postData['campaign_id']) ? strip_tags($postData['campaign_id']) : 0);
+                    //    $uploadLead->lead_date       = date_format(date_create(strip_tags($postData['lead_date'])), "Y-m-d"),
+                    $uploadLead->lead_date             = strip_tags($postData['lead_date']);
+                    $uploadLead->filename              = strip_tags($csvName);
+
                     $uploadLead->save();
                     $lastInsertId = $uploadLead->id;
 
@@ -108,28 +109,67 @@ class UploadLeadController extends Controller
 
                     // max length among all columns
                     $maxLength = max(array_map('count', $csvArray));
-                    $arr = [];
-                    for($i = 0; $i < $maxLength; $i++)
+
+                    $skippedRows = 0;
+                    $insertedRows = 0;
+                   
+                    for ($i = 0; $i < $maxLength; $i++) 
                     {
-                        foreach ($csvArray as $key => $value) 
-                        {
-                            $master_leads = [];
-                             $header_id = LeadHeader::where('name', '=', $key)->where('status', '=', 1)->first()->id;
-                             $master_leads = [
-                                "header_id" => $header_id,
-                                "header_value" => isset($value[$i])? $value[$i]: '',
-                                "upload_id"  => $lastInsertId,
-                            ];
-                            $arr[] = $master_leads; //I will add insertion code here
+                        $sl_no = MasterLead::orderBy('id', 'desc')->value('sl_no') ?? 0;
+                        $sl_no++;
+                        $lead_no = str_pad($sl_no, 8, '0', STR_PAD_LEFT);
+
+                        $csvRow = [];
+                        foreach ($csvArray as $key => $value) {
+                           
+                            $header_id = LeadHeader::where('name', '=', $key)->where('status', '=', 1)->first()->id  ?? '';
+                            if ($header_id) 
+                            {
+                                $csvCell = [];
+                                $csvCell = [
+                                    "header_id" => $header_id,
+                                    "header_value" => strip_tags(isset($value[$i]) ? $value[$i] : ''),
+                                    "upload_id"  => $lastInsertId,
+                                    "sl_no" => $sl_no,
+                                    "lead_no" => $lead_no
+                                ];
+                                
+                                if($key == 'Phone')
+                                {
+                                    $phone = MasterLead::where('header_id', '=', 4)->where('header_value', '=', strip_tags($value[$i]))->exists();
+                                    if($phone) //true
+                                    {
+                                        $skippedRows++;
+                                        $csvRow = [];
+                                        break;
+                                    }
+                                }
+
+                                $csvRow[] = $csvCell;
+                                
+                                
+                            } else {
+                                return redirect()->back()->with('error_message', 'Please Maintain Proper CSV Format !!!');
+                            }    
                         }
+
+                        if (!empty($csvRow)) 
+                        {
+                            foreach($csvRow as $leads)
+                            {
+                                MasterLead::insert($leads);
+                            }
+                        }
+
                     }
-                    dd($arr);
-                    
+
+                    $insertedRows = $maxLength - $skippedRows;
+
                 } else {
                     return redirect()->back()->with('error_message', 'Please Upload CSV File !!!');
                 }
 
-                return redirect($this->data['controller_route'] . "/list")->with('success_message', $this->data['title'] . ' Inserted Successfully !!!');
+                return redirect($this->data['controller_route'] )->with('success_message',  $insertedRows. ' Lead(s) Uploaded Successfully !!!' . ($skippedRows > 0 ? ' And ' . $skippedRows . ' Lead(s) Skipped !!!' : ''));
             } else {
                 return redirect()->back()->with('error_message', 'All Fields Required !!!');
             }
@@ -137,7 +177,7 @@ class UploadLeadController extends Controller
 
 
         $data['module']                 = $this->data;
-        $title                          = $this->data['title'];
+        $title                          = 'Upload' . ' ' . $this->data['title'];
         $page_name                      = 'upload-lead.upload';
         $data['row']                    = [];
         $data['branches']               = Branch::where('status', '=', 1)->get();
