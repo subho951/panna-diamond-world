@@ -40,8 +40,7 @@ $controllerRoute = $module['controller_route'];
                             <div class="row">
                                 <div class="col-md-3 mb-3">
                                     <label for="branch_id" class="form-label">Branch <small class="text-danger">*</small></label>
-                                    <select class="form-control" type="text" id="branch_id" name="branch_id" autofocus
-                                        required>
+                                    <select id="branch_id" class="select2 form-select" data-allow-clear="true" name="branch_id" autofocus required>
                                         <option value="" selected disabled>Select Branch</option>
                                         <?php if($branches){ foreach($branches as $branch){?>
                                         <option value="<?= $branch->id ?>"><?= $branch->name ?></option>
@@ -50,7 +49,7 @@ $controllerRoute = $module['controller_route'];
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label for="telecaller_id" class="form-label">Telecaller <small class="text-danger">*</small></label>
-                                    <select class="select2" id="telecaller_id" name="telecaller_id[]" required multiple>
+                                    <select class="select2 form-select" id="telecaller_id" name="telecaller_id[]" required multiple>
                                         
                                     </select>
                                 </div>
@@ -61,7 +60,7 @@ $controllerRoute = $module['controller_route'];
 
                                 <div class="col-md-6 mb-3">
                                     <label for="campaign_type_id" class="form-label">Campaign Type</label>
-                                    <select class="form-control" type="text" id="campaign_type_id" name="campaign_type_id">
+                                    <select class="select2 form-select" type="text" id="campaign_type_id" name="campaign_type_id">
                                         <option value="" selected disabled>Select Campaign Type</option>
                                         <?php if($campaign_types){ foreach($campaign_types as $campaign_type){?>
                                             <option value="<?= $campaign_type->id ?>"><?= $campaign_type->name ?></option>
@@ -70,36 +69,69 @@ $controllerRoute = $module['controller_route'];
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="campaign_id" class="form-label">Campaign <small class="text-danger campaign_star"></small></label>
-                                    <select class="form-control" type="text" id="campaign_id" name="campaign_id">
+                                    <select class="select2 form-select" type="text" id="campaign_id" name="campaign_id">
                                         <option value="" selected disabled>Select Campaign</option>
                                     </select>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label for="lead_date" class="form-label">Lead Date <small class="text-danger">*</small></label>
-                                    <input class="form-control" type="date" id="lead_date" name="lead_date"
-                                        value="" required />
+                                    <input class="form-control" type="date" id="lead_date" name="lead_date" min="<?=date('Y-m-d')?>" required />
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="lead_file" class="form-label">Lead File <small class="text-danger">*</small>
                                         <small class="text-danger">(Only csv file are allowed to upload)</small>
-                                        <a href="#" class="text-primary" target="_blank">Sample File</a>
+                                        <a href="sample-lead-file.csv" class="text-primary" target="_blank">Sample File</a>
                                     </label>
                                     <input class="form-control" type="file" id="lead_file" name="lead_file" accept=".csv" required />
                                 </div>
                             </div>
                             <div class="mt-2">
-                                <button type="submit" class="btn btn-primary btn-sm me-2">Upload Leads</button>
+                                <button type="submit" class="btn btn-primary btn-sm me-2">Save Changes</button>
                                 <a href="<?= url($controllerRoute . '/list/') ?>" class="btn btn-label-secondary btn-sm">Cancel</a>
                             </div>
                         </form>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Branch</th>
+                                    <th>Telecallers</th>
+                                    <th>Lead Title</th>
+                                    <th>Campaign Type</th>
+                                    <th>Campaign</th>
+                                    <th>Lead Date</th>
+                                    <th>Lead File</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 @endsection
-
 @section('scripts')
     <script src="<?= config('constants.admin_assets_url') ?>assets/js/upload-lead.js"></script>
 @endsection

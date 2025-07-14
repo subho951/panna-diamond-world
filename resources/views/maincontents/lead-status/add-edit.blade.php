@@ -53,7 +53,7 @@ $controllerRoute = $module['controller_route'];
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="parent_id" class="form-label">Parent Status <small class="text-danger">*</small></label>
-                            <select class="form-control" type="text" id="parent_id" name="parent_id">
+                            <select class="select2 form-select" type="text" id="parent_id" name="parent_id">
                                 <option value="" selected>Select Parent Status</option>
                                 <?php if($parent_Stats){ foreach($parent_Stats as $parent_Stat){?>
                                     <option value="<?=$parent_Stat->id?>" <?=(($parent_Stat->id == $parent_id)?'selected':'')?>><?=$parent_Stat->name?></option>
@@ -67,7 +67,7 @@ $controllerRoute = $module['controller_route'];
                         
                         <div class="col-md-6 mt-3">
                             <label for="rank" class="form-label">Rank <small class="text-danger">*</small></label>
-                            <select class="form-control" type="text" id="rank" name="rank" required>
+                            <select class="select2 form-select" type="text" id="rank" name="rank" required>
                                 <option value="" selected>Select Rank</option>
                                 <?php for($y=1; $y<=20; $y++){?>
                                     <option value="<?=$y?>" <?=(($y == $rank)?'selected':'')?>><?=$y?></option>

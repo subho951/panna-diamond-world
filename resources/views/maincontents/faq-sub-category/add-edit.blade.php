@@ -53,7 +53,7 @@ $controllerRoute = $module['controller_route'];
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="faq_category_id" class="form-label">FAQ Category <small class="text-danger">*</small></label>
-                            <select class="form-control" type="text" id="faq_category_id" name="faq_category_id" required>
+                            <select class="select2 form-select" type="text" id="faq_category_id" name="faq_category_id" required>
                                 <option value="" selected>Select FAQ Category</option>
                                 <?php if($cats){ foreach($cats as $cat){?>
                                     <option value="<?=$cat->id?>" <?=(($cat->id == $faq_category_id)?'selected':'')?>><?=$cat->name?></option>

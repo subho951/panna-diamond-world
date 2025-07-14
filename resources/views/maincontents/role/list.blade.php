@@ -34,13 +34,13 @@ $controllerRoute = $module['controller_route'];
             </div>
             <div class="card-body">
                <div class="dt-responsive table-responsive">
-                  <table id="simpletable" class="table table-striped table-bordered nowrap">
+                  <table id="simpletable" class="table table-striped nowrap">
                      <thead>
                         <tr>
                            <th scope="col">#</th>
                            <th scope="col">Name</th>
                            <th scope="col">Modules</th>
-                           <th scope="col">Action</th>
+                           <th style="width: 15%; text-align: center">Action</th>
                         </tr>
                      </thead>
                      <tbody>
@@ -49,7 +49,7 @@ $controllerRoute = $module['controller_route'];
                      ?>
                      <?php if(count($rows)>0){ $sl=1; foreach($rows as $row){?>
                         <tr>
-                           <th scope="row"><?=$sl++?></th>
+                           <td scope="row"><?=$sl++?></td>
                            <td><?=$row->role_name?></td>
                            <td>
                               <div class="row">
@@ -58,13 +58,13 @@ $controllerRoute = $module['controller_route'];
                                  if(!empty($module_id)){ for($m=0;$m<count($module_id);$m++){
                                    $module = Module::where('id', '=', $module_id[$m])->first();
                                  ?>
-                                 <div class="col-md-3 mt-3">
-                                   <span class="badge bg-primary"><i class="bi bi-collection me-1"></i> <?=(($module)?$module->name:'')?></span>
+                                 <div class="col-md-3 mt-1">
+                                   <span class="badge bg-primary blue_badge"><?=(($module)?$module->name:'')?></span>
                                  </div>
                                  <?php } }?>
                               </div>
                            </td>
-                           <td>
+                           <td style="text-align: center; vertical-align: top;">
                               <a href="<?=url($controllerRoute . '/edit/'.Helper::encoded($row->id))?>" class="btn btn-sm btn-primary me-1" title="Edit <?=$module['title']?>"><i class="fa fa-edit"></i></a>
                               <?php if($row->status){?>
                                  <a href="<?=url($controllerRoute . '/change-status/'.Helper::encoded($row->id))?>" class="btn btn-sm btn-success me-1" title="Activate <?=$module['title']?>"><i class="fa fa-check"></i></a>
