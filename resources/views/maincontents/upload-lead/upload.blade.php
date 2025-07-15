@@ -38,7 +38,7 @@ $controllerRoute = $module['controller_route'];
                         <form id="formAccountSettings" action="" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
-                                <div class="col-md-3 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label for="branch_id" class="form-label">Branch <small class="text-danger">*</small></label>
                                     <select id="branch_id" class="select2 form-select" data-allow-clear="true" name="branch_id" autofocus required>
                                         <option value="" selected disabled>Select Branch</option>
@@ -47,15 +47,17 @@ $controllerRoute = $module['controller_route'];
                                         <?php } }?>
                                     </select>
                                 </div>
-                                <div class="col-md-3 mb-3">
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="lead_title" class="form-label">Lead Title <small class="text-danger">*</small></label>
+                                    <input class="form-control" type="text" id="lead_title" name="lead_title" required placeholder="Lead Title" />
+                                </div>
+
+                                <div class="col-md-12 mb-3">
                                     <label for="telecaller_id" class="form-label">Telecaller <small class="text-danger">*</small></label>
                                     <select class="select2 form-select" id="telecaller_id" name="telecaller_id[]" required multiple>
                                         
                                     </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="lead_title" class="form-label">Lead Title <small class="text-danger">*</small></label>
-                                    <input class="form-control" type="text" id="lead_title" name="lead_title" required placeholder="Lead Title" />
                                 </div>
 
                                 <div class="col-md-6 mb-3">

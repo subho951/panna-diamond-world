@@ -15,6 +15,7 @@ use App\Models\LeadHeader;
 use App\Models\CampaignType;
 use App\Models\Campaign;
 use App\Models\MasterLead;
+use App\Models\BranchLead;
 use App\Services\SiteAuthService;
 use App\Helpers\Helper;
 
@@ -81,7 +82,7 @@ class UploadLeadController extends Controller
                     $uploadLead->title                 = strip_tags($postData['lead_title']);
                     $uploadLead->campaign_type_id      = (isset($postData['campaign_type_id']) ? strip_tags($postData['campaign_type_id']) : 0);
                     $uploadLead->campaign_id           = (isset($postData['campaign_id']) ? strip_tags($postData['campaign_id']) : 0);
-                    //    $uploadLead->lead_date       = date_format(date_create(strip_tags($postData['lead_date'])), "Y-m-d"),
+                    //$uploadLead->lead_date       = date_format(date_create(strip_tags($postData['lead_date'])), "Y-m-d"),
                     $uploadLead->lead_date             = strip_tags($postData['lead_date']);
                     $uploadLead->filename              = strip_tags($csvName);
 
@@ -120,7 +121,8 @@ class UploadLeadController extends Controller
                         $lead_no = str_pad($sl_no, 8, '0', STR_PAD_LEFT);
 
                         $csvRow = [];
-                        foreach ($csvArray as $key => $value) {
+                        foreach ($csvArray as $key => $value)
+                        {
                            
                             $header_id = LeadHeader::where('name', '=', $key)->where('status', '=', 1)->first()->id  ?? '';
                             if ($header_id) 
@@ -155,13 +157,53 @@ class UploadLeadController extends Controller
 
                         if (!empty($csvRow)) 
                         {
-                            foreach($csvRow as $leads)
+                            $cellsPerRow = 0;
+                            foreach($csvRow as $cell)   //uploading 1 lead i.e., 1 csv row
                             {
-                                MasterLead::insert($leads);
-                            }
+                                $masterLead = new MasterLead();
+
+                                $masterLead->header_id        = $cell["header_id"];       
+                                $masterLead->header_value     = $cell["header_value"];
+                                $masterLead->upload_id        = $cell["upload_id"];
+                                $masterLead->sl_no            = $cell["sl_no"];
+                                $masterLead->lead_no          = $cell["lead_no"];
+
+                                $masterLead->save();
+
+                                if($cellsPerRow == 0)
+                                {
+                                    $branchLead =  new BranchLead();
+
+                                    $branchLead->upload_id = $masterLead->upload_id ;
+                                    $branchLead->master_lead_id = $masterLead->id ;
+                                    $branchLead->lead_sl_no = $masterLead->sl_no ;
+                                    $branchLead->branch_id = $uploadLead->branch_id ;
+                                    $branchLead->campaign_type_id = $uploadLead->campaign_type_id ;                                   
+                                    $branchLead->campaign_id = $uploadLead->campaign_id ;
+                                    $branchLead->assigned_telecaller_id = 0 ;
+                                    
+                                    $branchLead->save();                                    
+                                }
+                               
+                                $cellsPerRow++;
+                            }           
+                           
                         }
 
                     }
+
+                    $insertedBranchLead = BranchLead::where('upload_id', '=', $lastInsertId)->where('status', '=', 1)->get();
+
+                    // Get telecaller IDs array
+                    $telecallerIds = json_decode($uploadLead->telecaller_id, true);
+                    $telecallerCount = count($telecallerIds);
+ 
+                    // Update each lead with assigned telecaller in circular manner
+                    foreach ($insertedBranchLead as $index => $lead) {
+                        $lead->assigned_telecaller_id = $telecallerIds[$index % $telecallerCount];
+                        $lead->update();
+                    }
+                   
 
                     $insertedRows = $maxLength - $skippedRows;
 
