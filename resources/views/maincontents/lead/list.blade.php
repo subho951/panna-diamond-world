@@ -55,12 +55,12 @@ $controllerRoute = $module['controller_route'];
 
                                     </select>
                                 </div>
-                                <div class="col-md-2 mb-2">
+                                <div class="col-4 col-md-2 mb-2">
                                     <button type="button" class="btn btn-outline-dark">
                                         <i class="fa-solid fa-filter"></i>&nbsp;<span>Filter Leads</span>
                                     </button>
                                 </div>
-                                <div class="col-md-2 mb-2">
+                                <div class="col-8 col-md-2 mb-2">
                                     <button type="button" class="btn btn-label-secondary">
                                         <i class="fa-solid fa-arrow-rotate-left"></i>&nbsp;<span>Reset</span>
                                     </button>

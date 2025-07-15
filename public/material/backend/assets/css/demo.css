@@ -34,6 +34,10 @@ h4{
 }
 
 /* ! For .layout-navbar-fixed added fix padding top tpo .layout-page */
+.layout-page{
+  background: url(http://localhost/panna-diamond-world/public/uploads/diamond-bg-1.jpg);
+  background-size: contain;
+}
 .layout-navbar-fixed .layout-wrapper:not(.layout-without-menu) .layout-page {
   padding-top: 64px !important;
 }
@@ -146,6 +150,10 @@ h4{
 }
 
 /* table design css */
+#table1{
+  overflow: auto;
+  width: 100%;
+}
 table thead th{
   background: #040707 !important;
   border-bottom: 1px solid #fff;
@@ -217,7 +225,40 @@ table.table-striped tbody td:last-child{
   background-color: #040707 !important;
   border-color: #040707 !important;
   color: #fff !important;
+
+  position: relative;
+      cursor: pointer;
+      border: none;
+      color: #000;
+      background: transparent;
+      overflow: hidden;
+      border-radius: 5px;
 }
+/* .btn-outline-dark::after {
+      content: '';
+      background: linear-gradient(to right, #fdfc47, #24fe41);
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      transition: all 1.3s ease-in;
+      z-index: 0;
+    }
+.btn-text {
+      background: #fff;
+      padding: 1.25rem 6rem;
+      font-size: 15px;
+      position: relative;
+      z-index: 1;
+      display: block;
+      margin: 0.25rem 0;
+      border-radius: 5px;
+    }
+.btn-outline-dark:hover::after {
+      transform: rotate(180deg);
+      transition: all 1s ease-in-out;
+    } */
 
 
 .select2-container--default .select2-results__option--highlighted[aria-selected] {
@@ -257,7 +298,16 @@ html:not([dir=rtl]) .select2-container--default .select2-selection--multiple .se
     font-size: 22px;
   }
   #search1{
-    padding: 7px 8px !important;
+    padding: 5px 8px !important;
+    margin-top: 8px
+  }
+  .table thead tr th {
+    padding-block: 0.8rem;
+    font-size: 8px;
+  }
+  tbody tr td {
+    padding-block: 0.8rem;
+    font-size: 10px !important;
   }
 }
 @media(max-width: 575px) {

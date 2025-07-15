@@ -85,16 +85,14 @@ $user_type = session('type');
                                  <img src="<?=(($user->profile_image != '')?config('constants.app_url') . config('constants.uploads_url_path') . $user->profile_image:config('constants.no_image_avatar'))?>" alt="<?=$user->name?>" class="d-block rounded" height="100" width="100" id="uploadedAvatar" />
                                  <div class="button-wrapper">
                                     <label for="upload" class="btn btn-dark btn-sm me-2 mb-2" tabindex="0">
-                                    <span class="d-none d-sm-block">Upload new photo</span>
-                                    <i class="bx bx-upload d-block d-sm-none"></i>
+                                    <span class="d-sm-block">Upload new photo</span>
                                     <input type="file" id="upload" class="account-file-input" name="profile_image" hidden accept="image/png, image/jpeg, image/jpg, image/webp, image/avif, image/gif" />
                                     </label>
                                     <?php
                                     $pageLink = Request::url();
                                     ?>
-                                    <a href="<?=url('common-delete-image/' . Helper::encoded($pageLink) . '/users/profile_image/id/' . (($user)?$user->id:0))?>" class="btn btn-label-secondary account-image-reset mb-4 btn-sm" onclick="return confirm('Do you want to remove this image ?');">
-                                       <i class="bx bx-reset d-block d-sm-none"></i>
-                                       <span class="d-none d-sm-block">Reset</span>
+                                    <a href="<?=url('common-delete-image/' . Helper::encoded($pageLink) . '/users/profile_image/id/' . (($user)?$user->id:0))?>" class="btn btn-label-secondary account-image-reset mb-2 btn-sm" onclick="return confirm('Do you want to remove this image ?');">
+                                       <span class="d-sm-block">Reset</span>
                                     </a>
                                     <p class="mb-0">Allowed JPG, GIF, PNG, JPEG, WEBP, AVIF</p>
                                  </div>
@@ -218,12 +216,11 @@ $user_type = session('type');
                            </div>
 
                            <div class="mb-3 col-md-12">
-                              <div class="d-flex align-items-start align-items-sm-center gap-4">
+                              <div class="d-flex align-items-start align-items-sm-center gap-4 flex-wrap">
                                  <img src="<?=((Helper::getSettingValue('site_logo') != '')?config('constants.app_url') . config('constants.uploads_url_path') . Helper::getSettingValue('site_logo'):env('NO_IMAGE'))?>" alt="<?=Helper::getSettingValue('site_name')?>" class="d-block rounded" height="50" width="300" id="uploadedAvatar" />
                                  <div class="button-wrapper">
                                     <label for="upload2" class="btn btn-dark btn-sm me-2 mb-2" tabindex="0">
-                                    <span class="d-none d-sm-block">Upload Logo</span>
-                                    <i class="bx bx-upload d-block d-sm-none"></i>
+                                    <span class="d-sm-block">Upload Logo</span>
                                     <input type="file" id="upload2" class="account-file-input" name="site_logo" hidden accept="image/png, image/jpeg, image/jpg, image/webp, image/avif, image/gif" />
                                     </label>
                                     <?php
@@ -238,12 +235,11 @@ $user_type = session('type');
                               </div>
                            </div>
                            <div class="mb-3 col-md-12">
-                              <div class="d-flex align-items-start align-items-sm-center gap-4">
+                              <div class="d-flex align-items-start align-items-sm-center gap-4 flex-wrap">
                                  <img src="<?=((Helper::getSettingValue('site_footer_logo') != '')?config('constants.app_url') . config('constants.uploads_url_path') . Helper::getSettingValue('site_   _logo'):env('NO_IMAGE'))?>" alt="<?=Helper::getSettingValue('site_name')?>" class="d-block rounded" height="50" width="300" id="uploadedAvatar" />
                                  <div class="button-wrapper">
                                     <label for="upload3" class="btn btn-dark btn-sm me-2 mb-2" tabindex="0">
-                                    <span class="d-none d-sm-block">Upload Footer Logo</span>
-                                    <i class="bx bx-upload d-block d-sm-none"></i>
+                                    <span class="d-sm-block">Upload Footer Logo</span>
                                     <input type="file" id="upload3" class="account-file-input" name="site_footer_logo" hidden accept="image/png, image/jpeg, image/jpg, image/webp, image/avif, image/gif" />
                                     </label>
                                     <?php
@@ -258,12 +254,11 @@ $user_type = session('type');
                               </div>
                            </div>
                            <div class="mb-3 col-md-12">
-                              <div class="d-flex align-items-start align-items-sm-center gap-4">
+                              <div class="d-flex align-items-start align-items-sm-center gap-4 flex-wrap">
                                  <img src="<?=((Helper::getSettingValue('site_favicon') != '')?config('constants.app_url') . config('constants.uploads_url_path') . Helper::getSettingValue('site_favicon'):env('NO_IMAGE'))?>" alt="<?=Helper::getSettingValue('site_name')?>" class="d-block rounded" height="50" width="300" id="uploadedAvatar" />
                                  <div class="button-wrapper">
                                     <label for="upload4" class="btn btn-dark btn-sm me-2 mb-2" tabindex="0">
-                                    <span class="d-none d-sm-block">Upload Favicon</span>
-                                    <i class="bx bx-upload d-block d-sm-none"></i>
+                                    <span class="d-sm-block">Upload Favicon</span>
                                     <input type="file" id="upload4" class="account-file-input" name="site_favicon" hidden accept="image/png, image/jpeg, image/jpg, image/webp, image/avif, image/gif" />
                                     </label>
                                     <?php

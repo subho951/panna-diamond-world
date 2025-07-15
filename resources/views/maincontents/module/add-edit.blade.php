@@ -56,7 +56,9 @@ $controllerRoute = $module['controller_route'];
                         </div>
                     </div>
                     <div class="mt-4">
-                        <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>
+                        <button type="submit" class="btn btn-outline-dark btn-sm me-2">
+                            <span class="btn-text">Save Changes</span>
+                        </button>
                         <a href="<?=url($controllerRoute . '/list/')?>" class="btn btn-outline-danger btn-sm">Cancel</a>
                     </div>
                 </form>

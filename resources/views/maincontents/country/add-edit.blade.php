@@ -49,11 +49,11 @@ $controllerRoute = $module['controller_route'];
                 <form id="formAccountSettings" action="" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 mt-3 mt-md-0">
                             <label for="name" class="form-label">Name <small class="text-danger">*</small></label>
                             <input class="form-control" type="text" id="name" name="name" value="<?=$name?>" required placeholder="Name" autofocus />
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mt-3 mt-md-0">
                             <label for="short_code" class="form-label">Short Code <small class="text-danger">*</small></label>
                             <input class="form-control" type="text" id="short_code" name="short_code" value="<?=$short_code?>" required placeholder="Short Code" />
                         </div>

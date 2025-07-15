@@ -96,36 +96,38 @@ $controllerRoute = $module['controller_route'];
 
                 <div class="card mb-4">
                     <div class="card-body">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Branch</th>
-                                    <th>Telecallers</th>
-                                    <th>Lead Title</th>
-                                    <th>Campaign Type</th>
-                                    <th>Campaign</th>
-                                    <th>Lead Date</th>
-                                    <th>Lead File</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Branch</th>
+                                        <th>Telecallers</th>
+                                        <th>Lead Title</th>
+                                        <th>Campaign Type</th>
+                                        <th>Campaign</th>
+                                        <th>Lead Date</th>
+                                        <th>Lead File</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
 
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
 
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -86,26 +86,26 @@ function loadTable(config) {
                 const base = '/' + config.routePrefix;
 
                 html += `<td>
-                    <a href="${base_url}/${config.routePrefix}/edit/${encodedId}" class="btn btn-sm btn-primary me-1" title="Edit">
+                    <a href="${base_url}/${config.routePrefix}/edit/${encodedId}" class="btn btn-sm btn-primary me-1 mb-1" title="Edit">
                         <i class="fas fa-edit"></i>
                     </a>`;
 
                 if (status == 1) {
-                    html += `<a href="${base_url}/${config.routePrefix}/change-status/${encodedId}" class="btn btn-sm btn-success me-1" title="Deactivate">
+                    html += `<a href="${base_url}/${config.routePrefix}/change-status/${encodedId}" class="btn btn-sm btn-success me-1 mb-1" title="Deactivate">
                         <i class="fa-solid fa-check"></i>
                     </a>`;
                 } else {
-                    html += `<a href="${base_url}/${config.routePrefix}/change-status/${encodedId}" class="btn btn-sm btn-warning me-1" title="Activate">
+                    html += `<a href="${base_url}/${config.routePrefix}/change-status/${encodedId}" class="btn btn-sm btn-warning me-1 mb-1" title="Activate">
                         <i class="fas fa-times"></i>
                     </a>`;
                 }
 
-                html += `<a href="${base_url}/${config.routePrefix}/delete/${encodedId}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')" title="Delete">
+                html += `<a href="${base_url}/${config.routePrefix}/delete/${encodedId}" class="btn btn-sm btn-danger mb-1" onclick="return confirm('Are you sure?')" title="Delete">
                     <i class="fa-solid fa-trash"></i>
                 </a>`;
 
                 if(config.routePrefix == 'company'){
-                    html += `<br><br><a href="${base_url}/${config.routePrefix}/subcriptions/${encodedId}" class="btn btn-sm btn-info" title="Subcriptions">
+                    html += `<br><br><a href="${base_url}/${config.routePrefix}/subcriptions/${encodedId}" class="btn btn-sm btn-info mb-1" title="Subcriptions">
                                     <i class="fa-solid fa-cart-shopping"></i>&nbsp;&nbsp;Subcriptions
                                 </a>`;
                 }

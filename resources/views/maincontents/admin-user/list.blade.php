@@ -28,7 +28,7 @@ $controllerRoute = $module['controller_route'];
             </div>
          <?php }?>
          <div class="card mb-4">
-            <div class="card-header">
+            <div class="card-header pb-2">
                 <a href="<?=url($controllerRoute . '/add/')?>" class="btn btn-outline-success btn-sm float-end">Add <?=$module['title']?></a>
             </div>
             <div class="card-body">
