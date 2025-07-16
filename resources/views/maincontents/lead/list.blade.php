@@ -4,7 +4,7 @@ $controllerRoute = $module['controller_route'];
 ?>
 @extends('layouts.main')
 @section('content')
-    <div class="container-xxl flex-grow-1 container-p-y">
+    <div class="container-fluid flex-grow-1 container-p-y">
         <div class="row g-6">
             <h4><?= $page_header ?></h4>
             <h6 class="breadcrumb-wrapper">
@@ -109,32 +109,32 @@ $controllerRoute = $module['controller_route'];
                                             <td>0000768</td>
 
                                             <td>
-                                                <span class="badge badge-center rounded-pill bg-label-dark mb-1">
+                                                <span class="badge badge-center rounded-pill bg-label-info mb-1">
                                                     <i class="fa-solid fa-building"></i>
                                                 </span> <span class="fw-bold text-primary">Tsunami Technology</span>
                                                 <br>
-                                                <span class="badge badge-center rounded-pill bg-label-dark mb-1">
+                                                <span class="badge badge-center rounded-pill bg-label-info mb-1">
                                                     <i class="fa-solid fa-phone"></i>
                                                 </span> <span class="fw-bold text-primary">9887458965</span>
                                                 <br>
-                                                <span class="badge badge-center rounded-pill bg-label-dark mb-1">
+                                                <span class="badge badge-center rounded-pill bg-label-info mb-1">
                                                     <i class="fa-solid fa-envelope"></i>
                                                 </span> <span class="fw-bold text-primary">tsunami@gmail.com</span>
                                             </td>
                                             <td>
                                                 <span>April 28, 2025</span>
                                                 <br>
-                                                <span class="badge bg-label-dark me-1 mt-1">Follow Up</span>
+                                                <span class="badge bg-label-info me-1 mt-1">Follow Up</span>
                                                 <br>
-                                                <span class="badge rounded-pill bg-label-light text-dark mt-1">1 Update</span>
+                                                <span class="badge rounded-pill bg-label-success text-dark mt-1">1 Update</span>
                                             </td>
                                             <td>
-                                                <span class="badge badge-center rounded-pill bg-label-dark">
+                                                <span class="badge badge-center rounded-pill bg-label-warning">
                                                     <i class="fa-regular fa-clock"></i>
                                                 </span> <span>Mar 03, 2025 03:23 PM</span>
                                             </td>
                                             <td>
-                                                <span class="badge badge-center rounded-pill bg-label-dark">
+                                                <span class="badge badge-center rounded-pill bg-label-danger">
                                                     <i class="fa-solid fa-user-tie"></i>
                                                 </span> <span>Ganesh Gaitonde</span>
                                             </td>
@@ -233,28 +233,28 @@ $controllerRoute = $module['controller_route'];
                                                             <span class="input-group-text border-primary"><i
                                                                     class="fa-solid fa-user"></i></span>
                                                             <input type="text"
-                                                                class="form-control border-primary text-primary"
+                                                                class="form-control border-dark text-primary"
                                                                 value="Paras">
                                                         </div>
                                                         <div class="input-group mb-2">
-                                                            <span class="input-group-text border-primary"><i
+                                                            <span class="input-group-text border-dark"><i
                                                                     class="fa-solid fa-phone"></i></span>
                                                             <input type="text"
-                                                                class="form-control border-primary text-primary"
+                                                                class="form-control border-dark text-primary"
                                                                 value="9831887018">
                                                         </div>
                                                         <div class="input-group mb-2">
-                                                            <span class="input-group-text border-primary"><i
+                                                            <span class="input-group-text border-dark"><i
                                                                     class="fa-solid fa-building"></i></span>
                                                             <input type="text"
-                                                                class="form-control border-primary text-primary"
+                                                                class="form-control border-dark text-primary"
                                                                 value="PRASEEDA EXIM LLP">
                                                         </div>
                                                         <div class="input-group mb-2">
-                                                            <span class="input-group-text border-primary"><i
+                                                            <span class="input-group-text border-dark"><i
                                                                     class="fa-solid fa-envelope"></i></span>
                                                             <input type="email"
-                                                                class="form-control border-primary text-primary"
+                                                                class="form-control border-dark text-primary"
                                                                 value="praseedae6@gmail.com">
                                                         </div>
 
