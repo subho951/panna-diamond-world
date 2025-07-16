@@ -141,7 +141,7 @@ class ApiController extends Controller
                     if($checkUser){
                         if(Hash::check($password, $checkUser->password)){
                             $objOfJwt           = new CreatorJwt();
-                            echo $app_access_token   = $objOfJwt->GenerateToken($checkUser->id, $checkUser->email, $checkUser->phone);die;
+                            $app_access_token   = $objOfJwt->GenerateToken($checkUser->id, $checkUser->email, $checkUser->phone);
                             $user_id            = $checkUser->id;
                             $fields             = [
                                 'user_id'               => $user_id,
