@@ -362,6 +362,7 @@ class ApiController extends Controller
                             User::where('id', '=', $user_id)->update(['otp' => 0]);
                             $fields     = [
                                 'user_id'               => $user_id,
+                                'branch_id'             => $checkUser->branch_id,
                                 'device_type'           => $device_type,
                                 'device_token'          => $device_token,
                                 'fcm_token'             => $fcm_token,
@@ -373,14 +374,15 @@ class ApiController extends Controller
                             } else {
                                 UserDevice::where('id','=',$checkUserTokenExist->id)->update($fields);
                             }
-                            $getEmployeeType        = EmployeeType::select('name')->where('id', '=', $checkUser->employee_type_id)->first();
+                            
+                            $getBranch = Branch::select('name')->where('id', '=', $checkUser->branch_id)->first();
                             $apiResponse            = [
                                 'user_id'               => $user_id,
-                                'name'                  => $checkUser->name,
+                                'name'                  => $checkUser->first_name. ' ' .$checkUser->last_name,
                                 'email'                 => $checkUser->email,
                                 'phone'                 => $checkUser->phone,
-                                'employee_type_name'    => (($getEmployeeType)?$getEmployeeType->name:''),
-                                'employee_type_id'      => $checkUser->employee_type_id,
+                                'branch_name'           => (($getBranch)?$getBranch->name:''),
+                                'branch_id'             => $checkUser->branch_id,
                                 'device_type'           => $device_type,
                                 'device_token'          => $device_token,
                                 'fcm_token'             => $fcm_token,
@@ -389,8 +391,8 @@ class ApiController extends Controller
                             /* user activity */
                                 $activityData = [
                                     'user_email'        => $checkUser->email,
-                                    'user_name'         => $checkUser->name,
-                                    'user_type'         => 'USER',
+                                    'user_name'         => $checkUser->first_name. ' ' .$checkUser->last_name,
+                                    'user_type'         => (($checkUser->role_id == 3)?'TELECALLER':'TEAM LEADER'),
                                     'ip_address'        => $request->ip(),
                                     'activity_type'     => 1,
                                     'activity_details'  => 'SignIn Successfully !!!',
@@ -398,14 +400,18 @@ class ApiController extends Controller
                                 ];
                                 UserActivity::insert($activityData);
                             /* user activity */
-                            $apiStatus                          = TRUE;
-                            $apiMessage                         = 'SignIn Successfully !!!';
+
+                            http_response_code(200);
+                            $apiStatus          = TRUE;
+                            $apiMessage         = 'SignIn Successfully !!!';
+                            $apiExtraField      = 'response_code';
+                            $apiExtraData       = http_response_code();
                         } else {
                             /* user activity */
                                 $activityData = [
                                     'user_email'        => $checkUser->email,
-                                    'user_name'         => $checkUser->name,
-                                    'user_type'         => 'USER',
+                                    'user_name'         => $checkUser->first_name. ' ' .$checkUser->last_name,
+                                    'user_type'         => (($checkUser->role_id == 3)?'TELECALLER':'TEAM LEADER'),
                                     'ip_address'        => $request->ip(),
                                     'activity_type'     => 0,
                                     'activity_details'  => 'OTP Mismatched !!!',
@@ -417,13 +423,14 @@ class ApiController extends Controller
                             http_response_code(200);
                             $apiMessage         = 'OTP Mismatched !!!';
                             $apiExtraField      = 'response_code';
+                            $apiExtraData       = http_response_code();
                         }
                     } else {
                         /* user activity */
                             $activityData = [
-                                'user_email'        => $requestData['phone'],
+                                'user_email'        => $requestData['email'],
                                 'user_name'         => '',
-                                'user_type'         => 'USER',
+                                'user_type'         => 'TELECALLER',
                                 'ip_address'        => $request->ip(),
                                 'activity_type'     => 0,
                                 'activity_details'  => 'We Don\'t Recognize You !!!',
@@ -431,12 +438,19 @@ class ApiController extends Controller
                             ];
                             UserActivity::insert($activityData);
                         /* user activity */
-                        $apiStatus                              = FALSE;
-                        $apiMessage                             = 'We Don\'t Recognize You !!!';
+
+                        http_response_code(200);
+                        $apiStatus          = FALSE;
+                        $apiMessage         = 'We Don\'t Recognize You !!!';
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
                     }
                 } else {
+                    http_response_code(400);
                     $apiStatus          = FALSE;
-                    $apiMessage         = 'Unauthenticate Request !!!';
+                    $apiMessage         = $this->getResponseCode(http_response_code());
+                    $apiExtraField      = 'response_code';
+                    $apiExtraData       = http_response_code();
                 }
                 $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
             }
