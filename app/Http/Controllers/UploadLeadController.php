@@ -41,10 +41,9 @@ class UploadLeadController extends Controller
         );
     }
 
-    /* upload */
-    public function upload(Request $request)
+    /* add uploaded leads */
+    public function add(Request $request)
     {
-        $data['module']           = $this->data;
         if ($request->isMethod('post')) {
             $postData = $request->all();
 
@@ -82,7 +81,7 @@ class UploadLeadController extends Controller
                     $uploadLead->title                 = strip_tags($postData['lead_title']);
                     $uploadLead->campaign_type_id      = (isset($postData['campaign_type_id']) ? strip_tags($postData['campaign_type_id']) : 0);
                     $uploadLead->campaign_id           = (isset($postData['campaign_id']) ? strip_tags($postData['campaign_id']) : 0);
-                    //$uploadLead->lead_date       = date_format(date_create(strip_tags($postData['lead_date'])), "Y-m-d"),
+                    //$uploadLead->lead_date           = date_format(date_create(strip_tags($postData['lead_date'])), "Y-m-d"),
                     $uploadLead->lead_date             = strip_tags($postData['lead_date']);
                     $uploadLead->filename              = strip_tags($csvName);
 
@@ -94,8 +93,8 @@ class UploadLeadController extends Controller
                     $handle = fopen($csvPath, 'r');
                     $header = fgetcsv($handle); // First row (column headers)                   
                     array_shift($header); // Remove first column from header
-                    // Initialize column-wise array
-                    $csvArray = [];
+                    
+                    $csvArray = []; // Initialize column-wise array
                     foreach ($header as $column) {
                         $csvArray[$column] = []; // initialize each column
                     }
@@ -108,7 +107,7 @@ class UploadLeadController extends Controller
                     }
                     fclose($handle);
 
-                    // max length among all columns
+                    // max length among all columns i.e., total no. of rows(leads) trying to upload
                     $maxLength = max(array_map('count', $csvArray));
 
                     $skippedRows = 0;
@@ -178,7 +177,7 @@ class UploadLeadController extends Controller
                                     $branchLead->master_lead_id = $masterLead->id ;
                                     $branchLead->lead_sl_no = $masterLead->sl_no ;
                                     $branchLead->branch_id = $uploadLead->branch_id ;
-                                    $branchLead->campaign_type_id = $uploadLead->campaign_type_id ;                                   
+                                    $branchLead->campaign_type_id =$uploadLead->campaign_type_id ;                                   
                                     $branchLead->campaign_id = $uploadLead->campaign_id ;
                                     $branchLead->assigned_telecaller_id = 0 ;
                                     
@@ -207,6 +206,11 @@ class UploadLeadController extends Controller
 
                     $insertedRows = $maxLength - $skippedRows;
 
+                    $uploadLead->total_upload = $maxLength ;
+                    $uploadLead->success_upload = $insertedRows ;
+                    $uploadLead->failed_upload = $skippedRows ;
+                    $uploadLead->update();
+
                 } else {
                     return redirect()->back()->with('error_message', 'Please Upload CSV File !!!');
                 }
@@ -216,19 +220,83 @@ class UploadLeadController extends Controller
                 return redirect()->back()->with('error_message', 'All Fields Required !!!');
             }
         }
+        
+    }
+    /* add uploaded leads */
 
 
+    /* list uploaded leads */
+    public function upload()
+    {
         $data['module']                 = $this->data;
         $title                          = 'Upload' . ' ' . $this->data['title'];
         $page_name                      = 'upload-lead.upload';
-        $data['row']                    = [];
+        // $data['row']                    = [];
         $data['branches']               = Branch::where('status', '=', 1)->get();
         $data['campaign_types']         = CampaignType::where('status', '=', 1)->get();
-        $data                           = $this->siteAuthService->admin_after_login_layout($title, $page_name, $data);
-        return view('maincontents.' . $page_name, $data);
-    }
-    /* upload */
+        
+        $uploadedLeadsArr               = UploadLead::where('status', '!=', 3)->get();
 
+        $leadListArr = [];
+        foreach($uploadedLeadsArr as $leadRow)
+        {   
+            $leadRow['branch_name'] = Branch::where('id', '=', $leadRow->branch_id)->value('name') ?? 'N/A';
+            $leadRow['campaign_type_name'] = CampaignType::where('id', '=', $leadRow->campaign_type_id)->value('name')  ?? 'N/A';
+            $leadRow['campaign_name'] = Campaign::where('id', '=', $leadRow->campaign_id)->value('name')  ?? 'N/A';
+
+            $telecallerArr = json_decode($leadRow->telecaller_id, true) ;
+            $telecallerNameArr = [] ;
+            foreach($telecallerArr as $telecaller_id)
+            {
+                $telecallerNameArr[] = User::where('id', '=', $telecaller_id)->first()->first_name . ' ' . User::where('id', '=', $telecaller_id)->first()->last_name;
+            }
+            $leadRow['telecaller_name_str'] = implode("<br>", $telecallerNameArr) ?? 'N/A';
+
+            $leadRow['encodedId'] = Helper::encoded($leadRow->id) ;
+            
+            $leadListArr[] = $leadRow;
+        }
+
+        // dd($leadListArr) ;
+        
+        $data                           = $this->siteAuthService->admin_after_login_layout($title, $page_name, $data);
+        return view('maincontents.' . $page_name, $data)->with(["leadListArr" => $leadListArr]);
+    }
+    /* list uploaded leads */
+ 
+    
+    /* delete uploaded leads */
+    public function delete(Request $request, $id)
+    {
+        $id = Helper::decoded($id);
+        $uploadLead = UploadLead::find($id);
+
+        $fields = [
+            'status'             => 3,
+            'deleted_at'         => date('Y-m-d H:i:s'),
+        ];
+        UploadLead::where('id', '=', $id)->update($fields);
+        MasterLead::where('upload_id', '=', $id)->update($fields);
+        BranchLead::where('upload_id', '=', $id)->update($fields);
+
+         /* user activity */
+         $activityData = [
+            'user_email'        => session('user_data')['email'],
+            'user_name'         => session('user_data')['name'],
+            'user_type'         => 'ADMIN',
+            'ip_address'        => $request->ip(),
+            'activity_type'     => 3,
+            'activity_details'  => $uploadLead->title . ' ' . $this->data['title'] . ' Deleted',
+            'platform_type'     => 'WEB',
+        ];
+        UserActivity::insert($activityData);
+        /* user activity */
+        return redirect($this->data['controller_route'])->with('success_message', $uploadLead->title . ' ' .$this->data['title'].' Deleted Successfully !!!');
+    }
+    /* delete uploaded leads */
+
+
+    /* ajax requests */
     public function fetchTelecaller(Request $request)
     {
         if ($request->isMethod('post')) {
@@ -245,4 +313,5 @@ class UploadLeadController extends Controller
             return response()->json($campaign);
         }
     }
+    /* ajax requests */
 }

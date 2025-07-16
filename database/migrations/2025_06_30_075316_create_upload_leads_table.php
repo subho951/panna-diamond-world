@@ -19,6 +19,9 @@ return new class extends Migration
             $table->bigInteger('campaign_type_id');
             $table->bigInteger('campaign_id');
             $table->longText('telecaller_id')->default(null);
+            $table->bigInteger('total_upload')->default(0);
+            $table->bigInteger('success_upload')->default(0);
+            $table->bigInteger('failed_upload')->default(0);
             $table->longText('filename');
             $table->tinyInteger('status')->default(1);
             $table->integer('created_by')->default(1);

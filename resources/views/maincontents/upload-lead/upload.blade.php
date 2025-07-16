@@ -35,7 +35,7 @@ $controllerRoute = $module['controller_route'];
                 <?php }?>
                 <div class="card mb-4">
                     <div class="card-body">
-                        <form id="formAccountSettings" action="" method="POST" enctype="multipart/form-data">
+                        <form id="formAccountSettings" action="<?= url($controllerRoute .'/add') ?>" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -95,9 +95,9 @@ $controllerRoute = $module['controller_route'];
                         </form>
                     </div>
                 </div>
-
+                
                 <div class="card mb-4">
-                    <div class="card-body">
+                    <div class="card-body">        
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
@@ -108,30 +108,46 @@ $controllerRoute = $module['controller_route'];
                                         <th>Lead Title</th>
                                         <th>Campaign Type</th>
                                         <th>Campaign</th>
-                                        <th>Lead Date</th>
                                         <th>Lead File</th>
+                                        <th>Total Leads</th>
+                                        <th>Success Leads</th>
+                                        <th>Failed Leads</th>
+                                        <th>Lead Date</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                    {{-- @dd($leadListArr); --}}
+                                    
+                                    @foreach($leadListArr as $leadRow)
+                                    <tr> 
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $leadRow->branch_name }}</td>
+                                        <td>{{ $leadRow->telecaller_name_str }}</td>
+                                        <td>{{ $leadRow->title }}</td>
+                                        <td>{{ $leadRow->campaign_type_name }}</td>
+                                        <td>{{ $leadRow->campaign_name }}</td>
+                                        <td>{{ $leadRow->filename }}</td>
+                                        <td>{{ $leadRow->total_upload }}</td>
+                                        <td>{{ $leadRow->success_upload }}</td>
+                                        <td>{{ $leadRow->failed_upload }}</td>
+                                        <td>{{ $leadRow->lead_date }}</td>
+                                        
+                                        <td>
+                                            <a href="<?= url($controllerRoute . '/delete/' . $leadRow->encodedId) ?>" class="btn btn-sm btn-danger mb-1" onclick="return confirm('You Won\'t Be Able To Revert This Action. Are you sure?')"
+                                                title="Delete">
+                                             <i class="fa-solid fa-trash"></i>
+                                            </a>
+                                       </td>
+                                                                               
                                     </tr>
-
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
+                
             </div>
         </div>
     </div>
