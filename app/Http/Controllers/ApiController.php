@@ -428,7 +428,7 @@ class ApiController extends Controller
                     } else {
                         /* user activity */
                             $activityData = [
-                                'user_email'        => $requestData['email'],
+                                'user_email'        => $requestData['phone'],
                                 'user_name'         => '',
                                 'user_type'         => 'TELECALLER',
                                 'ip_address'        => $request->ip(),
