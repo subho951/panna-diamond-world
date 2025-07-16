@@ -241,7 +241,55 @@ class ApiController extends Controller
         /* signin with email */
     /* authentication */
     /* after login screen */
-
+        /* signout */
+            public function signout(Request $request)
+            {
+                $apiStatus          = TRUE;
+                $apiMessage         = '';
+                $apiResponse        = [];
+                $apiExtraField      = '';
+                $apiExtraData       = '';
+                $requestData        = $request->all();
+                $requiredFields     = [];
+                $headerData         = $request->header();
+                if (!$this->validateArray($requiredFields, $requestData)){
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'All Data Are Not Present !!!';
+                }
+                if($headerData['key'][0] == env('PROJECT_KEY')){
+                    $app_access_token           = $headerData['authorization'][0];
+                    $checkUserTokenExist        = UserDevice::where('app_access_token', '=', $app_access_token)->where('status', '=', 1)->first();
+                    if($checkUserTokenExist){
+                        /* user activity */
+                            $getTokenValue              = $this->tokenAuth($app_access_token);
+                            $uId                        = $getTokenValue['data'][1];
+                            $getUser                    = User::where('id', '=', $uId)->first();
+                            $activityData = [
+                                'user_email'        => (($getUser)?$getUser->email:''),
+                                'user_name'         => (($getUser)?$getUser->first_name.' '.$getUser->first_namelast_name:''),
+                                'user_type'         => (($getUser)?(($getUser->role_id == 3)?'TELECALLER':'TEAM LEADER'):''),
+                                'ip_address'        => $request->ip(),
+                                'activity_type'     => 2,
+                                'activity_details'  => 'Signout Successfully !!!',
+                                'platform_type'     => 'ANDROID',
+                            ];
+                            UserActivity::insert($activityData);
+                        /* user activity */
+                        UserDevice::where('app_access_token', '=', $app_access_token)->delete();
+                        
+                        $apiStatus                      = TRUE;
+                        $apiMessage                     = 'Signout Successfully !!!';
+                    } else {
+                        $apiStatus                      = FALSE;
+                        $apiMessage                     = 'Something Went Wrong !!!';
+                    }               
+                } else {
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'Unauthenticate Request !!!';
+                }
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse);
+            }
+        /* signout */
     /* after login screen */
 
     /*
