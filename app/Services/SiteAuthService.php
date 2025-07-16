@@ -22,7 +22,7 @@ class SiteAuthService
 {
     use AuthorizesRequests;
     use ValidatesRequests;
-    protected function sendMail($email, $subject, $message, $file = '')
+    public function sendMail($email, $subject, $message, $file = '')
     {
         $generalSetting             = GeneralSetting::find('1');
         $mailLibrary                = new PHPMailer(true);
