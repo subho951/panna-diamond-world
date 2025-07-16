@@ -35,7 +35,7 @@ h4{
 
 /* ! For .layout-navbar-fixed added fix padding top tpo .layout-page */
 .layout-page{
-  background: url(http://localhost/panna-diamond-world/public/uploads/diamond-bg-1.jpg);
+  background: url(../img/diamond-bg-1.jpg);
   background-size: contain;
 }
 .layout-navbar-fixed .layout-wrapper:not(.layout-without-menu) .layout-page {
