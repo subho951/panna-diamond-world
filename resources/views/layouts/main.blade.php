@@ -26,7 +26,7 @@
         <!-- Layout container -->
         <div class="layout-page">
           <!-- Navbar -->
-          <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+          <nav class="layout-navbar container-fluid navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
             @include('elements/header')
           </nav>
 

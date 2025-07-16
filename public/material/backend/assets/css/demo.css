@@ -149,6 +149,20 @@ h4{
   margin-bottom: 0 !important;
 }
 
+.bg-menu-theme .menu-sub > .menu-item > .menu-link:before{
+  content: "\f061";
+  font-family: "Font Awesome 6 Free";
+  position: absolute;
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+.menu-vertical .menu-sub .menu-link {
+  padding-left: 2.2rem;
+}
+.bg-menu-theme.menu-vertical .menu-sub > .menu-item > .menu-link:before{
+  top: 31%;
+}
+
 /* table design css */
 #table1{
   overflow: auto;
@@ -159,10 +173,13 @@ table thead th{
   border-bottom: 1px solid #fff;
   color: #fff !important;
 }
+.table thead tr th {
+  padding-block: 0.5rem;
+}
 table tbody td{
-  padding: 8px 10px !important;
   border: none;
   transition: all .3s ease-in-out;
+  padding: 2px 8px !important;
 }
 table tbody tr,
 table.table-striped tbody tr,
@@ -182,12 +199,12 @@ table.table-striped tbody tr:hover th{
   color: #000 !important
 }
 table thead th:first-child{
-  border-top-left-radius: 10px !important;
-  border-bottom-left-radius: 10px !important;
+  border-top-left-radius: 5px !important;
+  border-bottom-left-radius: 5px !important;
 }
 table thead th:last-child{
-  border-top-right-radius: 10px !important;
-  border-bottom-right-radius: 10px !important;
+  border-top-right-radius: 5px !important;
+  border-bottom-right-radius: 5px !important;
 }
 table.table-striped tbody tr{
   border-top-left-radius: 5px !important;
@@ -214,6 +231,9 @@ table.table-striped tbody td:last-child{
   box-shadow: 0 6px 15px -8px rgb(0 0 0 / 30%) !important;
   border-color: #040707 !important;
 }
+.input-group:focus-within{
+  box-shadow: 0 6px 15px -8px rgb(0 0 0 / 30%) !important;
+}
 .form-check-input:checked{
   background-color: #040707 !important;
 }
@@ -221,7 +241,12 @@ table.table-striped tbody td:last-child{
 
 
 /* btn design */
-
+.btn-sm{
+  padding: 5px 7px !important;
+}
+.btn-sm i{
+  font-size: 10px;
+}
 .btn-outline-dark{
   background-color: #040707 !important;
   border-color: #040707 !important;
@@ -303,7 +328,7 @@ html:not([dir=rtl]) .select2-container--default .select2-selection--multiple .se
     margin-top: 8px
   }
   .table thead tr th {
-    padding-block: 0.8rem;
+    padding-block: 0.5rem;
     font-size: 8px;
   }
   tbody tr td {
