@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>
-            {{ env('APP_NAME') }}
+            {{ Helper::getSettingValue('site_name') }}
         </title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta http-equiv="Content-Type" content="text/html; ">
