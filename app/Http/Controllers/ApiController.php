@@ -273,7 +273,7 @@ class ApiController extends Controller
                         ];
                         $generalSetting             = GeneralSetting::find('1');
                         $subject                    = Helper::getSettingValue('site_name').' :: SignIn Validate OTP';
-                        echo $message                    = view('mails.otp',$mailData);die;
+                        $message                    = view('mails.otp',$mailData);
                         $this->sendMail($checkUser->email, $subject, $message);
 
                         /* email log save */
