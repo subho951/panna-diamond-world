@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>
-            {{ env('APP_NAME') }}
+            {{ $site_name }}
         </title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta http-equiv="Content-Type" content="text/html; ">
@@ -173,7 +173,7 @@
                                                         <tr>
                                                             <td style="width:600px;">
                                                                 <img height="auto"
-                                                                    src="{{ asset('/public/logo.png') }}"
+                                                                    src="{{ $logo }}"
                                                                     style="border:0;display:block;outline:none;margin: 0 auto;padding-top: 30px;margin-bottom: 30px;"
                                                                     width="auto">
                                                             </td>
@@ -187,7 +187,7 @@
                                                 style="font-size:0px;padding:10px 25px; background: #ae860c;">
                                                 <div
                                                     style="font-family:'Lato', system-ui, sans-serif;text-align:center;">
-                                                    <h1 style="margin: 0;">OTP With {{ env('APP_NAME') }} (OTP Verification)</h1>
+                                                    <h1 style="margin: 0;">OTP With {{ $site_name }} (OTP Verification)</h1>
                                                 </div>
                                             </td>
                                         </tr>
@@ -206,7 +206,7 @@
                                                 style="padding:10px 25px;padding-top:0;padding-right:35px;padding-left:35px;word-break:break-word;">
                                                 <div style="font-family:Lato, system-ui, sans-serif;font-size:13px;text-align:left;color:white;"
                                                     class="news-content">
-                                                    <p>{{ $content }}</p>
+                                                    <p>Please verify activation OTP.</p>
                                                 </div>
                                             </td>
                                         </tr>
@@ -234,7 +234,7 @@
                                                 <div style="font-family:Lato, system-ui, sans-serif;font-size:13px;text-align:left;color:rgba(255, 255, 255, 0.808);"
                                                     class="news-content">
                                                     <p>Thank you,</p>
-                                                    <p>{{ env('APP_NAME') }}</p>
+                                                    <p>{{ $site_name }}</p>
                                                 </div>
                                             </td>
                                         </tr>
