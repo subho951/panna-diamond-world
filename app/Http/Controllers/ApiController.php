@@ -275,7 +275,7 @@ class ApiController extends Controller
                             'logo'      => url('/public/') . '/' . Helper::getSettingValue('site_logo'),
                             'site_name' => Helper::getSettingValue('site_name'),
                         ];
-                        $generalSetting             = GeneralSetting::find('1');
+                        
                         $subject                    = Helper::getSettingValue('site_name').' :: SignIn Validate OTP';
                         $message                    = view('mails.otp',$mailData);
                         $this->siteAuthService->sendMail($checkUser->email, $subject, $message);
@@ -471,28 +471,33 @@ class ApiController extends Controller
                 }
                 if($headerData['key'][0] == env('PROJECT_KEY')){
                     $id         = $requestData['id'];
-                    $getUser    = User::where('id', '=', $id)->first();
-                    if($getUser){
-                        $remember_token = rand(1000,9999);
+                    $checkUser    = User::where('id', '=', $id)->first();
+                    if($checkUser){
+                        $remember_token = rand(100000,999999);
                         $postData = [
                             'otp'        => $remember_token
                         ];
                         User::where('id', '=', $id)->update($postData);
                         
                         $mailData                   = [
-                            'id'    => $getUser->id,
-                            'email' => $getUser->email,
-                            'otp'   => $remember_token,
+                            'id'        => $checkUser->id,
+                            'name'      => $checkUser->first_name.' '.$checkUser->last_name,
+                            'content'   => $checkUser->first_name.' '.$checkUser->last_name,
+                            'email'     => $checkUser->email,
+                            'phone'     => $checkUser->phone,
+                            'otp'       => $remember_token,
+                            'logo'      => url('/public/') . '/' . Helper::getSettingValue('site_logo'),
+                            'site_name' => Helper::getSettingValue('site_name'),
                         ];
-                        $generalSetting             = GeneralSetting::find('1');
-                        $subject                    = Helper::getSettingValue('site_name').' :: Resend OTP';
-                        $message                    = view('email-templates.otp',$mailData);
-                        $this->sendMail($getUser->email, $subject, $message);
+                        
+                        $subject                    = Helper::getSettingValue('site_name').' :: SignIn Validate OTP';
+                        $message                    = view('mails.otp',$mailData);
+                        $this->siteAuthService->sendMail($checkUser->email, $subject, $message);
 
                         /* email log save */
                             $postData2 = [
-                                'name'                  => $getUser->name,
-                                'email'                 => $getUser->email,
+                                'name'                  => $checkUser->first_name.' '.$checkUser->last_name,
+                                'email'                 => $checkUser->email,
                                 'subject'               => $subject,
                                 'message'               => $message
                             ];
@@ -508,12 +513,12 @@ class ApiController extends Controller
                     } else {
                         $apiStatus          = FALSE;
                         http_response_code(200);
-                        $apiMessage         = 'Teacher Not Found !!!';
+                        $apiMessage         = 'User Not Found !!!';
                         $apiExtraField      = 'response_code';
                         $apiExtraData       = http_response_code();
                     }
                 } else {
-                    http_response_code(200);
+                    http_response_code(400);
                     $apiStatus          = FALSE;
                     $apiMessage         = $this->getResponseCode(http_response_code());
                     $apiExtraField      = 'response_code';
