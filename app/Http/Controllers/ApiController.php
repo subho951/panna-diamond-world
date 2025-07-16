@@ -262,12 +262,13 @@ class ApiController extends Controller
                         $remember_token  = rand(100000,999999);
                         User::where('id', '=', $checkUser->id)->update(['otp' => $remember_token]);
                         $mailData                   = [
-                            'id'    => $checkUser->id,
-                            'name'  => $checkUser->first_name.' '.$checkUser->last_name,
-                            'content'  => $checkUser->first_name.' '.$checkUser->last_name,
-                            'email' => $checkUser->email,
-                            'phone' => $checkUser->phone,
-                            'otp'   => $remember_token,
+                            'id'        => $checkUser->id,
+                            'name'      => $checkUser->first_name.' '.$checkUser->last_name,
+                            'content'   => $checkUser->first_name.' '.$checkUser->last_name,
+                            'email'     => $checkUser->email,
+                            'phone'     => $checkUser->phone,
+                            'otp'       => $remember_token,
+                            'logo'      => url('/public/') . '/' . Helper::getSettingValue('site_logo'),
                         ];
                         $generalSetting             = GeneralSetting::find('1');
                         $subject                    = Helper::getSettingValue('site_name').' :: SignIn Validate OTP';

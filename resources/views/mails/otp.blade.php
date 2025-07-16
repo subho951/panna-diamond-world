@@ -173,7 +173,7 @@
                                                         <tr>
                                                             <td style="width:600px;">
                                                                 <img height="auto"
-                                                                    src="{{ asset('/public/logo.png') }}"
+                                                                    src="{{ $logo }}"
                                                                     style="border:0;display:block;outline:none;margin: 0 auto;padding-top: 30px;margin-bottom: 30px;"
                                                                     width="auto">
                                                             </td>
@@ -206,7 +206,7 @@
                                                 style="padding:10px 25px;padding-top:0;padding-right:35px;padding-left:35px;word-break:break-word;">
                                                 <div style="font-family:Lato, system-ui, sans-serif;font-size:13px;text-align:left;color:white;"
                                                     class="news-content">
-                                                    <p>{{ $content }}</p>
+                                                    <p>Please verify activation OTP.</p>
                                                 </div>
                                             </td>
                                         </tr>
