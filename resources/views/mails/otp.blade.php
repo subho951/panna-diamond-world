@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>
-            {{ Helper::getSettingValue('site_name') }}
+            {{ $site_name }}
         </title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta http-equiv="Content-Type" content="text/html; ">
@@ -187,7 +187,7 @@
                                                 style="font-size:0px;padding:10px 25px; background: #ae860c;">
                                                 <div
                                                     style="font-family:'Lato', system-ui, sans-serif;text-align:center;">
-                                                    <h1 style="margin: 0;">OTP With {{ env('APP_NAME') }} (OTP Verification)</h1>
+                                                    <h1 style="margin: 0;">OTP With {{ $site_name }} (OTP Verification)</h1>
                                                 </div>
                                             </td>
                                         </tr>
@@ -234,7 +234,7 @@
                                                 <div style="font-family:Lato, system-ui, sans-serif;font-size:13px;text-align:left;color:rgba(255, 255, 255, 0.808);"
                                                     class="news-content">
                                                     <p>Thank you,</p>
-                                                    <p>{{ env('APP_NAME') }}</p>
+                                                    <p>{{ $site_name }}</p>
                                                 </div>
                                             </td>
                                         </tr>

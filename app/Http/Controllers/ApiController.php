@@ -269,6 +269,7 @@ class ApiController extends Controller
                             'phone'     => $checkUser->phone,
                             'otp'       => $remember_token,
                             'logo'      => url('/public/') . '/' . Helper::getSettingValue('site_logo'),
+                            'site_name' => Helper::getSettingValue('site_name'),
                         ];
                         $generalSetting             = GeneralSetting::find('1');
                         $subject                    = Helper::getSettingValue('site_name').' :: SignIn Validate OTP';
