@@ -29,6 +29,10 @@ class ApiController extends Controller
 {
     protected $siteAuthService;
     protected $data;
+    public function __construct()
+    {
+        $this->siteAuthService = new SiteAuthService();
+    }
     
     /* before login screen */
         /* general settings */
