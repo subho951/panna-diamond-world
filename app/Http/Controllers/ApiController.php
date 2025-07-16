@@ -263,6 +263,8 @@ class ApiController extends Controller
                         User::where('id', '=', $checkUser->id)->update(['otp' => $remember_token]);
                         $mailData                   = [
                             'id'    => $checkUser->id,
+                            'name'  => $checkUser->first_name.' '.$checkUser->last_name,
+                            'content'  => $checkUser->first_name.' '.$checkUser->last_name,
                             'email' => $checkUser->email,
                             'phone' => $checkUser->phone,
                             'otp'   => $remember_token,
