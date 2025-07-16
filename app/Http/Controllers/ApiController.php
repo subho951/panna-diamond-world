@@ -40,30 +40,15 @@ class ApiController extends Controller
                     $apiMessage         = 'All Data Are Not Present !!!';
                 }
                 if($headerData['key'][0] == env('PROJECT_KEY')){
-                    $generalSetting = GeneralSetting::find(1);
-                    Helper::pr($generalSetting);
+                    $generalSetting = GeneralSetting::where('is_active', '=', 1)->orderBy('id', 'ASC')->get();
                     if($generalSetting){
-                        $apiResponse = [
-                            'site_name'             => $generalSetting->site_name,
-                            'site_phone'            => $generalSetting->site_phone,
-                            'site_phone2'           => $generalSetting->site_phone2,
-                            'site_mail'             => $generalSetting->site_mail,
-                            'system_email'          => $generalSetting->system_email,
-                            'site_url'              => $generalSetting->site_url,
-                            'site_logo'             => env('UPLOADS_URL').$generalSetting->site_logo,
-                            'site_footer_logo'      => env('UPLOADS_URL').$generalSetting->site_footer_logo,
-                            'site_favicon'          => env('UPLOADS_URL').$generalSetting->site_favicon,
-                            'site_address'          => $generalSetting->description,
-                            'theme_color'           => $generalSetting->theme_color,
-                            'font_color'            => $generalSetting->font_color,
-                            'sidebar_bgcolor'       => $generalSetting->sidebar_bgcolor,
-                            'header_bgcolor'        => $generalSetting->header_bgcolor,
-                            'twitter_profile'       => $generalSetting->twitter_profile,
-                            'facebook_profile'      => $generalSetting->facebook_profile,
-                            'instagram_profile'     => $generalSetting->instagram_profile,
-                            'linkedin_profile'      => $generalSetting->linkedin_profile,
-                            'youtube_profile'       => $generalSetting->youtube_profile,
-                        ];
+                        foreach($generalSetting as $setting){
+                            $apiResponse = [
+                                'id'             => $setting->id,
+                                'key'            => $setting->key,
+                                'value'          => $setting->value
+                            ];
+                        }
                     }
                     http_response_code(200);
                     $apiStatus          = TRUE;

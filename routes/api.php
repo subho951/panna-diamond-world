@@ -4,9 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
 
-// Route::prefix('api')->namespace('App\Http\Controllers')->group(function(){
-    
-// });
+
 /* before login */
     Route::match(['get'], '/get-app-setting', [ApiController::class, 'getAppSetting']);
     Route::match(['post'], '/get-static-pages', [ApiController::class, 'getStaticPages']);
