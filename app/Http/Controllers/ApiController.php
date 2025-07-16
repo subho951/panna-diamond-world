@@ -5,8 +5,12 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Models\Branch;
+use App\Models\BranchLead;
 use App\Models\GeneralSetting;
 use App\Models\Page;
+use App\Models\User;
+use App\Models\UserDevice;
 use App\Models\UserActivity;
 
 use App\Services\SiteAuthService;
@@ -112,7 +116,128 @@ class ApiController extends Controller
         /* static page */
     /* before login screen */
     /* authentication */
+        /* signin with email */
+            public function signin(Request $request)
+            {
+                $apiStatus          = TRUE;
+                $apiMessage         = '';
+                $apiResponse        = [];
+                $apiExtraField      = '';
+                $apiExtraData       = '';
+                $requestData        = $request->all();
+                $requiredFields     = ['key', 'source', 'email', 'password', 'device_token', 'fcm_token'];
+                $headerData         = $request->header();
+                if (!$this->validateArray($requiredFields, $requestData)){
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'All Data Are Not Present !!!';
+                }
+                if($headerData['key'][0] == env('PROJECT_KEY')){
+                    $email                      = $requestData['email'];
+                    $password                   = $requestData['password'];
+                    $device_type                = $headerData['source'][0];
+                    $device_token               = $requestData['device_token'];
+                    $fcm_token                  = $requestData['fcm_token'];
+                    $checkUser                  = User::where('email', '=', $email)->where('status', '=', 1)->first();
+                    if($checkUser){
+                        if(Hash::check($password, $checkUser->password)){
+                            $objOfJwt           = new CreatorJwt();
+                            echo $app_access_token   = $objOfJwt->GenerateToken($checkUser->id, $checkUser->email, $checkUser->phone);die;
+                            $user_id            = $checkUser->id;
+                            $fields             = [
+                                'user_id'               => $user_id,
+                                'device_type'           => $device_type,
+                                'device_token'          => $device_token,
+                                'fcm_token'             => $fcm_token,
+                                'app_access_token'      => $app_access_token,
+                            ];
+                            $checkUserTokenExist            = UserDevice::where('user_id', '=', $user_id)->where('published', '=', 1)->where('device_type', '=', $device_type)->where('device_token', '=', $device_token)->first();
+                            if(!$checkUserTokenExist){
+                                UserDevice::insert($fields);
+                            } else {
+                                UserDevice::where('id','=',$checkUserTokenExist->id)->update($fields);
+                            }
+                            
+                            $getBranch = Branch::select('name')->where('id', '=', $checkUser->branch_id)->first();
+                            $apiResponse            = [
+                                'user_id'               => $user_id,
+                                'name'                  => $checkUser->first_name. ' ' .$checkUser->last_name,
+                                'email'                 => $checkUser->email,
+                                'phone'                 => $checkUser->phone,
+                                'branch_name'           => (($getBranch)?$getBranch->name:''),
+                                'branch_id'             => $checkUser->branch_id,
+                                'device_type'           => $device_type,
+                                'device_token'          => $device_token,
+                                'fcm_token'             => $fcm_token,
+                                'app_access_token'      => $app_access_token,
+                            ];
+                            /* user activity */
+                                $activityData = [
+                                    'user_email'        => $checkUser->email,
+                                    'user_name'         => $checkUser->first_name. ' ' .$checkUser->last_name,
+                                    'user_type'         => (($checkUser->role_id == 3)?'TELECALLER':'TEAM LEADER'),
+                                    'ip_address'        => $request->ip(),
+                                    'activity_type'     => 1,
+                                    'activity_details'  => 'SignIn Successfully !!!',
+                                    'platform_type'     => 'ANDROID',
+                                ];
+                                UserActivity::insert($activityData);
+                            /* user activity */
+                            
+                            http_response_code(200);
+                            $apiStatus          = TRUE;
+                            $apiMessage         = 'SignIn Successfully !!!';
+                            $apiExtraField      = 'response_code';
+                            $apiExtraData       = http_response_code();
+                        } else {
+                            /* user activity */
+                                $activityData = [
+                                    'user_email'        => $requestData['email'],
+                                    'user_name'         => $checkUser->first_name. ' ' .$checkUser->last_name,
+                                    'user_type'         => (($checkUser->role_id == 3)?'TELECALLER':'TEAM LEADER'),
+                                    'ip_address'        => $request->ip(),
+                                    'activity_type'     => 0,
+                                    'activity_details'  => 'Invalid Email Or Password !!!',
+                                    'platform_type'     => 'ANDROID',
+                                ];
+                                UserActivity::insert($activityData);
+                            /* user activity */
+                            
+                            http_response_code(200);
+                            $apiStatus          = FALSE;
+                            $apiMessage         = 'Invalid Email Or Password !!!';
+                            $apiExtraField      = 'response_code';
+                            $apiExtraData       = http_response_code();
+                        }                   
+                    } else {
+                        /* user activity */
+                            $activityData = [
+                                'user_email'        => $requestData['email'],
+                                'user_name'         => '',
+                                'user_type'         => 'TELECALLER',
+                                'ip_address'        => $request->ip(),
+                                'activity_type'     => 0,
+                                'activity_details'  => 'We Don\'t Recognize You !!!',
+                                'platform_type'     => 'ANDROID',
+                            ];
+                            UserActivity::insert($activityData);
+                        /* user activity */
 
+                        http_response_code(200);
+                        $apiStatus          = FALSE;
+                        $apiMessage         = 'We Don\'t Recognize You !!!';
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
+                    }
+                } else {
+                    http_response_code(400);
+                    $apiStatus          = FALSE;
+                    $apiMessage         = $this->getResponseCode(http_response_code());
+                    $apiExtraField      = 'response_code';
+                    $apiExtraData       = http_response_code();
+                }
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
+            }
+        /* signin with email */
     /* authentication */
     /* after login screen */
 
