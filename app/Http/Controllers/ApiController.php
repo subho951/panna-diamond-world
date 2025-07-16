@@ -43,7 +43,7 @@ class ApiController extends Controller
                     $generalSetting = GeneralSetting::where('is_active', '=', 1)->orderBy('id', 'ASC')->get();
                     if($generalSetting){
                         foreach($generalSetting as $setting){
-                            $apiResponse = [
+                            $apiResponse[] = [
                                 'id'             => $setting->id,
                                 'key'            => $setting->key,
                                 'value'          => $setting->value
