@@ -144,6 +144,7 @@ class ApiController extends Controller
                             $app_access_token   = $objOfJwt->GenerateToken($checkUser->id, $checkUser->email, $checkUser->phone);
                             $user_id            = $checkUser->id;
                             $fields             = [
+                                'branch_id'             => $checkUser->branch_id,
                                 'user_id'               => $user_id,
                                 'device_type'           => $device_type,
                                 'device_token'          => $device_token,
@@ -170,7 +171,6 @@ class ApiController extends Controller
                                 'fcm_token'             => $fcm_token,
                                 'app_access_token'      => $app_access_token,
                             ];
-                            // Helper::pr($apiResponse);
                             /* user activity */
                                 $activityData = [
                                     'user_email'        => $checkUser->email,
