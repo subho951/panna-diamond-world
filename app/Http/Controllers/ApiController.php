@@ -170,6 +170,7 @@ class ApiController extends Controller
                                 'fcm_token'             => $fcm_token,
                                 'app_access_token'      => $app_access_token,
                             ];
+                            Helper::pr($apiResponse);
                             /* user activity */
                                 $activityData = [
                                     'user_email'        => $checkUser->email,
