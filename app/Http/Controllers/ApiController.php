@@ -150,7 +150,7 @@ class ApiController extends Controller
                                 'fcm_token'             => $fcm_token,
                                 'app_access_token'      => $app_access_token,
                             ];
-                            $checkUserTokenExist            = UserDevice::where('user_id', '=', $user_id)->where('published', '=', 1)->where('device_type', '=', $device_type)->where('device_token', '=', $device_token)->first();
+                            $checkUserTokenExist            = UserDevice::where('user_id', '=', $user_id)->where('status', '=', 1)->where('device_type', '=', $device_type)->where('device_token', '=', $device_token)->first();
                             if(!$checkUserTokenExist){
                                 UserDevice::insert($fields);
                             } else {
@@ -170,7 +170,7 @@ class ApiController extends Controller
                                 'fcm_token'             => $fcm_token,
                                 'app_access_token'      => $app_access_token,
                             ];
-                            Helper::pr($apiResponse);
+                            // Helper::pr($apiResponse);
                             /* user activity */
                                 $activityData = [
                                     'user_email'        => $checkUser->email,
