@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Models\Branch;
 use App\Models\BranchLead;
+use App\Models\EmailLog;
 use App\Models\GeneralSetting;
 use App\Models\Page;
 use App\Models\User;
@@ -239,6 +240,266 @@ class ApiController extends Controller
                 $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
             }
         /* signin with email */
+        /* signin with mobile */
+            public function signinWithMobile(Request $request)
+            {
+                $apiStatus          = TRUE;
+                $apiMessage         = '';
+                $apiResponse        = [];
+                $apiExtraField      = '';
+                $apiExtraData       = '';
+                $requestData        = $request->all();
+                $requiredFields     = ['phone'];
+                $headerData         = $request->header();
+                if (!$this->validateArray($requiredFields, $requestData)){
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'All Data Are Not Present !!!';
+                }
+                if($headerData['key'][0] == env('PROJECT_KEY')){
+                    $phone                      = $requestData['phone'];
+                    $checkUser                  = User::where('phone', '=', $phone)->where('status', '=', 1)->first();
+                    if($checkUser){
+                        $remember_token  = rand(100000,999999);
+                        User::where('id', '=', $checkUser->id)->update(['otp' => $remember_token]);
+                        $mailData                   = [
+                            'id'    => $checkUser->id,
+                            'email' => $checkUser->email,
+                            'phone' => $checkUser->phone,
+                            'otp'   => $remember_token,
+                        ];
+                        $generalSetting             = GeneralSetting::find('1');
+                        $subject                    = Helper::getSettingValue('site_name').' :: SignIn Validate OTP';
+                        echo $message                    = view('mails.otp',$mailData);die;
+                        $this->sendMail($checkUser->email, $subject, $message);
+
+                        /* email log save */
+                            $postData2 = [
+                                'name'                  => $checkUser->first_name.' '.$checkUser->last_name,
+                                'email'                 => $checkUser->email,
+                                'subject'               => $subject,
+                                'message'               => $message
+                            ];
+                            EmailLog::insert($postData2);
+                        /* email log save */
+                        /* send sms */
+                            // $name       = $checkUser->name;
+                            // $message    = "Dear ".$name.", ".$remember_token." is your verification OTP for ProTime Manager at KEYLINE. Do not share this OTP with anyone for security reasons.";
+                            // $mobileNo   = (($checkUser)?$checkUser->phone:'');
+                            // $this->sendSMS($mobileNo,$message);
+                        /* send sms */
+                        $apiResponse                        = $mailData;
+                        
+                        http_response_code(200);
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
+                        $apiStatus          = TRUE;
+                        $apiMessage         = 'OTP Sent To Email & Phone Validation !!!';
+                    } else {
+                        /* user activity */
+                            $activityData = [
+                                'user_email'        => $requestData['phone'],
+                                'user_name'         => '',
+                                'user_type'         => 'TELECALLER',
+                                'ip_address'        => $request->ip(),
+                                'activity_type'     => 0,
+                                'activity_details'  => 'We Don\'t Recognize You !!!',
+                                'platform_type'     => 'ANDROID',
+                            ];
+                            UserActivity::insert($activityData);
+                        /* user activity */
+                        
+                        http_response_code(200);
+                        $apiStatus          = FALSE;
+                        $apiMessage         = 'We Don\'t Recognize You !!!';
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
+                    }
+                } else {
+                    http_response_code(400);
+                    $apiStatus          = FALSE;
+                    $apiMessage         = $this->getResponseCode(http_response_code());
+                    $apiExtraField      = 'response_code';
+                    $apiExtraData       = http_response_code();
+                }
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
+            }
+        /* signin with mobile */
+        /* signin validate mobile */
+            public function signinValidateMobile(Request $request)
+            {
+                $apiStatus          = TRUE;
+                $apiMessage         = '';
+                $apiResponse        = [];
+                $apiExtraField      = '';
+                $apiExtraData       = '';
+                $requestData        = $request->all();
+                $requiredFields     = ['phone', 'otp', 'device_token'];
+                $headerData         = $request->header();
+                if (!$this->validateArray($requiredFields, $requestData)){
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'All Data Are Not Present !!!';
+                }
+                if($headerData['key'][0] == env('PROJECT_KEY')){
+                    $phone                      = $requestData['phone'];
+                    $otp                        = $requestData['otp'];
+                    $device_type                = $headerData['source'][0];
+                    $device_token               = $requestData['device_token'];
+                    $fcm_token                  = $requestData['fcm_token'];
+                    $checkUser                  = User::where('phone', '=', $phone)->where('status', '=', 1)->first();
+                    if($checkUser){
+                        if($checkUser->otp == $otp){
+                            $objOfJwt               = new CreatorJwt();
+                            $app_access_token       = $objOfJwt->GenerateToken($checkUser->id, $checkUser->email, $checkUser->phone);
+                            $user_id                = $checkUser->id;
+                            User::where('id', '=', $user_id)->update(['otp' => 0]);
+                            $fields     = [
+                                'user_id'               => $user_id,
+                                'device_type'           => $device_type,
+                                'device_token'          => $device_token,
+                                'fcm_token'             => $fcm_token,
+                                'app_access_token'      => $app_access_token,
+                            ];
+                            $checkUserTokenExist            = UserDevice::where('user_id', '=', $user_id)->where('status', '=', 1)->where('device_type', '=', $device_type)->where('device_token', '=', $device_token)->first();
+                            if(!$checkUserTokenExist){
+                                UserDevice::insert($fields);
+                            } else {
+                                UserDevice::where('id','=',$checkUserTokenExist->id)->update($fields);
+                            }
+                            $getEmployeeType        = EmployeeType::select('name')->where('id', '=', $checkUser->employee_type_id)->first();
+                            $apiResponse            = [
+                                'user_id'               => $user_id,
+                                'name'                  => $checkUser->name,
+                                'email'                 => $checkUser->email,
+                                'phone'                 => $checkUser->phone,
+                                'employee_type_name'    => (($getEmployeeType)?$getEmployeeType->name:''),
+                                'employee_type_id'      => $checkUser->employee_type_id,
+                                'device_type'           => $device_type,
+                                'device_token'          => $device_token,
+                                'fcm_token'             => $fcm_token,
+                                'app_access_token'      => $app_access_token,
+                            ];
+                            /* user activity */
+                                $activityData = [
+                                    'user_email'        => $checkUser->email,
+                                    'user_name'         => $checkUser->name,
+                                    'user_type'         => 'USER',
+                                    'ip_address'        => $request->ip(),
+                                    'activity_type'     => 1,
+                                    'activity_details'  => 'SignIn Successfully !!!',
+                                    'platform_type'     => 'ANDROID',
+                                ];
+                                UserActivity::insert($activityData);
+                            /* user activity */
+                            $apiStatus                          = TRUE;
+                            $apiMessage                         = 'SignIn Successfully !!!';
+                        } else {
+                            /* user activity */
+                                $activityData = [
+                                    'user_email'        => $checkUser->email,
+                                    'user_name'         => $checkUser->name,
+                                    'user_type'         => 'USER',
+                                    'ip_address'        => $request->ip(),
+                                    'activity_type'     => 0,
+                                    'activity_details'  => 'OTP Mismatched !!!',
+                                    'platform_type'     => 'ANDROID',
+                                ];
+                                UserActivity::insert($activityData);
+                            /* user activity */
+                            $apiStatus          = FALSE;
+                            http_response_code(200);
+                            $apiMessage         = 'OTP Mismatched !!!';
+                            $apiExtraField      = 'response_code';
+                        }
+                    } else {
+                        /* user activity */
+                            $activityData = [
+                                'user_email'        => $requestData['phone'],
+                                'user_name'         => '',
+                                'user_type'         => 'USER',
+                                'ip_address'        => $request->ip(),
+                                'activity_type'     => 0,
+                                'activity_details'  => 'We Don\'t Recognize You !!!',
+                                'platform_type'     => 'ANDROID',
+                            ];
+                            UserActivity::insert($activityData);
+                        /* user activity */
+                        $apiStatus                              = FALSE;
+                        $apiMessage                             = 'We Don\'t Recognize You !!!';
+                    }
+                } else {
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'Unauthenticate Request !!!';
+                }
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
+            }
+        /* signin validate mobile */
+        /* resend otp */
+            public function resendOtp(Request $request){
+                $apiStatus          = TRUE;
+                $apiMessage         = '';
+                $apiResponse        = [];
+                $apiExtraField      = '';
+                $apiExtraData       = '';
+                $requestData        = $request->all();
+                $requiredFields     = ['key', 'source', 'id'];
+                $headerData         = $request->header();
+                if (!$this->validateArray($requiredFields, $requestData)){
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'All Data Are Not Present !!!';
+                }
+                if($headerData['key'][0] == env('PROJECT_KEY')){
+                    $id         = $requestData['id'];
+                    $getUser    = User::where('id', '=', $id)->first();
+                    if($getUser){
+                        $remember_token = rand(1000,9999);
+                        $postData = [
+                            'otp'        => $remember_token
+                        ];
+                        User::where('id', '=', $id)->update($postData);
+                        
+                        $mailData                   = [
+                            'id'    => $getUser->id,
+                            'email' => $getUser->email,
+                            'otp'   => $remember_token,
+                        ];
+                        $generalSetting             = GeneralSetting::find('1');
+                        $subject                    = Helper::getSettingValue('site_name').' :: Resend OTP';
+                        $message                    = view('email-templates.otp',$mailData);
+                        $this->sendMail($getUser->email, $subject, $message);
+
+                        /* email log save */
+                            $postData2 = [
+                                'name'                  => $getUser->name,
+                                'email'                 => $getUser->email,
+                                'subject'               => $subject,
+                                'message'               => $message
+                            ];
+                            EmailLog::insert($postData2);
+                        /* email log save */
+
+                        $apiResponse                        = $mailData;
+                        $apiStatus                          = TRUE;
+                        http_response_code(200);
+                        $apiMessage                         = 'OTP Resend !!!';
+                        $apiExtraField                      = 'response_code';
+                        $apiExtraData                       = http_response_code();
+                    } else {
+                        $apiStatus          = FALSE;
+                        http_response_code(200);
+                        $apiMessage         = 'Teacher Not Found !!!';
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
+                    }
+                } else {
+                    http_response_code(200);
+                    $apiStatus          = FALSE;
+                    $apiMessage         = $this->getResponseCode(http_response_code());
+                    $apiExtraField      = 'response_code';
+                    $apiExtraData       = http_response_code();
+                }
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
+            }
+        /* resend otp */
     /* authentication */
     /* after login screen */
         /* signout */
@@ -296,7 +557,7 @@ class ApiController extends Controller
                     $apiExtraField      = 'response_code';
                     $apiExtraData       = http_response_code();
                 }
-                $this->response_to_json($apiStatus, $apiMessage, $apiResponse);
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
             }
         /* signout */
     /* after login screen */

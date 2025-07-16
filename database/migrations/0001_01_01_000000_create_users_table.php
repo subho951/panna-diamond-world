@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('phone', 15)->unique();
             $table->string('profile_image')->nullable();
             $table->string('password');
+            $table->integer('otp')->default(0);
             $table->tinyInteger('status')->default(1);//[0->inactive, 2->signup completed, 3->setup completed , 1->verified]
             $table->integer('created_by')->default(1);
             $table->integer('updated_by')->default(1);
