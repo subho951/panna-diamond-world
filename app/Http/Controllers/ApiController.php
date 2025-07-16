@@ -277,15 +277,24 @@ class ApiController extends Controller
                         /* user activity */
                         UserDevice::where('app_access_token', '=', $app_access_token)->delete();
                         
-                        $apiStatus                      = TRUE;
-                        $apiMessage                     = 'Signout Successfully !!!';
+                        http_response_code(200);
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
+                        $apiStatus          = TRUE;
+                        $apiMessage         = 'Signout Successfully !!!';
                     } else {
-                        $apiStatus                      = FALSE;
-                        $apiMessage                     = 'Something Went Wrong !!!';
+                        http_response_code(200);
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
+                        $apiStatus          = FALSE;
+                        $apiMessage         = 'Something Went Wrong !!!';
                     }               
                 } else {
+                    http_response_code(400);
                     $apiStatus          = FALSE;
-                    $apiMessage         = 'Unauthenticate Request !!!';
+                    $apiMessage         = $this->getResponseCode(http_response_code());
+                    $apiExtraField      = 'response_code';
+                    $apiExtraData       = http_response_code();
                 }
                 $this->response_to_json($apiStatus, $apiMessage, $apiResponse);
             }
