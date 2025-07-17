@@ -815,7 +815,7 @@ class ApiController extends Controller
                                 'branch_name'           => (($getBranch)?$getBranch->name:''),
                                 'branch_id'             => $getUser->branch_id,
                                 'created_at'            => date_format(date_create($getUser->created_at), "M d, Y h:i A"),
-                                'profile_image'         => (($getUser->profile_image != '')?env('UPLOADS_URL').'user/'.$getUser->profile_image:env('NO_USER_IMAGE')),
+                                'profile_image'         => (($getUser->profile_image != '')?env('UPLOADS_URL').'user/'.$getUser->profile_image:env('NO_IMAGE_AVATAR')),
                             ];
                             
                             $apiStatus          = TRUE;
