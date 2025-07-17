@@ -837,7 +837,94 @@ class ApiController extends Controller
             }
         /* get profile */
         /* upload profile image */
-            
+            public function uploadProfileImage(Request $request)
+            {
+                $apiStatus          = TRUE;
+                $apiMessage         = '';
+                $apiResponse        = [];
+                $apiExtraField      = '';
+                $apiExtraData       = '';
+                $requestData        = $request->all();
+                $requiredFields     = ['profile_image'];
+                $headerData         = $request->header();
+                if (!$this->validateArray($requiredFields, $requestData)){
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'All Data Are Not Present !!!';
+                }
+                if($headerData['key'][0] == env('PROJECT_KEY')){
+                    $app_access_token           = $headerData['authorization'][0];
+                    $checkUserTokenExist        = UserDevice::where('app_access_token', '=', $app_access_token)->where('status', '=', 1)->first();
+                    if($checkUserTokenExist){
+                        $getTokenValue              = $this->tokenAuth($app_access_token);
+                        $uId                        = $getTokenValue['data'][1];
+                        $getUser    = User::where('id', '=', $uId)->first();
+                        if($getUser){
+                            $profile_image  = $requestData['profile_image'];
+                            if(!empty($profile_image)){
+                                $profile_image      = $profile_image;
+                                $upload_type        = $profile_image[0]['type'];
+                                if($upload_type == 'image/jpeg' || $upload_type == 'image/jpg' || $upload_type == 'image/png' || $upload_type == 'image/gif'){
+                                    $upload_base64      = $profile_image[0]['base64'];
+                                    $img                = $upload_base64;
+                                    $proof_type         = $profile_image[0]['type'];
+                                    if($proof_type == 'image/png'){
+                                        $extn = 'png';
+                                    } elseif($proof_type == 'image/jpg'){
+                                        $extn = 'jpg';
+                                    } elseif($proof_type == 'image/jpeg'){
+                                        $extn = 'jpeg';
+                                    } elseif($proof_type == 'image/gif'){
+                                        $extn = 'gif';
+                                    } else {
+                                        $extn = 'png';
+                                    }
+                                    $data               = base64_decode($img);
+                                    $fileName           = uniqid() . '.' . $extn;
+                                    $file               = 'public/uploads/user/' . $fileName;
+                                    $success            = file_put_contents($file, $data);
+                                    $profile_image      = $fileName;
+                                } else {
+                                    $apiStatus          = FALSE;
+                                    http_response_code(404);
+                                    $apiMessage         = 'Please Upload Image !!!';
+                                    $apiExtraField      = 'response_code';
+                                    $apiExtraData       = http_response_code();
+                                }
+                            } else {
+                                $profile_image = $getUser->profile_image;
+                            }
+                            $postData = [
+                                            'profile_image'         => $profile_image
+                                        ];
+                            User::where('id', '=', $uId)->update($postData);
+                            $apiStatus                  = TRUE;
+                            $apiMessage                 = 'Profile Image Uploaded Successfully !!!';
+                            http_response_code(200);
+                            $apiExtraField      = 'response_code';
+                            $apiExtraData       = http_response_code();
+                        } else {
+                            $apiStatus          = FALSE;
+                            http_response_code(200);
+                            $apiMessage         = 'User Not Found !!!';
+                            $apiExtraField      = 'response_code';
+                            $apiExtraData       = http_response_code();
+                        }
+                    } else {
+                        $apiStatus          = FALSE;
+                        $apiMessage         = 'Something Went Wrong !!!';
+                        http_response_code(200);
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
+                    }                                               
+                } else {
+                    http_response_code(200);
+                    $apiStatus          = FALSE;
+                    $apiMessage         = $this->getResponseCode(http_response_code());
+                    $apiExtraField      = 'response_code';
+                    $apiExtraData       = http_response_code();
+                }
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
+            }
         /* upload profile image */
         /* change password */
             public function changePassword(Request $request)
