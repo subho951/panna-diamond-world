@@ -863,59 +863,86 @@ class ApiController extends Controller
                     if($getTokenValue['status']){
                         $uId        = $getTokenValue['data'][1];
                         $expiry     = date('d/m/Y H:i:s', $getTokenValue['data'][4]);
-                        $getUser    = User::where('id', '=', $uId)->first();
-                        if($getUser){
-                            if(Hash::check($old_password, $getUser->password)){
+                        $checkUser    = User::where('id', '=', $uId)->first();
+                        if($checkUser){
+                            if(Hash::check($old_password, $checkUser->password)){
                                 if($new_password == $confirm_password){
                                     if($new_password != $old_password){
                                         $fields = [
                                             'password'                  => Hash::make($new_password)
                                         ];
-                                        Employees::where('id', '=', $uId)->update($fields);
-                                        // new password send mail
-                                            $generalSetting                 = GeneralSetting::find('1');
-                                            $subject                        = $generalSetting->site_name.' Change Password';
-                                            $mailData['name']               = $getUser->name;
-                                            $mailData['email']              = $getUser->email;
-                                            $message                        = view('email-templates/change-password', $mailData);
-                                            $this->sendMail($getUser->email, $subject, $message);
-                                        // new password send mail
+                                        User::where('id', '=', $uId)->update($fields);
+                                        $mailData                   = [
+                                            'id'        => $checkUser->id,
+                                            'name'      => $checkUser->first_name.' '.$checkUser->last_name,
+                                            'email'     => $checkUser->email,
+                                            'phone'     => $checkUser->phone,
+                                            'logo'      => url('/public/') . '/' . Helper::getSettingValue('site_logo'),
+                                            'site_name' => Helper::getSettingValue('site_name'),
+                                        ];
+                                        
+                                        $subject                    = Helper::getSettingValue('site_name').' :: Reset Password';
+                                        $message                    = view('mails.reset-password',$mailData);
+                                        $this->siteAuthService->sendMail($checkUser->email, $subject, $message);
+
                                         /* email log save */
                                             $postData2 = [
-                                                'name'                  => $getUser->name,
-                                                'email'                 => $getUser->email,
+                                                'name'                  => $checkUser->first_name.' '.$checkUser->last_name,
+                                                'email'                 => $checkUser->email,
                                                 'subject'               => $subject,
                                                 'message'               => $message
                                             ];
                                             EmailLog::insert($postData2);
                                         /* email log save */
+
                                         $apiStatus          = TRUE;
+                                        http_response_code(200);
                                         $apiMessage         = 'Password Updated Successfully !!!';
+                                        $apiExtraField      = 'response_code';
+                                        $apiExtraData       = http_response_code();
                                     } else {
                                         $apiStatus          = FALSE;
+                                        http_response_code(200);
                                         $apiMessage         = 'Current & New Password Should Not Be Same !!!';
+                                        $apiExtraField      = 'response_code';
+                                        $apiExtraData       = http_response_code();
                                     }
                                 } else {
                                     $apiStatus          = FALSE;
+                                    http_response_code(200);
                                     $apiMessage         = 'New & Confirm Password Doesn\'t Matched !!!';
+                                    $apiExtraField      = 'response_code';
+                                    $apiExtraData       = http_response_code();
                                 }
                             } else {
                                 $apiStatus          = FALSE;
+                                http_response_code(200);
                                 $apiMessage         = 'Current Password Doesn\'t Matched !!!';
+                                $apiExtraField      = 'response_code';
+                                $apiExtraData       = http_response_code();
                             }
                         } else {
                             $apiStatus          = FALSE;
+                            http_response_code(200);
                             $apiMessage         = 'User Not Found !!!';
+                            $apiExtraField      = 'response_code';
+                            $apiExtraData       = http_response_code();
                         }
                     } else {
                         $apiStatus                      = FALSE;
                         $apiMessage                     = $getTokenValue['data'];
+                        http_response_code(200);
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
                     }                                               
                 } else {
+                    http_response_code(200);
                     $apiStatus          = FALSE;
-                    $apiMessage         = 'Unauthenticate Request !!!';
+                    $apiMessage         = $this->getResponseCode(http_response_code());
+                    $apiExtraField      = 'response_code';
+                    $apiExtraData       = http_response_code();
                 }
-                $this->response_to_json($apiStatus, $apiMessage, $apiResponse);
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
             }
         /* change password */
     /* after login screen */
