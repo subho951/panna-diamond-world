@@ -76,6 +76,7 @@ class AdminUserController extends Controller
                         'email'                 => strip_tags($postData['email']),
                         'country_code'          => strip_tags($postData['country_code']),
                         'phone'                 => strip_tags($postData['phone']),
+                        
                         'password'              => Hash::make(strip_tags($postData['password'])),
                         'status'                => ((array_key_exists("status",$postData))?1:0),
                     ];

@@ -128,7 +128,7 @@ class UploadLeadController extends Controller
                                 $csvCell = [];
                                 $csvCell = [
                                     "header_id" => $header_id,
-                                    "header_value" => strip_tags(isset($value[$i]) ? $value[$i] : ''),
+                                    "header_value" => strip_tags(isset($value[$i]) ? $value[$i] : 'N/A'),
                                     "upload_id"  => $lastInsertId,
                                     "sl_no" => $sl_no,
                                     "lead_no" => $lead_no
@@ -151,8 +151,8 @@ class UploadLeadController extends Controller
                             } else {
 
                                 $deleteLead = UploadLead::find($lastInsertId);
-                                $deleteLead->status = 3;
-                                $deleteLead->delete();
+                                unlink(public_path('uploads/lead/'.$deleteLead->filename));
+                                $deleteLead->forceDelete();
                                 return redirect()->back()->with('error_message', 'Please Maintain Proper CSV Format !!!');
                             }    
                         }
@@ -229,7 +229,7 @@ class UploadLeadController extends Controller
 
 
     /* list upload leads */
-    public function upload()
+    public function list()
     {
         $data['module']                 = $this->data;
         $title                          = 'Upload' . ' ' . $this->data['title'];
