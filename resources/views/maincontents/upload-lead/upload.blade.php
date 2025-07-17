@@ -83,7 +83,7 @@ $controllerRoute = $module['controller_route'];
                                 <div class="col-md-6 mb-3">
                                     <label for="lead_file" class="form-label">Lead File <small class="text-danger">*</small>
                                         <small class="text-danger">(Only csv file are allowed to upload)</small>
-                                        <a href="sample-lead-file.csv" class="text-primary" target="_blank">Sample File</a>
+                                        <a href="<?= url('public/uploads/sample-lead-file.csv') ?>" class="text-primary" target="_blank">Sample File</a>
                                     </label>
                                     <input class="form-control" type="file" id="lead_file" name="lead_file" accept=".csv" required />
                                 </div>
@@ -120,14 +120,27 @@ $controllerRoute = $module['controller_route'];
                                     {{-- @dd($leadListArr); --}}
                                     
                                     @foreach($leadListArr as $leadRow)
-                                    <tr> 
+                                    <tr>
+
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $leadRow->branch_name }}</td>
-                                        <td>{{ $leadRow->telecaller_name_str }}</td>
+
+                                        <td>
+                                            @foreach($leadRow->telecaller_name_arr as $telecaller_name)
+                                            {{ $telecaller_name }}<br>
+                                            @endforeach
+                                        </td>
+
                                         <td>{{ $leadRow->title }}</td>
                                         <td>{{ $leadRow->campaign_type_name }}</td>
                                         <td>{{ $leadRow->campaign_name }}</td>
-                                        <td>{{ $leadRow->filename }}</td>
+
+                                        <td>
+                                            <a href="<?= url($controllerRoute . '/csv-download/' . $leadRow->encodedId) ?>" class="btn btn-sm btn-primary mb-1" title="Download CSV">
+                                                <i class="fa-solid fa-file-csv"></i> 
+                                            </a>
+                                        </td>
+
                                         <td>{{ $leadRow->total_upload }}</td>
                                         <td>{{ $leadRow->success_upload }}</td>
                                         <td>{{ $leadRow->failed_upload }}</td>
@@ -139,7 +152,7 @@ $controllerRoute = $module['controller_route'];
                                              <i class="fa-solid fa-trash"></i>
                                             </a>
                                        </td>
-                                                                               
+
                                     </tr>
                                     @endforeach
                                 </tbody>

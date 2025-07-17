@@ -19,7 +19,6 @@ use App\Models\BranchLead;
 use App\Services\SiteAuthService;
 use App\Helpers\Helper;
 
-
 use Auth;
 use Session;
 use Hash;
@@ -41,7 +40,7 @@ class UploadLeadController extends Controller
         );
     }
 
-    /* add uploaded leads */
+    /* add upload leads */
     public function add(Request $request)
     {
         if ($request->isMethod('post')) {
@@ -150,6 +149,10 @@ class UploadLeadController extends Controller
                                 
                                 
                             } else {
+
+                                $deleteLead = UploadLead::find($lastInsertId);
+                                $deleteLead->status = 3;
+                                $deleteLead->delete();
                                 return redirect()->back()->with('error_message', 'Please Maintain Proper CSV Format !!!');
                             }    
                         }
@@ -222,10 +225,10 @@ class UploadLeadController extends Controller
         }
         
     }
-    /* add uploaded leads */
+    /* add upload leads */
 
 
-    /* list uploaded leads */
+    /* list upload leads */
     public function upload()
     {
         $data['module']                 = $this->data;
@@ -250,7 +253,7 @@ class UploadLeadController extends Controller
             {
                 $telecallerNameArr[] = User::where('id', '=', $telecaller_id)->first()->first_name . ' ' . User::where('id', '=', $telecaller_id)->first()->last_name;
             }
-            $leadRow['telecaller_name_str'] = implode("<br>", $telecallerNameArr) ?? 'N/A';
+            $leadRow['telecaller_name_arr'] = $telecallerNameArr ?? 'N/A';
 
             $leadRow['encodedId'] = Helper::encoded($leadRow->id) ;
             
@@ -262,10 +265,51 @@ class UploadLeadController extends Controller
         $data                           = $this->siteAuthService->admin_after_login_layout($title, $page_name, $data);
         return view('maincontents.' . $page_name, $data)->with(["leadListArr" => $leadListArr]);
     }
-    /* list uploaded leads */
- 
-    
-    /* delete uploaded leads */
+    /* list upload leads */
+
+
+    /* download uploaded csv */
+    public function csvDownload(Request $request, $id)
+    {
+        $id = Helper::decoded($id);
+        
+        try {
+            $lead = UploadLead::find($id);
+            
+            if (!$lead) {
+                return redirect()->back()->with('error_message', 'Lead not found');
+            }
+
+            $filePath = public_path('uploads/lead/' . $lead->filename);
+            
+            if (!file_exists($filePath)) {
+                return redirect()->back()->with('error_message', 'File not found');
+            }
+
+            /* user activity */
+            $activityData = [
+                'user_email'        => session('user_data')['email'],
+                'user_name'         => session('user_data')['name'],
+                'user_type'         => 'ADMIN',
+                'ip_address'        => $request->ip(),
+                'activity_type'     => 3,
+                'activity_details'  => $lead->title . ' ' . $this->data['title'] . ' Downloaded',
+                'platform_type'     => 'WEB',
+            ];
+            UserActivity::insert($activityData);
+            /* user activity */
+
+            return response()->download($filePath);
+            
+            
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error_message', 'Error downloading file');
+        }
+    }
+    /* download uploaded csv */
+
+
+    /* delete upload leads */
     public function delete(Request $request, $id)
     {
         $id = Helper::decoded($id);
@@ -279,7 +323,7 @@ class UploadLeadController extends Controller
         MasterLead::where('upload_id', '=', $id)->update($fields);
         BranchLead::where('upload_id', '=', $id)->update($fields);
 
-         /* user activity */
+        /* user activity */
          $activityData = [
             'user_email'        => session('user_data')['email'],
             'user_name'         => session('user_data')['name'],
@@ -293,7 +337,7 @@ class UploadLeadController extends Controller
         /* user activity */
         return redirect($this->data['controller_route'])->with('success_message', $uploadLead->title . ' ' .$this->data['title'].' Deleted Successfully !!!');
     }
-    /* delete uploaded leads */
+    /* delete upload leads */
 
 
     /* ajax requests */
