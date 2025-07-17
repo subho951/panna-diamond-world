@@ -9,7 +9,7 @@ $controllerRoute = $module['controller_route'];
             width: 100% !important;
         }
     </style>
-    <div class="container-xxl flex-grow-1 container-p-y">
+    <div class="container-fluid flex-grow-1 container-p-y">
         <div class="row g-6">
             <h4><?= $page_header ?></h4>
             <h6 class="breadcrumb-wrapper">
@@ -38,7 +38,7 @@ $controllerRoute = $module['controller_route'];
                         <form id="formAccountSettings" action="" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
-                                <div class="col-md-3 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label for="branch_id" class="form-label">Branch <small class="text-danger">*</small></label>
                                     <select id="branch_id" class="select2 form-select" data-allow-clear="true" name="branch_id" autofocus required>
                                         <option value="" selected disabled>Select Branch</option>
@@ -47,15 +47,17 @@ $controllerRoute = $module['controller_route'];
                                         <?php } }?>
                                     </select>
                                 </div>
-                                <div class="col-md-3 mb-3">
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="lead_title" class="form-label">Lead Title <small class="text-danger">*</small></label>
+                                    <input class="form-control" type="text" id="lead_title" name="lead_title" required placeholder="Lead Title" />
+                                </div>
+
+                                <div class="col-md-12 mb-3">
                                     <label for="telecaller_id" class="form-label">Telecaller <small class="text-danger">*</small></label>
                                     <select class="select2 form-select" id="telecaller_id" name="telecaller_id[]" required multiple>
                                         
                                     </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="lead_title" class="form-label">Lead Title <small class="text-danger">*</small></label>
-                                    <input class="form-control" type="text" id="lead_title" name="lead_title" required placeholder="Lead Title" />
                                 </div>
 
                                 <div class="col-md-6 mb-3">
@@ -86,9 +88,9 @@ $controllerRoute = $module['controller_route'];
                                     <input class="form-control" type="file" id="lead_file" name="lead_file" accept=".csv" required />
                                 </div>
                             </div>
-                            <div class="mt-2">
-                                <button type="submit" class="btn btn-primary btn-sm me-2">Save Changes</button>
-                                <a href="<?= url($controllerRoute . '/list/') ?>" class="btn btn-label-secondary btn-sm">Cancel</a>
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>
+                                <a href="<?= url($controllerRoute . '/list/') ?>" class="btn btn-outline-danger btn-sm">Cancel</a>
                             </div>
                         </form>
                     </div>
@@ -96,36 +98,38 @@ $controllerRoute = $module['controller_route'];
 
                 <div class="card mb-4">
                     <div class="card-body">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Branch</th>
-                                    <th>Telecallers</th>
-                                    <th>Lead Title</th>
-                                    <th>Campaign Type</th>
-                                    <th>Campaign</th>
-                                    <th>Lead Date</th>
-                                    <th>Lead File</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Branch</th>
+                                        <th>Telecallers</th>
+                                        <th>Lead Title</th>
+                                        <th>Campaign Type</th>
+                                        <th>Campaign</th>
+                                        <th>Lead Date</th>
+                                        <th>Lead File</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
 
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
 
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

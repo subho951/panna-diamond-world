@@ -191,3 +191,4 @@ Route::middleware(['auth'])->group(function () {
         Route::get('lead-list', [LeadListController::class, 'list']);
     /* Lead List */
 });
+

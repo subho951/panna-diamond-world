@@ -2,7 +2,9 @@
 * demo.css
 * File include item demo only specific css only
 ******************************************************************************/
-
+h4{
+  margin-bottom: 0;
+}
 .light-style .menu .app-brand.demo {
   height: 64px;
 }
@@ -32,6 +34,10 @@
 }
 
 /* ! For .layout-navbar-fixed added fix padding top tpo .layout-page */
+.layout-page{
+  background: url(../img/diamond-bg-1.jpg);
+  background-size: contain;
+}
 .layout-navbar-fixed .layout-wrapper:not(.layout-without-menu) .layout-page {
   padding-top: 64px !important;
 }
@@ -143,16 +149,37 @@
   margin-bottom: 0 !important;
 }
 
+.bg-menu-theme .menu-sub > .menu-item > .menu-link:before{
+  content: "\f061";
+  font-family: "Font Awesome 6 Free";
+  position: absolute;
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+.menu-vertical .menu-sub .menu-link {
+  padding-left: 2.2rem;
+}
+.bg-menu-theme.menu-vertical .menu-sub > .menu-item > .menu-link:before{
+  top: 31%;
+}
+
 /* table design css */
+#table1{
+  overflow: auto;
+  width: 100%;
+}
 table thead th{
   background: #040707 !important;
   border-bottom: 1px solid #fff;
   color: #fff !important;
 }
+.table thead tr th {
+  padding-block: 0.5rem;
+}
 table tbody td{
-  padding: 8px 10px !important;
   border: none;
   transition: all .3s ease-in-out;
+  padding: 2px 8px !important;
 }
 table tbody tr,
 table.table-striped tbody tr,
@@ -172,12 +199,12 @@ table.table-striped tbody tr:hover th{
   color: #000 !important
 }
 table thead th:first-child{
-  border-top-left-radius: 10px !important;
-  border-bottom-left-radius: 10px !important;
+  border-top-left-radius: 5px !important;
+  border-bottom-left-radius: 5px !important;
 }
 table thead th:last-child{
-  border-top-right-radius: 10px !important;
-  border-bottom-right-radius: 10px !important;
+  border-top-right-radius: 5px !important;
+  border-bottom-right-radius: 5px !important;
 }
 table.table-striped tbody tr{
   border-top-left-radius: 5px !important;
@@ -195,4 +222,122 @@ table.table-striped tbody td:last-child{
   background-color: #79a1c92b !important;
   border: 1px solid #123456;
   color: #123456;
+}
+
+
+/* form design css */
+.form-control:focus, .form-select:focus,
+.form-check-input:checked{
+  box-shadow: 0 6px 15px -8px rgb(0 0 0 / 30%) !important;
+  border-color: #040707 !important;
+}
+.input-group:focus-within{
+  box-shadow: 0 6px 15px -8px rgb(0 0 0 / 30%) !important;
+}
+.form-check-input:checked{
+  background-color: #040707 !important;
+}
+
+
+
+/* btn design */
+.btn-sm{
+  padding: 5px 7px !important;
+}
+.btn-sm i{
+  font-size: 10px;
+}
+.btn-outline-dark{
+  background-color: #040707 !important;
+  border-color: #040707 !important;
+  color: #fff !important;
+
+  position: relative;
+      cursor: pointer;
+      border: none;
+      color: #000;
+      background: transparent;
+      overflow: hidden;
+      border-radius: 5px;
+}
+/* .btn-outline-dark::after {
+      content: '';
+      background: linear-gradient(to right, #fdfc47, #24fe41);
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      transition: all 1.3s ease-in;
+      z-index: 0;
+    }
+.btn-text {
+      background: #fff;
+      padding: 1.25rem 6rem;
+      font-size: 15px;
+      position: relative;
+      z-index: 1;
+      display: block;
+      margin: 0.25rem 0;
+      border-radius: 5px;
+    }
+.btn-outline-dark:hover::after {
+      transform: rotate(180deg);
+      transition: all 1s ease-in-out;
+    } */
+
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: #040707 !important;
+  color: #fff !important;
+}
+.select2-container--default .select2-results__option--highlighted:not([aria-selected=true]){
+  background-color: #040707 !important;
+  color: #fff !important;
+}
+.select2-results__option.select2-results__option--highlighted{
+  background-color: #040707 !important;
+  color: #fff !important;
+}
+html:not([dir=rtl]) .select2-container--default .select2-selection--multiple .select2-selection__choice{
+  padding-right: 0.8rem !important;
+}
+.nav-pills .nav-link.active, .nav-pills .nav-link.active:hover, .nav-pills .nav-link.active:focus{
+  background-color: #040707 !important;
+  color: #fff !important;
+  box-shadow: 0 0.125rem 0.375rem 0 rgb(2 2 4 / 30%);
+}
+.nav-pills .nav-item .nav-link:not(.active):hover, .nav-pills .nav-item .nav-link:not(.active):focus{
+  background-color: #d3d3d3 !important;
+  color: #000 !important;
+}
+#leadEdit .input-group-text i{
+  font-size: 16px;
+}
+#leadEdit .input-group-text{
+  width: 43px;
+}
+
+@media(max-width: 767px) {
+  .main_heading {
+    line-height: 1;
+    font-size: 22px;
+  }
+  #search1{
+    padding: 5px 8px !important;
+    margin-top: 8px
+  }
+  .table thead tr th {
+    padding-block: 0.5rem;
+    font-size: 8px;
+  }
+  tbody tr td {
+    padding-block: 0.8rem;
+    font-size: 10px !important;
+  }
+}
+@media(max-width: 575px) {
+  .main_heading {
+    font-size: 18px;
+  }
 }

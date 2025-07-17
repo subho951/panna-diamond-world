@@ -5,10 +5,14 @@ use App\Helpers\Helper;
 @extends('layouts.main')
 @section('title', 'Dashboard')
 @section('content')
-<div class="container-xxl flex-grow-1 container-p-y">
+<div class="container-fluid flex-grow-1 container-p-y">
   <div class="row g-6">
-    <!-- Sales last year -->
-    <div class="col-xxl-2 col-md-4 col-sm-6">
+    <div class="col-lg-12">
+      <h3 class="mt-2 main_heading">Welcome to <?=Helper::getSettingValue('site_name')?> masteradmin panel</h2>
+    </div>
+
+    <!-- Average Daily Sales -->
+    <div class="col-xxl-2 col-xl-2 col-md-6 col-sm-6">
       <div class="card h-100">
         <div class="card-header pb-3">
           <h5 class="card-title mb-1">Order</h5>
@@ -24,8 +28,8 @@ use App\Helpers\Helper;
       </div>
     </div>
 
-    <!-- Sessions Last month -->
-    <div class="col-xxl-2 col-md-4 col-sm-6">
+    <!-- Average Daily Sales -->
+    <div class="col-xxl-2 col-xl-2 col-md-6 col-sm-6 mt-3 mt-sm-0">
       <div class="card h-100">
         <div class="card-header pb-0">
           <h5 class="card-title mb-1">Sales</h5>
@@ -41,61 +45,8 @@ use App\Helpers\Helper;
       </div>
     </div>
 
-    <!-- Total Profit -->
-    <div class="col-xxl-2 col-md-4 col-6">
-      <div class="card h-100">
-        <div class="card-body">
-          <div class="badge p-2 bg-label-danger mb-3 rounded">
-            <i class="ti ti-credit-card ti-28px"></i>
-          </div>
-          <h5 class="card-title mb-1">Total Profit</h5>
-          <p class="card-subtitle">Last week</p>
-          <p class="text-heading mb-3 mt-1">1.28k</p>
-          <div>
-            <span class="badge bg-label-danger">-12.2%</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Total Sales -->
-    <div class="col-xxl-2 col-md-5 col-6">
-      <div class="card h-100">
-        <div class="card-body">
-          <div class="badge p-2 bg-label-success mb-3 rounded">
-            <i class="ti ti-credit-card ti-28px"></i>
-          </div>
-          <h5 class="card-title mb-1">Total Sales</h5>
-          <p class="card-subtitle">Last week</p>
-          <p class="text-heading mb-3 mt-1">24.67k</p>
-          <div>
-            <span class="badge bg-label-success">+24.5%</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Revenue Growth -->
-    <div class="col-xxl-4 col-md-7">
-      <div class="card h-100">
-        <div class="card-body d-flex justify-content-between">
-          <div class="d-flex flex-column me-xl-7">
-            <div class="card-title mb-auto">
-              <h5 class="mb-2 text-nowrap">Revenue Growth</h5>
-              <p class="mb-0">Weekly Report</p>
-            </div>
-            <div class="chart-statistics">
-              <h3 class="card-title mb-1">$4,673</h3>
-              <span class="badge bg-label-success">+15.2%</span>
-            </div>
-          </div>
-          <div id="revenueGrowth"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Earning Reports Tabs-->
-    <div class="col-xl-8 col-12">
+    <!-- Projects table -->
+    {{-- <div class="col-xxl-8 col-xl-8 col-md-8 col-sm-8">
       <div class="card">
         <div class="card-header d-flex justify-content-between">
           <div class="card-title m-0">
@@ -207,7 +158,12 @@ use App\Helpers\Helper;
           </div>
         </div>
       </div>
-    </div>
+    </div> --}}
+    <!--/ Projects table -->
+  </div>
+</div>
+<!-- / Content -->
+ @endsection
 
     <!-- Sales last 6 months -->
     <div class="col-xl-4 col-md-6">

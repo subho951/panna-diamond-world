@@ -5,7 +5,7 @@ $controllerRoute = $module['controller_route'];
 ?>
 @extends('layouts.main')
 @section('content')
-<div class="container-xxl flex-grow-1 container-p-y">
+<div class="container-fluid flex-grow-1 container-p-y">
    <div class="row g-6">
       <h4><?=$page_header?></h4>
       <h6 class="breadcrumb-wrapper">
@@ -65,13 +65,13 @@ $controllerRoute = $module['controller_route'];
                               </div>
                            </td>
                            <td style="text-align: center; vertical-align: top;">
-                              <a href="<?=url($controllerRoute . '/edit/'.Helper::encoded($row->id))?>" class="btn btn-sm btn-primary me-1" title="Edit <?=$module['title']?>"><i class="fa fa-edit"></i></a>
+                              <a href="<?=url($controllerRoute . '/edit/'.Helper::encoded($row->id))?>" class="btn btn-sm btn-primary me-1 mb-1" title="Edit <?=$module['title']?>"><i class="fa fa-edit"></i></a>
                               <?php if($row->status){?>
-                                 <a href="<?=url($controllerRoute . '/change-status/'.Helper::encoded($row->id))?>" class="btn btn-sm btn-success me-1" title="Activate <?=$module['title']?>"><i class="fa fa-check"></i></a>
+                                 <a href="<?=url($controllerRoute . '/change-status/'.Helper::encoded($row->id))?>" class="btn btn-sm btn-success me-1 mb-1" title="Activate <?=$module['title']?>"><i class="fa fa-check"></i></a>
                               <?php } else {?>
-                                 <a href="<?=url($controllerRoute . '/change-status/'.Helper::encoded($row->id))?>" class="btn btn-sm btn-warning me-1" title="Deactivate <?=$module['title']?>"><i class="fa fa-times"></i></a>
+                                 <a href="<?=url($controllerRoute . '/change-status/'.Helper::encoded($row->id))?>" class="btn btn-sm btn-warning me-1 mb-1" title="Deactivate <?=$module['title']?>"><i class="fa fa-times"></i></a>
                               <?php }?>
-                              <a href="<?=url($controllerRoute . '/delete/'.Helper::encoded($row->id))?>" class="btn btn-sm btn-danger me-1" title="Delete <?=$module['title']?>" onclick="return confirm('Do You Want To Delete This <?=$module['title']?>');"><i class="fa fa-trash"></i>  </a>
+                              <a href="<?=url($controllerRoute . '/delete/'.Helper::encoded($row->id))?>" class="btn btn-sm btn-danger me-1 mb-1" title="Delete <?=$module['title']?>" onclick="return confirm('Do You Want To Delete This <?=$module['title']?>');"><i class="fa fa-trash"></i>  </a>
                            </td>
                         </tr>
                      <?php } }?>

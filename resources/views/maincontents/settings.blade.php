@@ -4,7 +4,7 @@ $user_type = session('type');
 ?>
 @extends('layouts.main')
 @section('content')
-<div class="container-xxl flex-grow-1 container-p-y">
+<div class="container-fluid flex-grow-1 container-p-y">
    <div class="row g-6">
       <h5><?=$page_header?></h5>
       <h6 class="py-3 breadcrumb-wrapper mb-4">
@@ -80,30 +80,28 @@ $user_type = session('type');
                               <label for="phone" class="form-label">Phone</label>
                               <input class="form-control" type="text" id="phone" name="phone" value="<?=(($user)?$user->phone:'')?>" required placeholder="9876543210" />
                            </div>
-                           <div class="mb-3 col-md-12">
+                           <div class="mb-3 col-md-8">
                               <div class="d-flex align-items-start align-items-sm-center gap-4">
                                  <img src="<?=(($user->profile_image != '')?config('constants.app_url') . config('constants.uploads_url_path') . $user->profile_image:config('constants.no_image_avatar'))?>" alt="<?=$user->name?>" class="d-block rounded" height="100" width="100" id="uploadedAvatar" />
                                  <div class="button-wrapper">
-                                    <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
-                                    <span class="d-none d-sm-block">Upload new photo</span>
-                                    <i class="bx bx-upload d-block d-sm-none"></i>
+                                    <label for="upload" class="btn btn-dark btn-sm me-2 mb-2" tabindex="0">
+                                    <span class="d-sm-block">Upload new photo</span>
                                     <input type="file" id="upload" class="account-file-input" name="profile_image" hidden accept="image/png, image/jpeg, image/jpg, image/webp, image/avif, image/gif" />
                                     </label>
                                     <?php
                                     $pageLink = Request::url();
                                     ?>
-                                    <a href="<?=url('common-delete-image/' . Helper::encoded($pageLink) . '/users/profile_image/id/' . (($user)?$user->id:0))?>" class="btn btn-label-secondary account-image-reset mb-4" onclick="return confirm('Do you want to remove this image ?');">
-                                       <i class="bx bx-reset d-block d-sm-none"></i>
-                                       <span class="d-none d-sm-block">Reset</span>
+                                    <a href="<?=url('common-delete-image/' . Helper::encoded($pageLink) . '/users/profile_image/id/' . (($user)?$user->id:0))?>" class="btn btn-label-secondary account-image-reset mb-2 btn-sm" onclick="return confirm('Do you want to remove this image ?');">
+                                       <span class="d-sm-block">Reset</span>
                                     </a>
                                     <p class="mb-0">Allowed JPG, GIF, PNG, JPEG, WEBP, AVIF</p>
                                  </div>
                               </div>
                            </div>
                         </div>
-                        <div class="mt-2">
-                           <button type="submit" class="btn btn-primary me-2">Save Changes</button>
-                           <button type="reset" class="btn btn-label-secondary">Cancel</button>
+                        <div class="mt-4">
+                           <button type="submit" class="btn btn-outline-dark me-2 btn-sm">Save Changes</button>
+                           <button type="reset" class="btn btn-outline-danger btn-sm">Cancel</button>
                         </div>
                      </form>
                   </div>
@@ -218,12 +216,11 @@ $user_type = session('type');
                            </div>
 
                            <div class="mb-3 col-md-12">
-                              <div class="d-flex align-items-start align-items-sm-center gap-4">
+                              <div class="d-flex align-items-start align-items-sm-center gap-4 flex-wrap">
                                  <img src="<?=((Helper::getSettingValue('site_logo') != '')?config('constants.app_url') . config('constants.uploads_url_path') . Helper::getSettingValue('site_logo'):env('NO_IMAGE'))?>" alt="<?=Helper::getSettingValue('site_name')?>" class="d-block rounded" height="50" width="300" id="uploadedAvatar" />
                                  <div class="button-wrapper">
-                                    <label for="upload2" class="btn btn-primary me-2 mb-4" tabindex="0">
-                                    <span class="d-none d-sm-block">Upload Logo</span>
-                                    <i class="bx bx-upload d-block d-sm-none"></i>
+                                    <label for="upload2" class="btn btn-dark btn-sm me-2 mb-2" tabindex="0">
+                                    <span class="d-sm-block">Upload Logo</span>
                                     <input type="file" id="upload2" class="account-file-input" name="site_logo" hidden accept="image/png, image/jpeg, image/jpg, image/webp, image/avif, image/gif" />
                                     </label>
                                     <?php
@@ -238,12 +235,11 @@ $user_type = session('type');
                               </div>
                            </div>
                            <div class="mb-3 col-md-12">
-                              <div class="d-flex align-items-start align-items-sm-center gap-4">
-                                 <img src="<?=((Helper::getSettingValue('site_footer_logo') != '')?config('constants.app_url') . config('constants.uploads_url_path') . Helper::getSettingValue('site_footer_logo'):env('NO_IMAGE'))?>" alt="<?=Helper::getSettingValue('site_name')?>" class="d-block rounded" height="50" width="300" id="uploadedAvatar" />
+                              <div class="d-flex align-items-start align-items-sm-center gap-4 flex-wrap">
+                                 <img src="<?=((Helper::getSettingValue('site_footer_logo') != '')?config('constants.app_url') . config('constants.uploads_url_path') . Helper::getSettingValue('site_   _logo'):env('NO_IMAGE'))?>" alt="<?=Helper::getSettingValue('site_name')?>" class="d-block rounded" height="50" width="300" id="uploadedAvatar" />
                                  <div class="button-wrapper">
-                                    <label for="upload3" class="btn btn-primary me-2 mb-4" tabindex="0">
-                                    <span class="d-none d-sm-block">Upload Footer Logo</span>
-                                    <i class="bx bx-upload d-block d-sm-none"></i>
+                                    <label for="upload3" class="btn btn-dark btn-sm me-2 mb-2" tabindex="0">
+                                    <span class="d-sm-block">Upload Footer Logo</span>
                                     <input type="file" id="upload3" class="account-file-input" name="site_footer_logo" hidden accept="image/png, image/jpeg, image/jpg, image/webp, image/avif, image/gif" />
                                     </label>
                                     <?php
@@ -258,12 +254,11 @@ $user_type = session('type');
                               </div>
                            </div>
                            <div class="mb-3 col-md-12">
-                              <div class="d-flex align-items-start align-items-sm-center gap-4">
+                              <div class="d-flex align-items-start align-items-sm-center gap-4 flex-wrap">
                                  <img src="<?=((Helper::getSettingValue('site_favicon') != '')?config('constants.app_url') . config('constants.uploads_url_path') . Helper::getSettingValue('site_favicon'):env('NO_IMAGE'))?>" alt="<?=Helper::getSettingValue('site_name')?>" class="d-block rounded" height="50" width="300" id="uploadedAvatar" />
                                  <div class="button-wrapper">
-                                    <label for="upload4" class="btn btn-primary me-2 mb-4" tabindex="0">
-                                    <span class="d-none d-sm-block">Upload Favicon</span>
-                                    <i class="bx bx-upload d-block d-sm-none"></i>
+                                    <label for="upload4" class="btn btn-dark btn-sm me-2 mb-2" tabindex="0">
+                                    <span class="d-sm-block">Upload Favicon</span>
                                     <input type="file" id="upload4" class="account-file-input" name="site_favicon" hidden accept="image/png, image/jpeg, image/jpg, image/webp, image/avif, image/gif" />
                                     </label>
                                     <?php
@@ -278,9 +273,9 @@ $user_type = session('type');
                               </div>
                            </div>
                         </div>
-                        <div class="mt-2">
-                           <button type="submit" class="btn btn-primary me-2">Save Changes</button>
-                           <button type="reset" class="btn btn-label-secondary">Cancel</button>
+                        <div class="mt-4">
+                           <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>
+                           <button type="reset" class="btn btn-outline-danger btn-sm">Cancel</button>
                         </div>
                      </form>
                   </div>
@@ -307,9 +302,9 @@ $user_type = session('type');
                               <input class="form-control" type="password" id="confirm_password" name="confirm_password" placeholder="********" required />
                            </div>
                         </div>
-                        <div class="mt-2">
-                           <button type="submit" class="btn btn-primary me-2">Save Changes</button>
-                           <button type="reset" class="btn btn-label-secondary">Cancel</button>
+                        <div class="mt-4">
+                           <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>
+                           <button type="reset" class="btn btn-outline-danger btn-sm">Cancel</button>
                         </div>
                      </form>
                   </div>
@@ -348,12 +343,12 @@ $user_type = session('type');
                               <input class="form-control" type="text" id="smtp_port" name="smtp_port" value="<?=Helper::getSettingValue('smtp_port')?>" required placeholder="SMTP Port" />
                            </div>
                         </div>
-                        <div class="mt-2">
-                           <button type="submit" class="btn btn-primary me-2">Save Changes</button>
-                           <button type="reset" class="btn btn-label-secondary">Cancel</button>
+                        <div class="mt-4">
+                           <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>
+                           <button type="reset" class="btn btn-outline-danger btn-sm">Cancel</button>
                         </div>
                      </form>
-                     <p class="mt-3"><a href="<?=url('test-email')?>" class="btn btn-primary btn-sm"><i class="fa fa-envelope"></i>&nbsp;Send Test Email</a></p>
+                     <p class="mt-3"><a href="<?=url('test-email')?>" class="btn btn-outline-info btn-sm"><i class="fa fa-envelope"></i>&nbsp;Send Test Email</a></p>
                   </div>
                   <!-- /Account -->
                </div>
@@ -386,9 +381,9 @@ $user_type = session('type');
                               <textarea class="form-control" id="ckeditor17" name="email_template_contactus" placeholder="Contact Us"><?=Helper::getSettingValue('email_template_contactus')?></textarea>
                            </div>
                         </div>
-                        <div class="mt-2">
-                           <button type="submit" class="btn btn-primary me-2">Save Changes</button>
-                           <button type="reset" class="btn btn-label-secondary">Cancel</button>
+                        <div class="mt-4">
+                           <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>
+                           <button type="reset" class="btn btn-outline-danger btn-sm">Cancel</button>
                         </div>
                      </form>
                   </div>
@@ -427,9 +422,9 @@ $user_type = session('type');
                               <input class="form-control" type="text" id="stripe_live_pk" name="stripe_live_pk" value="<?=Helper::getSettingValue('stripe_live_pk')?>" required placeholder="Stripe Live Public Key" />
                            </div>
                         </div>
-                        <div class="mt-2">
-                           <button type="submit" class="btn btn-primary me-2">Save Changes</button>
-                           <button type="reset" class="btn btn-label-secondary">Cancel</button>
+                        <div class="mt-4">
+                           <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>
+                           <button type="reset" class="btn btn-outline-danger btn-sm">Cancel</button>
                         </div>
                      </form>
                   </div>
@@ -456,9 +451,9 @@ $user_type = session('type');
                               <input class="form-control" type="text" id="sms_base_url" name="sms_base_url" value="<?=Helper::getSettingValue('sms_base_url')?>" required placeholder="SMS Base URL" />
                            </div>
                         </div>
-                        <div class="mt-2">
-                           <button type="submit" class="btn btn-primary me-2">Save Changes</button>
-                           <button type="reset" class="btn btn-label-secondary">Cancel</button>
+                        <div class="mt-4">
+                           <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>
+                           <button type="reset" class="btn btn-outline-danger btn-sm">Cancel</button>
                         </div>
                      </form>
                   </div>
@@ -484,7 +479,7 @@ $user_type = session('type');
                         <div class="row mt-3">
                            <div class="col-md-12">
                               <label for="" class="col-md-4 col-lg-3 col-form-label">Column 1</label>
-                              <div class="field_wrapper1" style="border: 1px solid #8144f0;padding: 10px;margin-bottom: 10px;">
+                              <div class="field_wrapper1" style="border: 1px solid #040404;padding: 10px;margin-bottom: 10px; border-radius: 5px;">
                                  <?php
                                  $footer_link_name = ((Helper::getSettingValue('footer_link_name') != '')?json_decode(Helper::getSettingValue('footer_link_name')):[]);
                                  $footer_link = ((Helper::getSettingValue('footer_link') != '')?json_decode(Helper::getSettingValue('footer_link')):[]);
@@ -528,7 +523,7 @@ $user_type = session('type');
                               </div>
 
                               <label for="" class="col-md-4 col-lg-3 col-form-label">Column 2</label>
-                              <div class="field_wrapper2" style="border: 1px solid #8144f0;padding: 10px;margin-bottom: 10px;">
+                              <div class="field_wrapper2" style="border: 1px solid #040404;padding: 10px;margin-bottom: 10px;border-radius: 5px;">
                                  <?php
                                  $footer_link_name2 = ((Helper::getSettingValue('footer_link_name2') != '')?json_decode(Helper::getSettingValue('footer_link_name2')):[]);
                                  $footer_link2 = ((Helper::getSettingValue('footer_link2') != '')?json_decode(Helper::getSettingValue('footer_link2')):[]);
@@ -572,7 +567,7 @@ $user_type = session('type');
                               </div>
 
                               <label for="" class="col-md-4 col-lg-3 col-form-label">Column 3</label>
-                              <div class="field_wrapper3" style="border: 1px solid #8144f0;padding: 10px;margin-bottom: 10px;">
+                              <div class="field_wrapper3" style="border: 1px solid #040404;padding: 10px;margin-bottom: 10px;border-radius: 5px;">
                                  <?php
                                  $footer_link_name3 = ((Helper::getSettingValue('footer_link_name3') != '')?json_decode(Helper::getSettingValue('footer_link_name3')):[]);
                                  $footer_link3 = ((Helper::getSettingValue('footer_link3') != '')?json_decode(Helper::getSettingValue('footer_link3')):[]);
@@ -616,9 +611,9 @@ $user_type = session('type');
                               </div>
                            </div>
                         </div>
-                        <div class="mt-2">
-                           <button type="submit" class="btn btn-primary me-2">Save Changes</button>
-                           <button type="reset" class="btn btn-label-secondary">Cancel</button>
+                        <div class="mt-4">
+                           <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>
+                           <button type="reset" class="btn btn-outline-danger btn-sm">Cancel</button>
                         </div>
                      </form>
                   </div>
@@ -646,8 +641,8 @@ $user_type = session('type');
                            </div>
                         </div>
                         <div class="mt-2">
-                           <button type="submit" class="btn btn-primary me-2">Save Changes</button>
-                           <button type="reset" class="btn btn-label-secondary">Cancel</button>
+                           <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>
+                           <button type="reset" class="btn btn-outline-danger btn-sm">Cancel</button>
                         </div>
                      </form>
                   </div>

@@ -4,7 +4,7 @@ $controllerRoute = $module['controller_route'];
 ?>
 @extends('layouts.main')
 @section('content')
-<div class="container-xxl flex-grow-1 container-p-y">
+<div class="container-fluid flex-grow-1 container-p-y">
    <div class="row g-6">
       <h4><?=$page_header?></h4>
       <h6 class="breadcrumb-wrapper">
@@ -79,7 +79,7 @@ $controllerRoute = $module['controller_route'];
                         <div class="col-md-6">
                             <div class="d-flex align-items-start align-items-sm-center gap-4 mt-3">
                                 <div class="button-wrapper">
-                                    <label for="page_banner_image" class="btn btn-primary me-2 mb-4" tabindex="0">
+                                    <label for="page_banner_image" class="btn btn-dark me-2 mb-4 btn-sm" tabindex="0">
                                         <span class="d-none d-sm-block">Upload Page Banner Image</span>
                                         <i class="bx bx-upload d-block d-sm-none"></i>
                                         <input type="file" id="page_banner_image" class="account-file-input" name="page_banner_image" hidden accept="image/png, image/jpeg, image/jpg, image/webp, image/avif, image/gif" />
@@ -98,14 +98,14 @@ $controllerRoute = $module['controller_route'];
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <img src="<?=(($page_banner_image != '')?config('constants.app_url') . config('constants.uploads_url_path') . $page_banner_image:config('constants.no_image'))?>" alt="<?=$page_name?>" class="img-thumbnail mt-3" height="200" width="200" id="uploadedAvatar" />
+                            <img src="<?=(($page_banner_image != '')?config('constants.app_url') . config('constants.uploads_url_path') . $page_banner_image:config('constants.no_image'))?>" alt="<?=$page_name?>" class="img-thumbnail mt-3" height="150" width="150" id="uploadedAvatar" />
                         </div>
                     </div>
                     <div class="row mt-3">
                         <div class="col-md-6">
                             <div class="d-flex align-items-start align-items-sm-center gap-4 mt-3">
                                 <div class="button-wrapper">
-                                    <label for="page_image" class="btn btn-primary me-2 mb-4" tabindex="0">
+                                    <label for="page_image" class="btn btn-dark me-2 mb-4 btn-sm" tabindex="0">
                                         <span class="d-none d-sm-block">Upload Page Image</span>
                                         <i class="bx bx-upload d-block d-sm-none"></i>
                                         <input type="file" id="page_image" class="account-file-input" name="page_image" hidden accept="image/png, image/jpeg, image/jpg, image/webp, image/avif, image/gif" />
@@ -114,7 +114,7 @@ $controllerRoute = $module['controller_route'];
                                     if(!empty($row)){
                                         $pageLink = Request::url();
                                     ?>
-                                        <a href="<?=url('common-delete-image/' . Helper::encoded($pageLink) . '/pages/page_image/id/' . $id)?>" class="btn btn-label-secondary account-image-reset mb-4" onclick="return confirm('Do you want to remove this image ?');">
+                                        <a href="<?=url('common-delete-image/' . Helper::encoded($pageLink) . '/pages/page_image/id/' . $id)?>" class="btn btn-dark account-image-reset mb-4" onclick="return confirm('Do you want to remove this image ?');">
                                             <i class="bx bx-reset d-block d-sm-none"></i>
                                             <span class="d-none d-sm-block">Reset</span>
                                         </a>
@@ -124,7 +124,7 @@ $controllerRoute = $module['controller_route'];
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <img src="<?=(($page_image != '')?config('constants.app_url') . config('constants.uploads_url_path') . $page_image:config('constants.no_image'))?>" alt="<?=$page_name?>" class="img-thumbnail mt-3" height="200" width="200" id="uploadedAvatar" />
+                            <img src="<?=(($page_image != '')?config('constants.app_url') . config('constants.uploads_url_path') . $page_image:config('constants.no_image'))?>" alt="<?=$page_name?>" class="img-thumbnail mt-3" height="150" width="150" id="uploadedAvatar" />
                         </div>
                     </div>
                     <div class="row mt-3">
@@ -145,9 +145,9 @@ $controllerRoute = $module['controller_route'];
                             <textarea class="form-control" id="ckeditor4" name="meta_description" placeholder="Meta Description"><?=$meta_description?></textarea>
                         </div>
                     </div>
-                    <div class="mt-2">
-                        <button type="submit" class="btn btn-primary btn-sm me-2">Save Changes</button>
-                        <a href="<?=url($controllerRoute . '/list/')?>" class="btn btn-label-secondary btn-sm">Cancel</a>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>
+                        <a href="<?=url($controllerRoute . '/list/')?>" class="btn btn-outline-danger btn-sm">Cancel</a>
                     </div>
                 </form>
             </div>

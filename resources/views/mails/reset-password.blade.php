@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>
-            {{ env('APP_NAME') }}
+            {{ $site_name }}
         </title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta http-equiv="Content-Type" content="text/html; ">
@@ -173,7 +173,7 @@
                                                         <tr>
                                                             <td style="width:600px;">
                                                                 <img height="auto"
-                                                                    src="{{ asset('/public/logo.png') }}"
+                                                                    src="{{ $logo }}"
                                                                     style="border:0;display:block;outline:none;margin: 0 auto;padding-top: 30px;margin-bottom: 30px;"
                                                                     width="auto">
                                                             </td>
@@ -206,7 +206,7 @@
                                                 <div style="font-family:Lato, system-ui, sans-serif;font-size:13px;text-align:left;color:rgba(255, 255, 255, 0.808);"
                                                     class="news-content">
                                                     <p>Thank you,</p>
-                                                    <p>{{ env('APP_NAME') }}</p>
+                                                    <p>{{ $site_name }}</p>
                                                 </div>
                                             </td>
                                         </tr>

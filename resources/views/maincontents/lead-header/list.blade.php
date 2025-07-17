@@ -4,7 +4,7 @@ $controllerRoute = $module['controller_route'];
 ?>
 @extends('layouts.main')
 @section('content')
-<div class="container-xxl flex-grow-1 container-p-y">
+<div class="container-fluid flex-grow-1 container-p-y">
    <div class="row g-6">
       <h4><?=$page_header?></h4>
       <h6 class="breadcrumb-wrapper">
@@ -28,7 +28,7 @@ $controllerRoute = $module['controller_route'];
             </div>
          <?php }?>
          <div class="card mb-4">
-            <div class="card-header">
+            <div class="card-header pb-2">
                 <a href="<?=url($controllerRoute . '/add/')?>" class="btn btn-outline-success btn-sm float-end">Add <?=$module['title']?></a>
             </div>
             <div class="card-body">

@@ -4,7 +4,7 @@ $controllerRoute = $module['controller_route'];
 ?>
 @extends('layouts.main')
 @section('content')
-<div class="container-xxl flex-grow-1 container-p-y">
+<div class="container-fluid flex-grow-1 container-p-y">
    <div class="row g-6">
       <h4><?=$page_header?></h4>
       <h6 class="breadcrumb-wrapper">
@@ -49,11 +49,11 @@ $controllerRoute = $module['controller_route'];
                 <form id="formAccountSettings" action="" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 mt-3 mt-md-0">
                             <label for="name" class="form-label">Name <small class="text-danger">*</small></label>
                             <input class="form-control" type="text" id="name" name="name" value="<?=$name?>" required placeholder="Name" autofocus />
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mt-3 mt-md-0">
                             <label for="short_code" class="form-label">Short Code <small class="text-danger">*</small></label>
                             <input class="form-control" type="text" id="short_code" name="short_code" value="<?=$short_code?>" required placeholder="Short Code" />
                         </div>
@@ -74,9 +74,9 @@ $controllerRoute = $module['controller_route'];
                             </div>
                         </div>
                     </div>
-                    <div class="mt-2">
-                        <button type="submit" class="btn btn-primary btn-sm me-2">Save Changes</button>
-                        <a href="<?=url($controllerRoute . '/list/')?>" class="btn btn-label-secondary btn-sm">Cancel</a>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>
+                        <a href="<?=url($controllerRoute . '/list/')?>" class="btn btn-outline-danger btn-sm">Cancel</a>
                     </div>
                 </form>
             </div>

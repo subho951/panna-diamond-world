@@ -4,7 +4,7 @@ $controllerRoute = $module['controller_route'];
 ?>
 @extends('layouts.main')
 @section('content')
-<div class="container-xxl flex-grow-1 container-p-y">
+<div class="container-fluid flex-grow-1 container-p-y">
    <div class="row g-6">
       <h4><?=$page_header?></h4>
       <h6 class="breadcrumb-wrapper">
@@ -66,7 +66,7 @@ $controllerRoute = $module['controller_route'];
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="description" class="form-label">Description <small class="text-danger">*</small></label>
-                            <textarea class="form-control" id="description" name="description" required placeholder="Description"><?=$description?></textarea>
+                            <textarea class="form-control" id="description" name="description" required placeholder="Description" rows="1"><?=$description?></textarea>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="status" class="form-label d-block">Status <small class="text-danger">*</small></label>
@@ -79,7 +79,7 @@ $controllerRoute = $module['controller_route'];
                         <div class="col-md-6 mb-3">
                             <div class="d-flex align-items-start align-items-sm-center gap-4 mt-3">
                                 <div class="button-wrapper">
-                                    <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
+                                    <label for="upload" class="btn btn-dark me-2 mb-4" tabindex="0">
                                         <span class="d-none d-sm-block">Upload Image</span>
                                         <i class="bx bx-upload d-block d-sm-none"></i>
                                         <input type="file" id="upload" class="account-file-input" name="image" hidden accept="image/png, image/jpeg, image/jpg, image/webp, image/avif, image/gif" />
@@ -98,12 +98,12 @@ $controllerRoute = $module['controller_route'];
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <img src="<?=(($image != '')?config('constants.app_url') . config('constants.uploads_url_path') . $image:config('constants.no_image'))?>" alt="<?=$name?>" class="img-thumbnail mt-3" height="200" width="200" id="uploadedAvatar" />
+                            <img src="<?=(($image != '')?config('constants.app_url') . config('constants.uploads_url_path') . $image:config('constants.no_image'))?>" alt="<?=$name?>" class="img-thumbnail mt-3" height="150" width="150" id="uploadedAvatar" />
                         </div>
                     </div>
-                    <div class="mt-2">
-                        <button type="submit" class="btn btn-primary btn-sm me-2">Save Changes</button>
-                        <a href="<?=url($controllerRoute . '/list/')?>" class="btn btn-label-secondary btn-sm">Cancel</a>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>
+                        <a href="<?=url($controllerRoute . '/list/')?>" class="btn btn-outline-danger btn-sm">Cancel</a>
                     </div>
                 </form>
             </div>

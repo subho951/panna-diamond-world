@@ -4,7 +4,7 @@ $controllerRoute = $module['controller_route'];
 ?>
 @extends('layouts.main')
 @section('content')
-<div class="container-xxl flex-grow-1 container-p-y">
+<div class="container-fluid flex-grow-1 container-p-y">
    <div class="row g-6">
       <h4><?=$page_header?></h4>
       <h6 class="breadcrumb-wrapper">
@@ -76,7 +76,7 @@ $controllerRoute = $module['controller_route'];
                         </div>
                         <div class="col-md-6 mt-3">
                             <label for="short_description" class="form-label">Short Description <small class="text-danger">*</small></label>
-                            <textarea class="form-control" id="short_description" name="short_description" required placeholder="Short Description" rows="3" maxlength="100"><?=$short_description?></textarea>
+                            <textarea class="form-control" id="short_description" name="short_description" required placeholder="Short Description" rows="1" maxlength="100"><?=$short_description?></textarea>
                             <small class="text-danger">Max 100 characters allowed</small>
                         </div>
                         
@@ -96,9 +96,9 @@ $controllerRoute = $module['controller_route'];
                             </div>
                         </div>
                     </div>
-                    <div class="mt-2">
-                        <button type="submit" class="btn btn-primary btn-sm me-2">Save Changes</button>
-                        <a href="<?=url($controllerRoute . '/list/')?>" class="btn btn-label-secondary btn-sm">Cancel</a>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>
+                        <a href="<?=url($controllerRoute . '/list/')?>" class="btn btn-outline-danger btn-sm">Cancel</a>
                     </div>
                 </form>
             </div>

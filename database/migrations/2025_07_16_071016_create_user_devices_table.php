@@ -11,18 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('upload_leads', function (Blueprint $table) {
+        Schema::create('user_devices', function (Blueprint $table) {
             $table->id();
-            $table->text('title');
-            $table->string('lead_date');
-            $table->bigInteger('branch_id');
-            $table->bigInteger('campaign_type_id');
-            $table->bigInteger('campaign_id');
-            $table->longText('telecaller_id')->default(null);
-            $table->longText('filename');
+            $table->bigInteger('branch_id')->default(0);
+            $table->bigInteger('user_id')->default(0);
+            $table->string('device_type')->nullable();
+            $table->string('device_token')->nullable();
+            $table->longText('fcm_token')->nullable();
+            $table->longText('app_access_token')->nullable();
             $table->tinyInteger('status')->default(1);
-            $table->integer('created_by')->default(1);
-            $table->integer('updated_by')->default(1);
             $table->softDeletes();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Auto-updates on change
@@ -34,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('upload_leads');
+        Schema::dropIfExists('user_devices');
     }
 };
