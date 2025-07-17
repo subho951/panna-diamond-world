@@ -815,7 +815,7 @@ class ApiController extends Controller
                                 'branch_name'           => (($getBranch)?$getBranch->name:''),
                                 'branch_id'             => $getUser->branch_id,
                                 'created_at'            => date_format(date_create($getUser->created_at), "M d, Y h:i A"),
-                                'profile_image'         => (($getUser->profile_image != '')?env('UPLOADS_URL').'user/'.$getUser->profile_image:env('NO_IMAGE_AVATAR')),
+                                'profile_image'         => (($getUser->profile_image != '')?url('/public/').'/'.$getUser->profile_image:env('NO_IMAGE_AVATAR')),
                             ];
                             
                             $apiStatus          = TRUE;
@@ -882,7 +882,7 @@ class ApiController extends Controller
                                     $fileName           = uniqid() . '.' . $extn;
                                     $file               = 'public/uploads/user/' . $fileName;
                                     $success            = file_put_contents($file, $data);
-                                    $profile_image      = $fileName;
+                                    $profile_image      = 'uploads/user/' . $fileName;
                                 } else {
                                     $apiStatus          = FALSE;
                                     http_response_code(404);
