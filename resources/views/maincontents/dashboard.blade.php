@@ -46,7 +46,7 @@ use App\Helpers\Helper;
     </div>
 
     <!-- Projects table -->
-    {{-- <div class="col-xxl-8 col-xl-8 col-md-8 col-sm-8">
+    <div class="col-xxl-8 col-xl-8 col-md-8 col-sm-8">
       <div class="card">
         <div class="card-header d-flex justify-content-between">
           <div class="card-title m-0">
@@ -158,7 +158,7 @@ use App\Helpers\Helper;
           </div>
         </div>
       </div>
-    </div> --}}
+    </div>
     <!--/ Projects table -->
   </div>
 </div>

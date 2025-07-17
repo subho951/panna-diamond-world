@@ -61,7 +61,7 @@ class AuthController extends Controller
 
             // Add extra conditions to the authData array
             $authData['status']  = 1;
-            // $authData['role_id'] = 1;
+            $authData['role_id'] = 1;
 
             if (Auth::attempt($authData)) {
                 $request->session()->regenerate();
