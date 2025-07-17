@@ -864,6 +864,7 @@ class ApiController extends Controller
                         $uId        = $getTokenValue['data'][1];
                         $expiry     = date('d/m/Y H:i:s', $getTokenValue['data'][4]);
                         $checkUser    = User::where('id', '=', $uId)->first();
+                        Helper::pr($checkUser);
                         if($checkUser){
                             if(Hash::check($old_password, $checkUser->password)){
                                 if($new_password == $confirm_password){
