@@ -528,6 +528,201 @@ class ApiController extends Controller
             }
         /* resend otp */
     /* authentication */
+    /* forgot password */
+        /* forgot password */
+            public function forgotPassword(Request $request){
+                $apiStatus          = TRUE;
+                $apiMessage         = '';
+                $apiResponse        = [];
+                $apiExtraField      = '';
+                $apiExtraData       = '';
+                $requestData        = $request->all();
+                $requiredFields     = ['key', 'source', 'email'];
+                $headerData         = $request->header();
+                if (!$this->validateArray($requiredFields, $requestData)){
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'All Data Are Not Present !!!';
+                }
+                if($headerData['key'][0] == env('PROJECT_KEY')){
+                    $checkUser = User::where('email', '=', $requestData['email'])->first();
+                    if($checkUser){
+                        $remember_token  = rand(100000,999999);
+                        User::where('id', '=', $checkUser->id)->update(['otp' => $remember_token]);
+                        $mailData                   = [
+                            'id'        => $checkUser->id,
+                            'name'      => $checkUser->first_name.' '.$checkUser->last_name,
+                            'content'   => $checkUser->first_name.' '.$checkUser->last_name,
+                            'email'     => $checkUser->email,
+                            'phone'     => $checkUser->phone,
+                            'otp'       => $remember_token,
+                            'logo'      => url('/public/') . '/' . Helper::getSettingValue('site_logo'),
+                            'site_name' => Helper::getSettingValue('site_name'),
+                        ];
+                        
+                        $subject                    = Helper::getSettingValue('site_name').' :: Forgot Password Validate OTP';
+                        $message                    = view('mails.otp',$mailData);
+                        $this->siteAuthService->sendMail($checkUser->email, $subject, $message);
+
+                        /* email log save */
+                            $postData2 = [
+                                'name'                  => $checkUser->first_name.' '.$checkUser->last_name,
+                                'email'                 => $checkUser->email,
+                                'subject'               => $subject,
+                                'message'               => $message
+                            ];
+                            EmailLog::insert($postData2);
+                        /* email log save */
+
+                        $apiResponse                        = $mailData;
+                        $apiStatus                          = TRUE;
+                        http_response_code(200);
+                        $apiMessage                         = 'OTP Sent To Email Validation !!!';
+                        $apiExtraField                      = 'response_code';
+                        $apiExtraData                       = http_response_code();
+                    } else {
+                        $apiStatus          = FALSE;
+                        http_response_code(200);
+                        $apiMessage         = 'Email Not Registered With Us !!!';
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
+                    }
+                } else {
+                    http_response_code(200);
+                    $apiStatus          = FALSE;
+                    $apiMessage         = $this->getResponseCode(http_response_code());
+                    $apiExtraField      = 'response_code';
+                    $apiExtraData       = http_response_code();
+                }
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
+            }
+        /* forgot password */
+        /* validate otp */
+            public function validateOtp(Request $request){
+                $apiStatus          = TRUE;
+                $apiMessage         = '';
+                $apiResponse        = [];
+                $apiExtraField      = '';
+                $apiExtraData       = '';
+                $requestData        = $request->all();
+                $requiredFields     = ['key', 'source', 'id', 'otp'];
+                $headerData         = $request->header();
+                if (!$this->validateArray($requiredFields, $requestData)){
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'All Data Are Not Present !!!';
+                }
+                if($headerData['key'][0] == env('PROJECT_KEY')){
+                    $getUser = User::where('id', '=', $requestData['id'])->first();
+                    if($getUser){
+                        $remember_token  = $getUser->otp;
+                        if($remember_token == $requestData['otp']){
+                            User::where('id', '=', $requestData['id'])->update(['otp' => 0]);
+                            
+                            $apiResponse        = [
+                                'id'    => $getUser->id,
+                                'email' => $getUser->email
+                            ];
+                            $apiStatus                          = TRUE;
+                            http_response_code(200);
+                            $apiMessage                         = 'OTP Validated Successfully !!!';
+                            $apiExtraField                      = 'response_code';
+                            $apiExtraData                       = http_response_code();
+                        } else {
+                            $apiStatus          = FALSE;
+                            http_response_code(200);
+                            $apiMessage         = 'OTP Mismatched !!!';
+                            $apiExtraField      = 'response_code';
+                            $apiExtraData       = http_response_code();
+                        }
+                    } else {
+                        $apiStatus          = FALSE;
+                        http_response_code(200);
+                        $apiMessage         = 'User Not Found !!!';
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
+                    }
+                } else {
+                    http_response_code(200);
+                    $apiStatus          = FALSE;
+                    $apiMessage         = $this->getResponseCode(http_response_code());
+                    $apiExtraField      = 'response_code';
+                    $apiExtraData       = http_response_code();
+                }
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
+            }
+        /* validate otp */
+        /* reset password */
+            public function resetPassword(Request $request)
+            {
+                $apiStatus          = TRUE;
+                $apiMessage         = '';
+                $apiResponse        = [];
+                $apiExtraField      = '';
+                $apiExtraData       = '';
+                $requestData        = $request->all();
+                $requiredFields     = ['key', 'source', 'id', 'password', 'confirm_password'];
+                $headerData         = $request->header();
+                if (!$this->validateArray($requiredFields, $requestData)){
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'All Data Are Not Present !!!';
+                }
+                if($headerData['key'][0] == env('PROJECT_KEY')){
+                    $checkUser = User::where('id', '=', $requestData['id'])->first();
+                    if($checkUser){
+                        if($requestData['password'] == $requestData['confirm_password']){
+                            User::where('id', '=', $requestData['id'])->update(['password' => Hash::make($requestData['password'])]);
+                            $mailData                   = [
+                                'id'        => $checkUser->id,
+                                'name'      => $checkUser->first_name.' '.$checkUser->last_name,
+                                'email'     => $checkUser->email,
+                                'phone'     => $checkUser->phone,
+                                'logo'      => url('/public/') . '/' . Helper::getSettingValue('site_logo'),
+                                'site_name' => Helper::getSettingValue('site_name'),
+                            ];
+                            
+                            $subject                    = Helper::getSettingValue('site_name').' :: Reset Password';
+                            $message                    = view('mails.reset-password',$mailData);
+                            $this->siteAuthService->sendMail($checkUser->email, $subject, $message);
+
+                            /* email log save */
+                                $postData2 = [
+                                    'name'                  => $checkUser->first_name.' '.$checkUser->last_name,
+                                    'email'                 => $checkUser->email,
+                                    'subject'               => $subject,
+                                    'message'               => $message
+                                ];
+                                EmailLog::insert($postData2);
+                            /* email log save */
+                            
+                            $apiStatus                          = TRUE;
+                            http_response_code(200);
+                            $apiMessage                         = 'Password Updated Successfully !!!';
+                            $apiExtraField                      = 'response_code';
+                            $apiExtraData                       = http_response_code();
+                        } else {
+                            $apiStatus          = FALSE;
+                            http_response_code(200);
+                            $apiMessage         = 'Password & Confirm Password Not Matched !!!';
+                            $apiExtraField      = 'response_code';
+                            $apiExtraData                       = http_response_code();
+                        }
+                    } else {
+                        $apiStatus          = FALSE;
+                        http_response_code(200);
+                        $apiMessage         = 'User Not Found !!!';
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
+                    }
+                } else {
+                    http_response_code(200);
+                    $apiStatus          = FALSE;
+                    $apiMessage         = $this->getResponseCode(http_response_code());
+                    $apiExtraField      = 'response_code';
+                    $apiExtraData       = http_response_code();
+                }
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
+            }
+        /* reset password */
+    /* forgot password */
     /* after login screen */
         /* signout */
             public function signout(Request $request)
@@ -587,6 +782,15 @@ class ApiController extends Controller
                 $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
             }
         /* signout */
+        /* get profile */
+
+        /* get profile */
+        /* upload profile image */
+
+        /* upload profile image */
+        /* change password */
+
+        /* change password */
     /* after login screen */
 
     /*

@@ -12,9 +12,9 @@ use App\Http\Controllers\ApiController;
     Route::match(['post'], '/signin', [ApiController::class, 'signin']);
     Route::match(['post'], '/signin-with-mobile', [ApiController::class, 'signinWithMobile']);
     Route::match(['post'], '/signin-validate-mobile', [ApiController::class, 'signinValidateMobile']);
+    Route::match(['post'], '/resend-otp', [ApiController::class, 'resendOtp']);
     Route::match(['post'], '/forgot-password', [ApiController::class, 'forgotPassword']);
     Route::match(['post'], '/validate-otp', [ApiController::class, 'validateOtp']);
-    Route::match(['post'], '/resend-otp', [ApiController::class, 'resendOtp']);
     Route::match(['post'], '/reset-password', [ApiController::class, 'resetPassword']);
 /* before login */
 /* after login */
