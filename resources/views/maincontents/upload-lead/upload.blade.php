@@ -35,7 +35,7 @@ $controllerRoute = $module['controller_route'];
                 <?php }?>
                 <div class="card mb-4">
                     <div class="card-body">
-                        <form id="formAccountSettings" action="" method="POST" enctype="multipart/form-data">
+                        <form id="formAccountSettings" action="<?= url($controllerRoute .'/add') ?>" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -83,7 +83,7 @@ $controllerRoute = $module['controller_route'];
                                 <div class="col-md-6 mb-3">
                                     <label for="lead_file" class="form-label">Lead File <small class="text-danger">*</small>
                                         <small class="text-danger">(Only csv file are allowed to upload)</small>
-                                        <a href="sample-lead-file.csv" class="text-primary" target="_blank">Sample File</a>
+                                        <a href="<?= url('public/uploads/sample-lead-file.csv') ?>" class="text-primary" target="_blank">Sample File</a>
                                     </label>
                                     <input class="form-control" type="file" id="lead_file" name="lead_file" accept=".csv" required />
                                 </div>
@@ -95,9 +95,9 @@ $controllerRoute = $module['controller_route'];
                         </form>
                     </div>
                 </div>
-
+                
                 <div class="card mb-4">
-                    <div class="card-body">
+                    <div class="card-body">        
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
@@ -108,30 +108,59 @@ $controllerRoute = $module['controller_route'];
                                         <th>Lead Title</th>
                                         <th>Campaign Type</th>
                                         <th>Campaign</th>
-                                        <th>Lead Date</th>
                                         <th>Lead File</th>
+                                        <th>Total Leads</th>
+                                        <th>Success Leads</th>
+                                        <th>Failed Leads</th>
+                                        <th>Lead Date</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-
+                                    {{-- @dd($leadListArr); --}}
+                                    
+                                    @foreach($leadListArr as $leadRow)
                                     <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
 
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $leadRow->branch_name }}</td>
+
+                                        <td>
+                                            @foreach($leadRow->telecaller_name_arr as $telecaller_name)
+                                            {{ $telecaller_name }}<br>
+                                            @endforeach
+                                        </td>
+
+                                        <td>{{ $leadRow->title }}</td>
+                                        <td>{{ $leadRow->campaign_type_name }}</td>
+                                        <td>{{ $leadRow->campaign_name }}</td>
+
+                                        <td>
+                                            <a href="<?= url($controllerRoute . '/csv-download/' . $leadRow->encodedId) ?>" class="btn btn-sm btn-primary mb-1" title="Download CSV">
+                                                <i class="fa-solid fa-file-csv"></i> 
+                                            </a>
+                                        </td>
+
+                                        <td>{{ $leadRow->total_upload }}</td>
+                                        <td>{{ $leadRow->success_upload }}</td>
+                                        <td>{{ $leadRow->failed_upload }}</td>
+                                        <td>{{ $leadRow->lead_date }}</td>
+                                        
+                                        <td>
+                                            <a href="<?= url($controllerRoute . '/delete/' . $leadRow->encodedId) ?>" class="btn btn-sm btn-danger mb-1" onclick="return confirm('You Won\'t Be Able To Revert This Action. Are you sure?')"
+                                                title="Delete">
+                                             <i class="fa-solid fa-trash"></i>
+                                            </a>
+                                       </td>
+
+                                    </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
+                
             </div>
         </div>
     </div>
