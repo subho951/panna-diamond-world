@@ -865,7 +865,7 @@ class ApiController extends Controller
                         $getTokenValue              = $this->tokenAuth($app_access_token);
                         $uId                        = $getTokenValue['data'][1];
                         $checkUser                  = User::where('id', '=', $uId)->first();
-                        Helper::pr($checkUser);
+                        
                         if($checkUser){
                             if(Hash::check($old_password, $checkUser->password)){
                                 if($new_password == $confirm_password){
