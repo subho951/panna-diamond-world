@@ -695,7 +695,7 @@ class ApiController extends Controller
                             
                             $apiStatus                          = TRUE;
                             http_response_code(200);
-                            $apiMessage                         = 'Password Updated Successfully !!!';
+                            $apiMessage                         = 'Password Reset Successfully !!!';
                             $apiExtraField                      = 'response_code';
                             $apiExtraData                       = http_response_code();
                         } else {
@@ -783,13 +783,140 @@ class ApiController extends Controller
             }
         /* signout */
         /* get profile */
-
+            public function getProfile(Request $request)
+            {
+                $apiStatus          = TRUE;
+                $apiMessage         = '';
+                $apiResponse        = [];
+                $apiExtraField      = '';
+                $apiExtraData       = '';
+                $requestData        = $request->all();
+                $requiredFields     = ['key', 'source'];
+                $headerData         = $request->header();
+                if (!$this->validateArray($requiredFields, $requestData)){
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'All Data Are Not Present !!!';
+                }
+                if($headerData['key'][0] == env('PROJECT_KEY')){
+                    $app_access_token           = $headerData['authorization'][0];
+                    $getTokenValue              = $this->tokenAuth($app_access_token);
+                    if($getTokenValue['status']){
+                        $uId        = $getTokenValue['data'][1];
+                        $expiry     = date('d/m/Y H:i:s', $getTokenValue['data'][4]);
+                        $getUser    = User::where('id', '=', $uId)->first();
+                        if($getUser){
+                            
+                            $getBranch = Branch::select('name')->where('id', '=', $getUser->branch_id)->first();
+                            $profileData            = [
+                                'user_id'               => $uId,
+                                'name'                  => $getUser->first_name. ' ' .$getUser->last_name,
+                                'email'                 => $getUser->email,
+                                'phone'                 => $getUser->phone,
+                                'branch_name'           => (($getBranch)?$getBranch->name:''),
+                                'branch_id'             => $getUser->branch_id,
+                                'created_at'            => date_format(date_create($getUser->created_at), "M d, Y h:i A"),
+                                'profile_image'         => (($getUser->profile_image != '')?env('UPLOADS_URL').'user/'.$getUser->profile_image:env('NO_USER_IMAGE')),
+                            ];
+                            
+                            $apiStatus          = TRUE;
+                            $apiMessage         = 'Data Available !!!';
+                            $apiResponse        = $profileData;
+                        } else {
+                            $apiStatus          = FALSE;
+                            $apiMessage         = 'User Not Found !!!';
+                        }
+                    } else {
+                        $apiStatus                      = FALSE;
+                        $apiMessage                     = $getTokenValue['data'];
+                    }                                               
+                } else {
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'Unauthenticate Request !!!';
+                }
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse);
+            }
         /* get profile */
         /* upload profile image */
-
+            
         /* upload profile image */
         /* change password */
-
+            public function changePassword(Request $request)
+            {
+                $apiStatus          = TRUE;
+                $apiMessage         = '';
+                $apiResponse        = [];
+                $apiExtraField      = '';
+                $apiExtraData       = '';
+                $requestData        = $request->all();
+                $requiredFields     = ['key', 'source'];
+                $headerData         = $request->header();
+                if (!$this->validateArray($requiredFields, $requestData)){
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'All Data Are Not Present !!!';
+                }
+                if($headerData['key'][0] == env('PROJECT_KEY')){
+                    $app_access_token           = $headerData['authorization'][0];
+                    $old_password               = $requestData['old_password'];
+                    $new_password               = $requestData['new_password'];
+                    $confirm_password           = $requestData['confirm_password'];
+                    $getTokenValue              = $this->tokenAuth($app_access_token);
+                    if($getTokenValue['status']){
+                        $uId        = $getTokenValue['data'][1];
+                        $expiry     = date('d/m/Y H:i:s', $getTokenValue['data'][4]);
+                        $getUser    = User::where('id', '=', $uId)->first();
+                        if($getUser){
+                            if(Hash::check($old_password, $getUser->password)){
+                                if($new_password == $confirm_password){
+                                    if($new_password != $old_password){
+                                        $fields = [
+                                            'password'                  => Hash::make($new_password)
+                                        ];
+                                        Employees::where('id', '=', $uId)->update($fields);
+                                        // new password send mail
+                                            $generalSetting                 = GeneralSetting::find('1');
+                                            $subject                        = $generalSetting->site_name.' Change Password';
+                                            $mailData['name']               = $getUser->name;
+                                            $mailData['email']              = $getUser->email;
+                                            $message                        = view('email-templates/change-password', $mailData);
+                                            $this->sendMail($getUser->email, $subject, $message);
+                                        // new password send mail
+                                        /* email log save */
+                                            $postData2 = [
+                                                'name'                  => $getUser->name,
+                                                'email'                 => $getUser->email,
+                                                'subject'               => $subject,
+                                                'message'               => $message
+                                            ];
+                                            EmailLog::insert($postData2);
+                                        /* email log save */
+                                        $apiStatus          = TRUE;
+                                        $apiMessage         = 'Password Updated Successfully !!!';
+                                    } else {
+                                        $apiStatus          = FALSE;
+                                        $apiMessage         = 'Current & New Password Should Not Be Same !!!';
+                                    }
+                                } else {
+                                    $apiStatus          = FALSE;
+                                    $apiMessage         = 'New & Confirm Password Doesn\'t Matched !!!';
+                                }
+                            } else {
+                                $apiStatus          = FALSE;
+                                $apiMessage         = 'Current Password Doesn\'t Matched !!!';
+                            }
+                        } else {
+                            $apiStatus          = FALSE;
+                            $apiMessage         = 'User Not Found !!!';
+                        }
+                    } else {
+                        $apiStatus                      = FALSE;
+                        $apiMessage                     = $getTokenValue['data'];
+                    }                                               
+                } else {
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'Unauthenticate Request !!!';
+                }
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse);
+            }
         /* change password */
     /* after login screen */
 
