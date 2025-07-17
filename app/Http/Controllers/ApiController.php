@@ -855,15 +855,16 @@ class ApiController extends Controller
                     $apiMessage         = 'All Data Are Not Present !!!';
                 }
                 if($headerData['key'][0] == env('PROJECT_KEY')){
-                    $app_access_token           = $headerData['authorization'][0];
                     $old_password               = $requestData['old_password'];
                     $new_password               = $requestData['new_password'];
                     $confirm_password           = $requestData['confirm_password'];
-                    $getTokenValue              = $this->tokenAuth($app_access_token);
-                    if($getTokenValue['status']){
-                        $uId        = $getTokenValue['data'][1];
-                        $expiry     = date('d/m/Y H:i:s', $getTokenValue['data'][4]);
-                        $checkUser    = User::where('id', '=', $uId)->first();
+                    
+                    $app_access_token           = $headerData['authorization'][0];
+                    $checkUserTokenExist        = UserDevice::where('app_access_token', '=', $app_access_token)->where('status', '=', 1)->first();
+                    if($checkUserTokenExist){
+                        $getTokenValue              = $this->tokenAuth($app_access_token);
+                        $uId                        = $getTokenValue['data'][1];
+                        $checkUser                  = User::where('id', '=', $uId)->first();
                         Helper::pr($checkUser);
                         if($checkUser){
                             if(Hash::check($old_password, $checkUser->password)){
@@ -930,11 +931,11 @@ class ApiController extends Controller
                             $apiExtraData       = http_response_code();
                         }
                     } else {
-                        $apiStatus                      = FALSE;
-                        $apiMessage                     = $getTokenValue['data'];
                         http_response_code(200);
                         $apiExtraField      = 'response_code';
                         $apiExtraData       = http_response_code();
+                        $apiStatus          = FALSE;
+                        $apiMessage         = 'Something Went Wrong !!!';
                     }                                               
                 } else {
                     http_response_code(200);
