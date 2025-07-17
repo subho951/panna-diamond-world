@@ -51,7 +51,7 @@ use App\Helpers\Helper;
           <!-- /Left Text -->
           <div class="d-none d-lg-flex col-lg-8 p-0">
             <div class="auth-cover-bg auth-cover-bg-color d-flex justify-content-center align-items-center">
-              <img
+              <!-- <img
                 src="{{ config('constants.admin_assets_url') }}assets/img/illustrations/auth-login-illustration-light.png"
                 alt="auth-login-cover"
                 class="my-5 auth-illustration"
@@ -63,7 +63,8 @@ use App\Helpers\Helper;
                 alt="auth-login-cover"
                 class="platform-bg"
                 data-app-light-img="illustrations/bg-shape-image-light.png"
-                data-app-dark-img="illustrations/bg-shape-image-dark.png" />
+                data-app-dark-img="illustrations/bg-shape-image-dark.png" /> -->
+                <img src="<?=((Helper::getSettingValue('site_logo') != '')?config('constants.app_url') . config('constants.uploads_url_path') . Helper::getSettingValue('site_logo'):config('constants.no_image'))?>" alt="<?=Helper::getSettingValue('site_name')?>" class="d-block" style="margin-top: 10px;height: 500px;width: 500px;" />
             </div>
           </div>
           <!-- /Left Text -->

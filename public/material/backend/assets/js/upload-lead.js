@@ -5,7 +5,7 @@ $(document).ready(function () {
         }
     });
     $('#telecaller_id').select2({
-        placeholder: "Select Telecaller",
+        // placeholder: "Select Telecaller",
         allowClear: true
     });
     let baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');

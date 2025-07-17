@@ -65,7 +65,7 @@ $controllerRoute = $module['controller_route'];
                                     <select class="select2 form-select" type="text" id="campaign_type_id" name="campaign_type_id">
                                         <option value="" selected disabled>Select Campaign Type</option>
                                         <?php if($campaign_types){ foreach($campaign_types as $campaign_type){?>
-                                        <option value="<?= $campaign_type->id ?>"><?= $campaign_type->name ?></option>
+                                            <option value="<?= $campaign_type->id ?>"><?= $campaign_type->name ?></option>
                                         <?php } }?>
                                     </select>
                                 </div>
