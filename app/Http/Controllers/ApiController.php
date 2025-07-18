@@ -1034,6 +1034,67 @@ class ApiController extends Controller
                 $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
             }
         /* change password */
+        /* update profile */
+            public function updateProfile(Request $request)
+            {
+                $apiStatus          = TRUE;
+                $apiMessage         = '';
+                $apiResponse        = [];
+                $apiExtraField      = '';
+                $apiExtraData       = '';
+                $requestData        = $request->all();
+                $requiredFields     = ['key', 'source', 'first_name', 'last_name'];
+                $headerData         = $request->header();
+                if (!$this->validateArray($requiredFields, $requestData)){
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'All Data Are Not Present !!!';
+                }
+                if($headerData['key'][0] == env('PROJECT_KEY')){
+                    $app_access_token           = $headerData['authorization'][0];
+                    $checkUserTokenExist        = UserDevice::where('app_access_token', '=', $app_access_token)->where('status', '=', 1)->first();
+                    if($checkUserTokenExist){
+                        $getTokenValue              = $this->tokenAuth($app_access_token);
+                        $uId                        = $getTokenValue['data'][1];
+                        $getUser                    = User::where('id', '=', $uId)->first();
+                        if($getUser){
+                            $postData = [
+                                        'first_name'                => $requestData['first_name'],
+                                        'last_name'                 => $requestData['last_name'],
+                                    ];
+                            User::where('id', '=', $uId)->update($postData);
+                            
+                            $apiStatus          = TRUE;
+                            http_response_code(200);
+                            $apiMessage         = 'Profile Updated Successfully !!!';
+                            $apiExtraField      = 'response_code';
+                            $apiExtraData       = http_response_code();
+                        } else {
+                            $apiStatus          = FALSE;
+                            http_response_code(200);
+                            $apiMessage         = 'User Not Found !!!';
+                            $apiExtraField      = 'response_code';
+                            $apiExtraData       = http_response_code();
+                        }
+                    } else {
+                        http_response_code(200);
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
+                        $apiStatus          = FALSE;
+                        $apiMessage         = 'Something Went Wrong !!!';
+                    }                                               
+                } else {
+                    http_response_code(200);
+                    $apiStatus          = FALSE;
+                    $apiMessage         = $this->getResponseCode(http_response_code());
+                    $apiExtraField      = 'response_code';
+                    $apiExtraData       = http_response_code();
+                }
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);           
+            }
+        /* update profile */
+        /* delete account */
+            
+        /* delete account */
     /* after login screen */
 
     /*
