@@ -41,6 +41,7 @@ $controllerRoute = $module['controller_route'];
                 $country_code       = $row->country_code;
                 $phone              = $row->phone;
                 $status             = $row->status;
+                $profile_image      = $row->profile_image;
             } else {
                 $id                 = '';
                 $role_id            = '';
@@ -51,6 +52,7 @@ $controllerRoute = $module['controller_route'];
                 $country_code       = '';
                 $phone              = '';
                 $status             = '';
+                $profile_image      = '';
             }
             ?>
             <div class="card-body">
@@ -115,6 +117,13 @@ $controllerRoute = $module['controller_route'];
                                 <label class="form-check-label" for="status">Active</label>
                             </div>
                         </div>
+
+                        <?php if($profile_image){ ?>
+                        <div class="col-md-6 mb-3">                           
+                            <img src="{{ url('public/uploads/user/' . $profile_image) }}" alt="Profile Image" class="img-fluid" style="width: 150px;">
+                        </div>
+                        <?php } ?>
+
                     </div>
                     <div class="mt-4">
                         <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>

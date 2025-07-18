@@ -43,6 +43,7 @@ class AdminUserController extends Controller
     /* add */
         public function add(Request $request){
             $data['module']           = $this->data;
+
             if($request->isMethod('post')){
                 $postData = $request->all();
                 $rules = [
@@ -67,7 +68,23 @@ class AdminUserController extends Controller
                             'platform_type'     => 'WEB',
                         ];
                         UserActivity::insert($activityData);
-                    /* user activity */
+                        /* user activity */
+
+                        if($request->file('profile_image'))
+                        {
+                            $profile_image = $request->file('profile_image');
+                            $ext = $profile_image->getClientOriginalExtension();
+                            if(in_array($ext, ['jpg', 'jpeg', 'png', 'webp']))
+                            {
+                                $profile_image_name = strip_tags(time().'_'.$profile_image->getClientOriginalName()); 
+                                $profile_image->move(public_path('uploads/user/'), $profile_image_name);                           
+                            }
+                            else
+                            {
+                                return redirect()->back()->with('error_message', 'Profile Image must be in jpg or jpeg or png or webp format !!!');
+                            }
+                        }
+                        
                     $fields = [
                         'role_id'               => strip_tags($postData['role_id']),
                         'branch_id'             => strip_tags($postData['branch_id']),
@@ -76,7 +93,7 @@ class AdminUserController extends Controller
                         'email'                 => strip_tags($postData['email']),
                         'country_code'          => strip_tags($postData['country_code']),
                         'phone'                 => strip_tags($postData['phone']),
-                        
+                        'profile_image'         => isset($profile_image_name)? $profile_image_name : '',
                         'password'              => Hash::make(strip_tags($postData['password'])),
                         'status'                => ((array_key_exists("status",$postData))?1:0),
                     ];
@@ -86,6 +103,7 @@ class AdminUserController extends Controller
                     return redirect()->back()->with('error_message', 'All Fields Required !!!');
                 }
             }
+
             $data['module']                 = $this->data;
             $title                          = $this->data['title'].' Add';
             $page_name                      = 'admin-user.add-edit';
@@ -118,6 +136,7 @@ class AdminUserController extends Controller
                     'phone'                 => 'required',
                 ];
                 if($this->validate($request, $rules)){
+
                     if($postData['password'] != ''){
                         $fields = [
                             'role_id'               => strip_tags($postData['role_id']),
@@ -142,6 +161,23 @@ class AdminUserController extends Controller
                             'status'                => ((array_key_exists("status",$postData))?1:0),
                         ];
                     }
+
+                    if($request->file('profile_image'))
+                    {
+                        $profile_image = $request->file('profile_image');
+                        $ext = $profile_image->getClientOriginalExtension();
+                        if(in_array($ext, ['jpg', 'jpeg', 'png', 'webp']))
+                        {
+                            $profile_image_name = strip_tags(time().'_'.$profile_image->getClientOriginalName()); 
+                            $profile_image->move(public_path('uploads/user/'), $profile_image_name); 
+                            $fields['profile_image'] = $profile_image_name;                          
+                        }
+                        else
+                        {
+                            return redirect()->back()->with('error_message', 'Profile Image must be in jpg or jpeg or png or webp format !!!');
+                        }
+                    }
+
                     User::where($this->data['primary_key'], '=', $id)->update($fields);
                     /* user activity */
                         $activityData = [
@@ -154,12 +190,13 @@ class AdminUserController extends Controller
                             'platform_type'     => 'WEB',
                         ];
                         UserActivity::insert($activityData);
-                    /* user activity */
-                    return redirect($this->data['controller_route'] . "/list")->with('success_message', $this->data['title'].' Updated Successfully !!!');
+                     return redirect($this->data['controller_route'] . "/list")->with('success_message', $this->data['title'].' Updated Successfully !!!');
                 } else {
-                    return redirect()->back()->with('error_message', 'All Fields Required !!!');
+                  /* user activity */
+                     return redirect()->back()->with('error_message', 'All Fields Required !!!');
                 }
             }
+            
             $data                           = $this->siteAuthService ->admin_after_login_layout($title,$page_name,$data);
             return view('maincontents.' . $page_name, $data);
         }
