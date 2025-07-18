@@ -1119,9 +1119,9 @@ class ApiController extends Controller
                         $uId                        = $getTokenValue['data'][1];
                         $getUser                    = User::where('id', '=', $uId)->first();
                         if($getUser){
-                            $getRole     = Role::select('name')->where('id', '=', $getUser->role_id)->first();
+                            $getRole     = Role::select('role_name')->where('id', '=', $getUser->role_id)->first();
                             $fields = [
-                                'user_type'                 => (($getRole)?$getRole->name:''),
+                                'user_type'                 => (($getRole)?$getRole->role_name:''),
                                 'entity_name'               => $getUser->first_name.' '.$getUser->last_name,
                                 'email'                     => $getUser->email,
                                 'is_email_verify'           => 1,
