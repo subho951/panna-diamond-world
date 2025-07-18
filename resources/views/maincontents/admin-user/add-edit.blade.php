@@ -41,6 +41,7 @@ $controllerRoute = $module['controller_route'];
                 $country_code       = $row->country_code;
                 $phone              = $row->phone;
                 $status             = $row->status;
+                $profile_image      = $row->profile_image;
             } else {
                 $id                 = '';
                 $role_id            = '';
@@ -51,6 +52,7 @@ $controllerRoute = $module['controller_route'];
                 $country_code       = '';
                 $phone              = '';
                 $status             = '';
+                $profile_image      = '';
             }
             ?>
             <div class="card-body">
@@ -65,17 +67,9 @@ $controllerRoute = $module['controller_route'];
                                     <option value="<?=$role->id?>" <?=(($role->id == $role_id)?'selected':'')?>><?=$role->role_name?></option>
                                 <?php } }?>
                             </select>
-                        </div>
+                        </div>                       
                         
                         <div class="col-md-6 mb-3">
-                            <label for="status" class="form-label d-block">Status <small class="text-danger">*</small></label>
-                            <div class="form-check form-switch mt-0 ">
-                                <input class="form-check-input" type="checkbox" name="status" role="switch" id="status" <?=(($status == 1)?'checked':'')?>>
-                                <label class="form-check-label" for="status">Active</label>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-12 mb-3">
                             <label for="branch_id" class="form-label">Branch <small class="text-danger">*</small></label>
                             <select class="select2 form-select" type="text" id="branch_id" name="branch_id"  required>
                                 <option value="" selected>Select Branch</option>
@@ -112,6 +106,24 @@ $controllerRoute = $module['controller_route'];
                             <input class="form-control" type="password" id="password" name="password" placeholder="Password" <?=((empty($row))?'required':'')?> />
                             <small class="text-danger">* Leave blank if you do not want to changes password</small>
                         </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="profile_image" class="form-label">Profile Image</label>
+                            <input class="form-control" type="file" id="profile_image" name="profile_image" accept="image/*"/>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="status" class="form-label d-block">Status <small class="text-danger">*</small></label>
+                            <div class="form-check form-switch mt-0 ">
+                                <input class="form-check-input" type="checkbox" name="status" role="switch" id="status" <?=(($status == 1)?'checked':'')?>>
+                                <label class="form-check-label" for="status">Active</label>
+                            </div>
+                        </div>
+
+                        <?php if($profile_image){ ?>
+                        <div class="col-md-6 mb-3">                           
+                            <img src="{{ url('public/uploads/user/' . $profile_image) }}" alt="Profile Image" class="img-fluid" style="width: 150px;">
+                        </div>
+                        <?php } ?>
+
                     </div>
                     <div class="mt-4">
                         <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>
