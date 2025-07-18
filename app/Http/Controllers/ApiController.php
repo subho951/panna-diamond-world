@@ -809,8 +809,8 @@ class ApiController extends Controller
                         $expiry     = date('d/m/Y H:i:s', $getTokenValue['data'][4]);
                         $getUser    = User::where('id', '=', $uId)->first();
                         if($getUser){
-                            
                             $getBranch = Branch::select('name')->where('id', '=', $getUser->branch_id)->first();
+                            $checkUserTokenExist        = UserDevice::where('app_access_token', '=', $app_access_token)->where('status', '=', 1)->first();
                             $profileData            = [
                                 'user_id'               => $uId,
                                 'name'                  => $getUser->first_name. ' ' .$getUser->last_name,
@@ -820,6 +820,7 @@ class ApiController extends Controller
                                 'branch_id'             => $getUser->branch_id,
                                 'created_at'            => date_format(date_create($getUser->created_at), "M d, Y h:i A"),
                                 'profile_image'         => (($getUser->profile_image != '')?url('/public/').'/'.$getUser->profile_image:env('NO_IMAGE_AVATAR')),
+                                'last_login'            => (($checkUserTokenExist)?date_format(date_create($checkUserTokenExist->created_at), "M d, Y h:i a"):date('Y-m-d H:i:s')),
                             ];
                             
                             $apiStatus          = TRUE;
