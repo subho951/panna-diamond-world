@@ -5,11 +5,14 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+
 use App\Models\Branch;
 use App\Models\BranchLead;
+use App\Models\DeleteAccountRequest;
 use App\Models\EmailLog;
 use App\Models\GeneralSetting;
 use App\Models\Page;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\UserDevice;
 use App\Models\UserActivity;
@@ -23,6 +26,7 @@ use Hash;
 use DB;
 use App\Libraries\CreatorJwt;
 use App\Libraries\JWT;
+
 date_default_timezone_set("Asia/Calcutta");
 
 class ApiController extends Controller
@@ -1093,7 +1097,68 @@ class ApiController extends Controller
             }
         /* update profile */
         /* delete account */
-            
+            public function deleteAccount(Request $request)
+            {
+                $apiStatus          = TRUE;
+                $apiMessage         = '';
+                $apiResponse        = [];
+                $apiExtraField      = '';
+                $apiExtraData       = '';
+                $requestData        = $request->all();
+                $requiredFields     = ['key', 'source'];
+                $headerData         = $request->header();
+                if (!$this->validateArray($requiredFields, $requestData)){
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'All Data Are Not Present !!!';
+                }
+                if($headerData['key'][0] == env('PROJECT_KEY')){
+                    $app_access_token           = $headerData['authorization'][0];
+                    $checkUserTokenExist        = UserDevice::where('app_access_token', '=', $app_access_token)->where('status', '=', 1)->first();
+                    if($checkUserTokenExist){
+                        $getTokenValue              = $this->tokenAuth($app_access_token);
+                        $uId                        = $getTokenValue['data'][1];
+                        $getUser                    = User::where('id', '=', $uId)->first();
+                        if($getUser){
+                            $getRole     = Role::select('name')->where('id', '=', $getUser->role_id)->first();
+                            $fields = [
+                                'user_type'                 => (($getRole)?$getRole->name:''),
+                                'entity_name'               => $getUser->first_name.' '.$getUser->last_name,
+                                'email'                     => $getUser->email,
+                                'is_email_verify'           => 1,
+                                'country_code'              => $getUser->country_code,
+                                'phone'                     => $getUser->phone,
+                                'is_phone_verify'           => 1,
+                            ];
+                            DeleteAccountRequest::insert($fields);
+
+                            $apiStatus          = TRUE;
+                            http_response_code(200);
+                            $apiMessage         = 'Account Delete Requests Submitted Successfully !!!';
+                            $apiExtraField      = 'response_code';
+                            $apiExtraData       = http_response_code();
+                        } else {
+                            $apiStatus          = FALSE;
+                            http_response_code(200);
+                            $apiMessage         = 'User Not Found !!!';
+                            $apiExtraField      = 'response_code';
+                            $apiExtraData       = http_response_code();
+                        }
+                    } else {
+                        http_response_code(200);
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
+                        $apiStatus          = FALSE;
+                        $apiMessage         = 'Something Went Wrong !!!';
+                    }               
+                } else {
+                    http_response_code(200);
+                    $apiStatus          = FALSE;
+                    $apiMessage         = $this->getResponseCode(http_response_code());
+                    $apiExtraField      = 'response_code';
+                    $apiExtraData       = http_response_code();
+                }
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData); 
+            }
         /* delete account */
     /* after login screen */
 
