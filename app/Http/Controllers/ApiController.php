@@ -814,6 +814,8 @@ class ApiController extends Controller
                             $profileData            = [
                                 'user_id'               => $uId,
                                 'name'                  => $getUser->first_name. ' ' .$getUser->last_name,
+                                'first_name'            => $getUser->first_name,
+                                'last_name'             => $getUser->last_name,
                                 'email'                 => $getUser->email,
                                 'phone'                 => $getUser->phone,
                                 'branch_name'           => (($getBranch)?$getBranch->name:''),
