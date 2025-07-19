@@ -4,11 +4,11 @@ $controllerRoute = $module['controller_route'];
 ?>
 @extends('layouts.main')
 @section('content')
-    <style>
+    {{-- <style>
         .select2-container {
             width: 100% !important;
         }
-    </style>
+    </style> --}}
     <div class="container-fluid flex-grow-1 container-p-y">
         <div class="row g-6">
             <h4><?= $page_header ?></h4>
@@ -62,7 +62,7 @@ $controllerRoute = $module['controller_route'];
 
                                 <div class="col-md-6 mb-3">
                                     <label for="campaign_type_id" class="form-label">Campaign Type</label>
-                                    <select class="select2 form-select" type="text" id="campaign_type_id" name="campaign_type_id">
+                                    <select class="select2 form-select"  id="campaign_type_id" name="campaign_type_id">
                                         <option value="" selected disabled>Select Campaign Type</option>
                                         <?php if($campaign_types){ foreach($campaign_types as $campaign_type){?>
                                             <option value="<?= $campaign_type->id ?>"><?= $campaign_type->name ?></option>
@@ -71,7 +71,7 @@ $controllerRoute = $module['controller_route'];
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="campaign_id" class="form-label">Campaign <small class="text-danger campaign_star"></small></label>
-                                    <select class="select2 form-select" type="text" id="campaign_id" name="campaign_id">
+                                    <select class="select2 form-select"  id="campaign_id" name="campaign_id">
                                         <option value="" selected disabled>Select Campaign</option>
                                     </select>
                                 </div>
@@ -90,7 +90,7 @@ $controllerRoute = $module['controller_route'];
                             </div>
                             <div class="mt-4">
                                 <button type="submit" class="btn btn-outline-dark btn-sm me-2">Save Changes</button>
-                                <a href="<?= url($controllerRoute . '/list/') ?>" class="btn btn-outline-danger btn-sm">Cancel</a>
+                                <a href="<?= url($controllerRoute) ?>" class="btn btn-outline-danger btn-sm">Cancel</a>
                             </div>
                         </form>
                     </div>

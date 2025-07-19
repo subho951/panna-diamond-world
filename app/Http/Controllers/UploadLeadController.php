@@ -121,8 +121,8 @@ class UploadLeadController extends Controller
                         $csvRow = [];
                         foreach ($csvArray as $key => $value)
                         {
-                           
-                            $header_id = LeadHeader::where('name', '=', $key)->where('status', '=', 1)->first()->id  ?? '';
+                            $slug = strtolower(Helper::clean(strip_tags($key)));
+                            $header_id = LeadHeader::where('slug', '=', $slug)->where('status', '=', 1)->first()->id  ?? '';
                             if ($header_id) 
                             {
                                 $csvCell = [];
@@ -134,7 +134,7 @@ class UploadLeadController extends Controller
                                     "lead_no" => $lead_no
                                 ];
                                 
-                                if($key == 'Phone')
+                                if($slug == 'phone')   //validating with respect to phone
                                 {
                                     $phone = MasterLead::where('header_id', '=', 4)->where('header_value', '=', strip_tags($value[$i]))->exists();
                                     if($phone) //true
@@ -238,8 +238,8 @@ class UploadLeadController extends Controller
         $data['branches']               = Branch::where('status', '=', 1)->get();
         $data['campaign_types']         = CampaignType::where('status', '=', 1)->get();
         
+        //listing purpose
         $uploadedLeadsArr               = UploadLead::where('status', '!=', 3)->get();
-
         $leadListArr = [];
         foreach($uploadedLeadsArr as $leadRow)
         {   
