@@ -255,8 +255,18 @@ $role_id      = (($user)?$user->role_id:0);
     <!-- Upload Lead -->
     <li class="menu-item <?=(($pageSegment == 'upload-lead')?'active':'')?>">
       <a href="<?=url('/upload-lead') ?>" class="menu-link">
-        <i class="menu-icon fa-solid fas fa-upload"></i>
+        <i class="menu-icon fa-solid fas fa-file-upload"></i>
         <div data-i18n="Upload Lead">Upload Lead</div>
+      </a>
+    </li>
+  <?php }?>
+
+  <?php if(in_array(23, $moduleIds)){?>
+    <!-- Add Individual Lead -->
+    <li class="menu-item <?=(($pageSegment == 'individual-lead')?'active':'')?>">
+      <a href="<?=url('/individual-lead/add') ?>" class="menu-link">
+        <i class="menu-icon fa-solid fas fa-address-card"></i>
+        <div data-i18n="Add Individual Lead">Add Individual Lead</div>
       </a>
     </li>
   <?php }?>

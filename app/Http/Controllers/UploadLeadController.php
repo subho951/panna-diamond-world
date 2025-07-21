@@ -121,28 +121,58 @@ class UploadLeadController extends Controller
                         $csvRow = [];
                         foreach ($csvArray as $key => $value)
                         {
-                           
-                            $header_id = LeadHeader::where('name', '=', $key)->where('status', '=', 1)->first()->id  ?? '';
+                            $slug = strtolower(Helper::clean(strip_tags($key)));
+                            $header_id = LeadHeader::where('slug', '=', $slug)->where('status', '=', 1)->first()->id  ?? '';
                             if ($header_id) 
                             {
                                 $csvCell = [];
                                 $csvCell = [
                                     "header_id" => $header_id,
-                                    "header_value" => strip_tags(isset($value[$i]) ? $value[$i] : 'N/A'),
+                                    "header_value" => !empty($value[$i]) ? strip_tags($value[$i]) : NULL,
                                     "upload_id"  => $lastInsertId,
                                     "sl_no" => $sl_no,
                                     "lead_no" => $lead_no
                                 ];
                                 
-                                if($key == 'Phone')
+                                //handling required fields
+                                $isRequiredArr = LeadHeader::where('is_required', '=', 1)->where('status', '=', 1)->pluck('slug')->toArray();
+                                // dd($isRequiredArr);
+                                if(count($isRequiredArr) > 0)
                                 {
-                                    $phone = MasterLead::where('header_id', '=', 4)->where('header_value', '=', strip_tags($value[$i]))->exists();
+                                    if(in_array($slug, $isRequiredArr))
+                                    {
+                                        if($csvCell["header_value"] == NULL)
+                                        {
+                                            $skippedRows++;
+                                            $csvRow = [];
+                                            break;
+                                        }
+                                    }
+                                }
+
+
+                                if($slug == 'phone')   //validating with respect to phone
+                                {
+                                    $phoneValue = strip_tags($value[$i]);
+                                    $phoneValue = preg_replace('/\D/', '', $phoneValue); // remove all non-digit characters
+
+                                    // Check if it's numeric and 10 digits
+                                    if (!ctype_digit($phoneValue) || strlen($phoneValue) !== 10) 
+                                    {
+                                        $skippedRows++;
+                                        $csvRow = [];
+                                        break;
+                                    }
+                                    // Check if it's already exists
+                                    $phone = MasterLead::where('header_id', '=', 4)->where('header_value', '=', $phoneValue)->exists();
                                     if($phone) //true
                                     {
                                         $skippedRows++;
                                         $csvRow = [];
                                         break;
                                     }
+
+                                    $csvCell["header_value"] = $phoneValue; //extra cleaning for phone number
                                 }
 
                                 $csvRow[] = $csvCell;
@@ -238,8 +268,8 @@ class UploadLeadController extends Controller
         $data['branches']               = Branch::where('status', '=', 1)->get();
         $data['campaign_types']         = CampaignType::where('status', '=', 1)->get();
         
+        //listing purpose
         $uploadedLeadsArr               = UploadLead::where('status', '!=', 3)->get();
-
         $leadListArr = [];
         foreach($uploadedLeadsArr as $leadRow)
         {   
