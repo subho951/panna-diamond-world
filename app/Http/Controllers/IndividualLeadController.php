@@ -51,23 +51,44 @@ class IndividualLeadController extends Controller
 
         $data['lead_headers']      = LeadHeader::where('status', '=', 1)->orderBy('rank', 'asc')->get();
         // dd($data['lead_headers']);
+        $isRequiredArr = LeadHeader::where('is_required', '=', 1)->where('status', '=', 1)->pluck('slug')->toArray();
 
         if ($request->isMethod('post')) {
             $postData = $request->all();
             // dd($postData);
-
-            $rules = [];
+          
+            $rules = [];            
             $postData = array_slice($postData, 1, null, true); //remove the first element before looping i.e., the _token
-            foreach ($postData as $key => $value) {
-                if ($key == "campaign_type_id" || $key == "campaign_id") {
-                    continue;
-                } elseif ($key == "phone") {
-                    $rules[$key] = 'required|digits:10';
-                } elseif ($key == "email") {
-                    $rules[$key] = 'required|regex:/^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/';
-                } else {
-                    $rules[$key]  = 'required';
+            foreach ($postData as $key => $value) 
+            {
+                if($key == "branch_id")
+                {
+                    $rules[$key] = 'required';
                 }
+
+                if($key == "telecaller_id")
+                {
+                    $rules[$key] = 'required';
+                }
+
+                if(count($isRequiredArr) > 0)
+                {
+                    if(in_array($key, $isRequiredArr))
+                    {
+                        if ($key == "phone") 
+                        {
+                            $rules[$key] = 'required|digits:10';
+                        }
+                        elseif ($key == "email") 
+                        {
+                            $rules[$key] = 'required|regex:/^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/';
+                        }
+                        else{
+                            $rules[$key] = 'required';
+                        }
+                    }
+                }
+
             }
             // dd($rules);
 
@@ -101,7 +122,7 @@ class IndividualLeadController extends Controller
                         $leadCell = [];
                         $leadCell = [
                             "header_id" => $header_id,
-                            "header_value" => strip_tags(isset($value) ? $value : 'N/A'),
+                            "header_value" => !empty($value) ? strip_tags($value) : NULL,
                             "upload_id"  => 0,
                             "sl_no" => $sl_no,
                             "lead_no" => $lead_no
@@ -157,7 +178,7 @@ class IndividualLeadController extends Controller
                     return redirect()->back()->with('error_message', 'Lead Insertion Failed !!!');
                 }
             } else {
-                return redirect()->back()->with('error_message', 'Star Marked Fields Are Required With Valid Phone And Email !!!');
+                return redirect()->back()->with('error_message', 'Star Marked Fields Are Required With Valid Data !!!');
             }
         }
 
@@ -172,7 +193,7 @@ class IndividualLeadController extends Controller
         //for dropdowns
 
         $data                      = $this->siteAuthService->admin_after_login_layout($title, $page_name, $data);
-        return view('maincontents.' . $page_name, $data);
+        return view('maincontents.' . $page_name, $data)->with(["isRequiredArr"=>$isRequiredArr]);
     }
 
 

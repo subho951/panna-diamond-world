@@ -79,38 +79,43 @@ $controllerRoute = $module['controller_route'];
                                     <div class="row">
                                         <h5 class="card-title mb-3">Lead Details</h5>
 
-                                        {{-- @dd($lead_headers); --}}
+                                        {{-- @dd($isRequiredArr); --}}
                                         
                                             @foreach($lead_headers as $leadHeaderRow)
 
                                                 @if($leadHeaderRow->input_type == 'TEXTBOX')  
                                                     @if($leadHeaderRow->slug == 'phone')                                                   
                                                         <div class="col-md-6 mb-3">
-                                                            <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} <small class="text-danger">*</small></label>
+                                                            <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
                                                             <input 
                                                             type="tel" 
                                                             minlength="10" 
                                                             maxlength="10" 
-                                                            oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-                                                            class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" required placeholder="Enter {{$leadHeaderRow->name}}">
+                                                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10);" 
+                                                            onblur="if(this.value!=='' && this.value.length!==10){ 
+                                                                alert('Please enter a valid phone number !'); 
+                                                                this.value=''; 
+                                                                this.focus(); 
+                                                            }" 
+                                                            class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif placeholder="Enter {{$leadHeaderRow->name}}">
                                                         </div> 
                                                     @elseif($leadHeaderRow->slug == 'email')
                                                         <div class="col-md-6 mb-3">
-                                                            <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} <small class="text-danger">*</small></label>
+                                                            <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
                                                             <input
                                                             type="email"
                                                             oninput="this.value = this.value.toLowerCase();" 
                                                             onblur="if(this.value!=='' && !/^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(this.value)){ 
-                                                                alert('Please enter a valid email address'); 
+                                                                alert('Please enter a valid email address !'); 
                                                                 this.value=''; 
                                                                 this.focus(); 
                                                             }"
-                                                            class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" required placeholder="Enter {{$leadHeaderRow->name}}">
+                                                            class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif placeholder="Enter {{$leadHeaderRow->name}}">
                                                         </div>
                                                     @else
                                                         <div class="col-md-6 mb-3">
-                                                            <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} <small class="text-danger">*</small></label>
-                                                            <input type="text" class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" required placeholder="Enter {{$leadHeaderRow->name}}">
+                                                            <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
+                                                            <input type="text" class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif placeholder="Enter {{$leadHeaderRow->name}}">
                                                         </div>                                                
                                                     @endif                                                              
                                                 @endif
@@ -119,69 +124,93 @@ $controllerRoute = $module['controller_route'];
                                                 
                                                 @if($leadHeaderRow->input_type == 'TEXTAREA')
                                                 <div class="col-md-6 mb-3">
-                                                    <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} <small class="text-danger">*</small></label>
-                                                    <textarea class="form-control" rows="1" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" required placeholder="Enter {{$leadHeaderRow->name}}"></textarea>
+                                                    <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
+                                                    <textarea class="form-control" rows="1" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif placeholder="Enter {{$leadHeaderRow->name}}"></textarea>
                                                 </div>
                                                 @endif
                                                 
                                                 @if($leadHeaderRow->input_type == 'DROPDOWN')
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}}<small class="text-danger">*</small></label>
-                                                    <select class="select2 form-select" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" required>
-                                                        <option value="" selected disabled>Select {{$leadHeaderRow->name}}</option>
-                                                        @if($leadHeaderRow->slug == 'country')
-                                                            @foreach($country as $countryRow)
-                                                                <option value="{{$countryRow->name}}">{{$countryRow->name}}</option>
-                                                            @endforeach
-                                                        @endif
+                                                
+                                                    @if($leadHeaderRow->slug == 'country')
+                                                        <div class="col-md-6 mb-3">
+                                                            <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
+                                                            <input type="hidden" name="{{$leadHeaderRow->slug}}" value="">
+                                                            <select class="select2 form-select" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif>
+                                                                <option value="" selected disabled>Select {{$leadHeaderRow->name}}</option>
+                                                                @foreach($country as $countryRow)
+                                                                    <option value="{{$countryRow->name}}" data-countryid="{{$countryRow->id}}">{{$countryRow->name}}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    @endif
 
-                                                        @if($leadHeaderRow->slug == 'phone-code')
-                                                            @foreach($country as $countryRow)
-                                                                <option value="{{$countryRow->phone_code}}">{{$countryRow->phone_code}}</option>
-                                                            @endforeach
-                                                        @endif
+                                                    @if($leadHeaderRow->slug == 'phone-code')
+                                                        <div class="col-md-6 mb-3">
+                                                            <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
+                                                            <input type="hidden" name="{{$leadHeaderRow->slug}}" value="">
+                                                            <select class="select2 form-select" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif>
+                                                                <option value="" selected disabled>Select {{$leadHeaderRow->name}}</option>
+                                                                @foreach($country as $countryRow)
+                                                                    <option value="{{$countryRow->phone_code}}">{{$countryRow->phone_code}}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    @endif
+                                                    
+                                                    @if($leadHeaderRow->slug == 'state')
+                                                        <div class="col-md-6 mb-3">
+                                                            <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
+                                                            <input type="hidden" name="{{$leadHeaderRow->slug}}" value="">
+                                                            <select class="select2 form-select" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif>
+                                                                <option value="" selected disabled>Select {{$leadHeaderRow->name}}</option>
+                                                                @foreach($state as $stateRow)
+                                                                    <option value="{{$stateRow->name}}">{{$stateRow->name}}</option>
+                                                                @endforeach
+                                                        </select>
+                                                        </div>
+                                                    @endif
 
-                                                        @if($leadHeaderRow->slug == 'state')
-                                                            {{-- @foreach($state as $stateRow)
-                                                                <option value="{{$stateRow->name}}">{{$stateRow->name}}</option>
-                                                            @endforeach --}}
-                                                        @endif
+                                                    @if($leadHeaderRow->slug == 'source')
+                                                        <div class="col-md-6 mb-3">
+                                                            <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
+                                                            <input type="hidden" name="{{$leadHeaderRow->slug}}" value="">
+                                                            <select class="select2 form-select" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif>
+                                                                <option value="" selected disabled>Select {{$leadHeaderRow->name}}</option>
+                                                                @foreach($source as $sourceRow)
+                                                                    <option value="{{$sourceRow->name}}">{{$sourceRow->name}}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    @endif
 
-                                                        @if($leadHeaderRow->slug == 'source')
-                                                            @foreach($source as $sourceRow)
-                                                                <option value="{{$sourceRow->name}}">{{$sourceRow->name}}</option>
-                                                            @endforeach
-                                                        @endif
-
-                                                    </select>
-                                                </div>
+                                                    
                                                 @endif
                                                 
                                                 @if($leadHeaderRow->input_type == 'CHECKBOX')
                                                 <div class="col-md-6 mb-3">
-                                                    <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} <small class="text-danger">*</small></label>
-                                                    <input type="checkbox" class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" required>
+                                                    <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
+                                                    <input type="checkbox" class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif>
                                                 </div>
                                                 @endif
                                                 
                                                 @if($leadHeaderRow->input_type == 'RADIO')
                                                 <div class="col-md-6 mb-3">
-                                                    <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} <small class="text-danger">*</small></label>
-                                                    <input type="radio" class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" required>
+                                                    <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
+                                                    <input type="radio" class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif>
                                                 </div>
                                                 @endif
                                                 
                                                 @if($leadHeaderRow->input_type == 'DATE')
                                                 <div class="col-md-6 mb-3">
-                                                    <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} <small class="text-danger">*</small></label>
-                                                    <input type="date" class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" required>
+                                                    <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
+                                                    <input type="date" class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif>
                                                 </div>
                                                 @endif
                                                 
                                                 @if($leadHeaderRow->input_type == 'TIME')
                                                 <div class="col-md-6 mb-3">
-                                                    <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} <small class="text-danger">*</small></label>
-                                                    <input type="time" class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" required>
+                                                    <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
+                                                    <input type="time" class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif>
                                                 </div>
                                                 @endif
 

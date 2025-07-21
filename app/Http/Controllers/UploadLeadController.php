@@ -128,21 +128,51 @@ class UploadLeadController extends Controller
                                 $csvCell = [];
                                 $csvCell = [
                                     "header_id" => $header_id,
-                                    "header_value" => strip_tags(isset($value[$i]) ? $value[$i] : 'N/A'),
+                                    "header_value" => !empty($value[$i]) ? strip_tags($value[$i]) : NULL,
                                     "upload_id"  => $lastInsertId,
                                     "sl_no" => $sl_no,
                                     "lead_no" => $lead_no
                                 ];
                                 
+                                //handling required fields
+                                $isRequiredArr = LeadHeader::where('is_required', '=', 1)->where('status', '=', 1)->pluck('slug')->toArray();
+                                // dd($isRequiredArr);
+                                if(count($isRequiredArr) > 0)
+                                {
+                                    if(in_array($slug, $isRequiredArr))
+                                    {
+                                        if($csvCell["header_value"] == NULL)
+                                        {
+                                            $skippedRows++;
+                                            $csvRow = [];
+                                            break;
+                                        }
+                                    }
+                                }
+
+
                                 if($slug == 'phone')   //validating with respect to phone
                                 {
-                                    $phone = MasterLead::where('header_id', '=', 4)->where('header_value', '=', strip_tags($value[$i]))->exists();
+                                    $phoneValue = strip_tags($value[$i]);
+                                    $phoneValue = preg_replace('/\D/', '', $phoneValue); // remove all non-digit characters
+
+                                    // Check if it's numeric and 10 digits
+                                    if (!ctype_digit($phoneValue) || strlen($phoneValue) !== 10) 
+                                    {
+                                        $skippedRows++;
+                                        $csvRow = [];
+                                        break;
+                                    }
+                                    // Check if it's already exists
+                                    $phone = MasterLead::where('header_id', '=', 4)->where('header_value', '=', $phoneValue)->exists();
                                     if($phone) //true
                                     {
                                         $skippedRows++;
                                         $csvRow = [];
                                         break;
                                     }
+
+                                    $csvCell["header_value"] = $phoneValue; //extra cleaning for phone number
                                 }
 
                                 $csvRow[] = $csvCell;

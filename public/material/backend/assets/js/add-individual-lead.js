@@ -68,8 +68,10 @@ $(document).ready(function () {
 
     //fetch state and phone code on country change
     let country_id;
+    let selectedOption;
     $(document).on('change', '#country', function(){
-        country_id = $(this).val();
+        selectedOption = $(this).find('option:selected');
+        country_id = selectedOption.data('countryid');
         // console.log(country_id);
         if(Number(country_id))
         {
