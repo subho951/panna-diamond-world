@@ -1167,7 +1167,7 @@ class ApiController extends Controller
     /* after login screen */
     /* after login lead */
         /* get lead status */
-            public function getLeadStatus(Request $request)
+            public function getLeadStatusList(Request $request)
             {
                 $apiStatus          = TRUE;
                 $apiMessage         = '';
