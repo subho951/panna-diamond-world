@@ -63,7 +63,7 @@ class LeadStatusController extends Controller
                     /* user activity */
                     $fields = [
                         'parent_id'                             => (($postData['parent_id'])?$postData['parent_id']:0),
-                        'name'                                  => strtoupper(strip_tags($postData['name'])),
+                        'name'                                  => ucwords(strtolower(strip_tags($postData['name']))),
                         'rank'                                  => strip_tags($postData['rank']),
                         'short_description'                     => strip_tags($postData['short_description']),
                         'is_registered'                         => ((array_key_exists("is_registered",$postData))?'YES':'NO'),
@@ -101,7 +101,7 @@ class LeadStatusController extends Controller
                 if($this->validate($request, $rules)){
                     $fields = [
                         'parent_id'                             => (($postData['parent_id'])?$postData['parent_id']:0),
-                        'name'                                  => strtoupper(strip_tags($postData['name'])),
+                        'name'                                  => ucwords(strtolower(strip_tags($postData['name']))),
                         'rank'                                  => strip_tags($postData['rank']),
                         'short_description'                     => strip_tags($postData['short_description']),
                         'is_registered'                         => ((array_key_exists("is_registered",$postData))?'YES':'NO'),
