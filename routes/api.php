@@ -26,4 +26,6 @@ use App\Http\Controllers\ApiController;
     Route::match(['post'], '/upload-profile-image', [ApiController::class, 'uploadProfileImage']);
     Route::match(['post'], '/update-profile', [ApiController::class, 'updateProfile']);
     Route::match(['get'], '/delete-account', [ApiController::class, 'deleteAccount']);
+
+    Route::match(['get'], '/get-lead-status', [ApiController::class, 'getLeadStatus']);
 /* after login */
