@@ -36,6 +36,8 @@ $controllerRoute = $module['controller_route'];
                 $name                       = $row->name;
                 $rank                       = $row->rank;
                 $short_description          = $row->short_description;
+                $background_color           = $row->background_color;
+                $font_color                 = $row->font_color;
                 $is_registered              = $row->is_registered;
                 $status                     = $row->status;
             } else {
@@ -43,6 +45,8 @@ $controllerRoute = $module['controller_route'];
                 $name                       = '';
                 $rank                       = '';
                 $short_description          = '';
+                $background_color           = '';
+                $font_color                 = '';
                 $is_registered              = '';
                 $status                     = '';
             }
@@ -80,6 +84,14 @@ $controllerRoute = $module['controller_route'];
                             <small class="text-danger">Max 100 characters allowed</small>
                         </div>
                         
+                        <div class="col-md-6">
+                            <label for="background_color" class="form-label">Background Color <small class="text-danger">*</small></label>
+                            <input class="form-control" type="text" id="background_color" name="background_color" value="<?=$background_color?>" required placeholder="Background Color" />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="font_color" class="form-label">Font Color <small class="text-danger">*</small></label>
+                            <input class="form-control" type="text" id="font_color" name="font_color" value="<?=$font_color?>" required placeholder="Font Color" />
+                        </div>
 
                         <div class="col-md-6 mt-3">
                             <label for="is_registered" class="form-label d-block">Is Registered <small class="text-danger">*</small></label>

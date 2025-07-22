@@ -1189,16 +1189,18 @@ class ApiController extends Controller
                         $expiry     = date('d/m/Y H:i:s', $getTokenValue['data'][4]);
                         $getUser    = User::where('id', '=', $uId)->first();
                         if($getUser){
-                            $getParentStats = LeadStatus::select('id', 'name')->where('status', '=', 1)->where('parent_id', '=', 0)->orderBy('rank', 'ASC')->get();
+                            $getParentStats = LeadStatus::select('id', 'name', 'background_color', 'font_color')->where('status', '=', 1)->where('parent_id', '=', 0)->orderBy('rank', 'ASC')->get();
                             if($getParentStats){
                                 foreach($getParentStats as $getParentStat){
                                     $child_status = [];
-                                    $getChildStats = LeadStatus::select('id', 'name')->where('status', '=', 1)->where('parent_id', '=', $getParentStat->id)->orderBy('rank', 'ASC')->get();
+                                    $getChildStats = LeadStatus::select('id', 'name', 'background_color', 'font_color')->where('status', '=', 1)->where('parent_id', '=', $getParentStat->id)->orderBy('rank', 'ASC')->get();
                                     if($getChildStats){
                                         foreach($getChildStats as $getChildStat){
                                             $child_status[]            = [
-                                                'parent_status_id'                  => $getChildStat->id,
-                                                'parent_status_name'                => $getChildStat->name
+                                                'child_status_id'                  => $getChildStat->id,
+                                                'child_status_name'                => $getChildStat->name,
+                                                'child_status_name'                => $getChildStat->background_color,
+                                                'font_color'                       => $getChildStat->font_color,
                                             ];
                                         }
                                     }
@@ -1206,6 +1208,8 @@ class ApiController extends Controller
                                     $apiResponse[]            = [
                                         'parent_status_id'                  => $getParentStat->id,
                                         'parent_status_name'                => $getParentStat->name,
+                                        'parent_status_name'                => $getParentStat->background_color,
+                                        'font_color'                        => $getParentStat->font_color,
                                         'child_status'                      => $child_status,
                                     ];
                                 }

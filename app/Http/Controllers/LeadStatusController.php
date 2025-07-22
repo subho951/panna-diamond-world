@@ -66,6 +66,8 @@ class LeadStatusController extends Controller
                         'name'                                  => ucwords(strtolower(strip_tags($postData['name']))),
                         'rank'                                  => strip_tags($postData['rank']),
                         'short_description'                     => strip_tags($postData['short_description']),
+                        'background_color'                      => strip_tags($postData['background_color']),
+                        'font_color'                            => strip_tags($postData['font_color']),
                         'is_registered'                         => ((array_key_exists("is_registered",$postData))?'YES':'NO'),
                         'status'                                => ((array_key_exists("status",$postData))?1:0),
                     ];
@@ -104,6 +106,8 @@ class LeadStatusController extends Controller
                         'name'                                  => ucwords(strtolower(strip_tags($postData['name']))),
                         'rank'                                  => strip_tags($postData['rank']),
                         'short_description'                     => strip_tags($postData['short_description']),
+                        'background_color'                      => strip_tags($postData['background_color']),
+                        'font_color'                            => strip_tags($postData['font_color']),
                         'is_registered'                         => ((array_key_exists("is_registered",$postData))?'YES':'NO'),
                         'status'                                => ((array_key_exists("status",$postData))?1:0),
                     ];
