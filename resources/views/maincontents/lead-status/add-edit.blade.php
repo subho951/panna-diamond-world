@@ -86,11 +86,11 @@ $controllerRoute = $module['controller_route'];
                         
                         <div class="col-md-6">
                             <label for="background_color" class="form-label">Background Color <small class="text-danger">*</small></label>
-                            <input class="form-control" type="text" id="background_color" name="background_color" value="<?=$background_color?>" required placeholder="Background Color" />
+                            <input class="form-control" type="color" id="background_color" name="background_color" value="<?=$background_color?>" required placeholder="Background Color" />
                         </div>
                         <div class="col-md-6">
                             <label for="font_color" class="form-label">Font Color <small class="text-danger">*</small></label>
-                            <input class="form-control" type="text" id="font_color" name="font_color" value="<?=$font_color?>" required placeholder="Font Color" />
+                            <input class="form-control" type="color" id="font_color" name="font_color" value="<?=$font_color?>" required placeholder="Font Color" />
                         </div>
 
                         <div class="col-md-6 mt-3">
