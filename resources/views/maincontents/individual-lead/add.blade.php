@@ -99,6 +99,21 @@ $controllerRoute = $module['controller_route'];
                                                             }" 
                                                             class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif placeholder="Enter {{$leadHeaderRow->name}}">
                                                         </div> 
+                                                    @elseif($leadHeaderRow->slug == 'whatsapp-number')                                                   
+                                                        <div class="col-md-6 mb-3">
+                                                            <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
+                                                            <input 
+                                                            type="tel" 
+                                                            minlength="10" 
+                                                            maxlength="10" 
+                                                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10);" 
+                                                            onblur="if(this.value!=='' && this.value.length!==10){ 
+                                                                alert('Please enter a valid whatsapp number !'); 
+                                                                this.value=''; 
+                                                                this.focus(); 
+                                                            }" 
+                                                            class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif placeholder="Enter {{$leadHeaderRow->name}}">
+                                                        </div> 
                                                     @elseif($leadHeaderRow->slug == 'email')
                                                         <div class="col-md-6 mb-3">
                                                             <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>

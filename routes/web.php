@@ -185,7 +185,9 @@ Route::middleware(['auth'])->group(function () {
     /* branch */
     /* Upload  Lead */
         Route::match(['get', 'post'], 'upload-lead', [UploadLeadController::class, 'list']);
-        Route::match(['get', 'post'], 'upload-lead/add', [UploadLeadController::class, 'add']);
+        Route::post( 'upload-lead/preview', [UploadLeadController::class, 'preview']);
+        Route::post( 'upload-lead/store', [UploadLeadController::class, 'store']);
+        Route::get( 'upload-lead/cancel-upload/{tempFile}', [UploadLeadController::class, 'cancelUpload']);
         Route::get('upload-lead/delete/{id}', [UploadLeadController::class, 'delete']);
         Route::get('upload-lead/csv-download/{id}', [UploadLeadController::class, 'csvDownload']);
         Route::post( 'upload-lead/fetch-telecaller', [UploadLeadController::class, 'fetchTelecaller']);

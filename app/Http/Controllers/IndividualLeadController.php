@@ -71,11 +71,30 @@ class IndividualLeadController extends Controller
                     $rules[$key] = 'required';
                 }
 
+                if ($key == "phone") 
+                {
+                    $rules[$key] = 'nullable|digits:10';
+                }
+
+                if ($key == "whatsapp-number") 
+                {
+                    $rules[$key] = 'nullable|digits:10';
+                }
+
+                if ($key == "email") 
+                {
+                    $rules[$key] = 'nullable|regex:/^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/';
+                }
+
                 if(count($isRequiredArr) > 0)
                 {
                     if(in_array($key, $isRequiredArr))
                     {
                         if ($key == "phone") 
+                        {
+                            $rules[$key] = 'required|digits:10';
+                        }
+                        elseif ($key == "whatsapp-number") 
                         {
                             $rules[$key] = 'required|digits:10';
                         }
@@ -130,13 +149,31 @@ class IndividualLeadController extends Controller
 
                         if ($slug == 'phone')   //validating with respect to phone
                         {
-                            $phone = MasterLead::where('header_id', '=', 4)->where('header_value', '=', strip_tags($value))->exists();
-                            if ($phone) //true
+                            if(!empty($value))
                             {
-                                $leadCell = [];
-                                return redirect()->back()->with('error_message', 'This Lead Already Exists !!!');
+                                $phone = MasterLead::where('header_id', '=', 4)->where('header_value', '=', strip_tags($value))->where('status', '!=', 3)->exists();
+                                if ($phone) //true
+                                {
+                                    $leadCell = [];
+                                    return redirect()->back()->with('error_message', 'This Lead Already Exists With Respect To Phone Number !!!');
+                                }
                             }
                         }
+
+                        if ($slug == 'whatsapp-number')   //validating with respect to whatsapp-number
+                        {
+                            if(!empty($value))
+                            {
+                                $whatsapp = MasterLead::where('header_id', '=', 14)->where('header_value', '=', strip_tags($value))->where('status', '!=', 3)->exists();
+                                if ($whatsapp) //true
+                                {
+                                    $leadCell = [];
+                                    return redirect()->back()->with('error_message', 'This Lead Already Exists With Respect To WhatsApp Number !!!');
+                                }
+                            }
+                        }
+
+
 
                         $leadRow[] = $leadCell;
                     }
