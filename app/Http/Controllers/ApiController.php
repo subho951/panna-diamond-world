@@ -12,6 +12,7 @@ use App\Models\DeleteAccountRequest;
 use App\Models\EmailLog;
 use App\Models\GeneralSetting;
 use App\Models\LeadStatus;
+use App\Models\MasterLead;
 use App\Models\Page;
 use App\Models\Role;
 use App\Models\User;
@@ -1272,9 +1273,16 @@ class ApiController extends Controller
                         $parent_status_id       = $requestData['parent_status_id'];
                         $child_status_id        = $requestData['child_status_id'];
                         if($getUser){
-                            Helper::pr($getUser,0);
-                            Helper::pr($requestData,0);
-                            die;
+                            $branch_id                      = $getUser->branch_id;
+                            $assigned_telecaller_id         = $uId;
+                            $limit                          = $per_page; // per page elements
+                            if($page_no == 1){
+                                $offset         = 0;
+                            } else {
+                                $offset         = (($limit * $page_no) - $limit); // ((15 * 3) - 15)
+                            }
+                            $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at')->where('status', '=', 1)->where('branch_id', '=', $branch_id)->where('assigned_telecaller_id', '=', $assigned_telecaller_id)->orderBy('lead_sl_no', 'ASC')->offset($offset)->limit($limit)->get();
+                            Helper::pr($leadNos);
 
                             $apiStatus          = TRUE;
                             http_response_code(200);
