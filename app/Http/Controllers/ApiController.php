@@ -1345,7 +1345,7 @@ class ApiController extends Controller
 
                                     $apiResponse[]      = [
                                         'sl_no'                 => $leadNo->lead_sl_no,
-                                        'lead_no'               => (($getMasterLead)?$getMasterLead->name:''),
+                                        'lead_no'               => (($getMasterLead)?$getMasterLead->lead_no:''),
                                         'company_name'          => $this->getHeaderValueByID($leadNo->lead_sl_no, 1),
                                         'contact_person_name'   => $this->getHeaderValueByID($leadNo->lead_sl_no, 2),
                                         'email'                 => $this->getHeaderValueByID($leadNo->lead_sl_no, 5),
