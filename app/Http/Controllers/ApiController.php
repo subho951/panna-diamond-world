@@ -1281,7 +1281,14 @@ class ApiController extends Controller
                             } else {
                                 $offset         = (($limit * $page_no) - $limit); // ((15 * 3) - 15)
                             }
-                            $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at')->where('status', '=', 1)->where('branch_id', '=', $branch_id)->where('assigned_telecaller_id', '=', $assigned_telecaller_id)->orderBy('lead_sl_no', 'ASC')->offset($offset)->limit($limit)->get();
+                            $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at')
+                                                        ->where('status', '=', 1)
+                                                        ->where('branch_id', '=', $branch_id)
+                                                        ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                        ->orderBy('lead_sl_no', 'ASC')
+                                                        ->offset($offset)
+                                                        ->limit($limit)
+                                                        ->get();
                             Helper::pr($leadNos);
 
                             $apiStatus          = TRUE;
