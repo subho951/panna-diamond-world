@@ -35,7 +35,7 @@ $controllerRoute = $module['controller_route'];
                 <?php }?>
                 <div class="card mb-4">
                     <div class="card-body">
-                        <form id="formAccountSettings" action="<?= url($controllerRoute .'/add') ?>" method="POST" enctype="multipart/form-data">
+                        <form id="formAccountSettings" action="<?= url($controllerRoute .'/preview') ?>" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
                                 <div class="col-md-6 mb-3">
