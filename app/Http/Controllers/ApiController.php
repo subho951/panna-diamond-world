@@ -1270,8 +1270,8 @@ class ApiController extends Controller
 
                         $page_no                = $requestData['page_no'];
                         $per_page               = $requestData['per_page'];
-                        $parent_status_id       = $requestData['parent_status_id'];
-                        $child_status_id        = $requestData['child_status_id'];
+                        $parent_status          = $requestData['parent_status'];
+                        $child_status           = $requestData['child_status'];
                         if($getUser){
                             $branch_id                      = $getUser->branch_id;
                             $assigned_telecaller_id         = $uId;
@@ -1281,7 +1281,9 @@ class ApiController extends Controller
                             } else {
                                 $offset         = (($limit * $page_no) - $limit); // ((15 * 3) - 15)
                             }
-                            $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at')
+
+                            if($parent_status == '' && $child_status == ''){
+                                $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at')
                                                         ->where('status', '=', 1)
                                                         ->where('branch_id', '=', $branch_id)
                                                         ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
@@ -1289,7 +1291,64 @@ class ApiController extends Controller
                                                         ->offset($offset)
                                                         ->limit($limit)
                                                         ->get();
-                            Helper::pr($leadNos);
+                            } elseif($parent_status != '' && $child_status == ''){
+                                $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at')
+                                                        ->where('status', '=', 1)
+                                                        ->where('branch_id', '=', $branch_id)
+                                                        ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                        ->where('parent_status_id', '=', $parent_status)
+                                                        ->orderBy('lead_sl_no', 'ASC')
+                                                        ->offset($offset)
+                                                        ->limit($limit)
+                                                        ->get();
+                            } elseif($parent_status == '' && $child_status != ''){
+                                $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at')
+                                                        ->where('status', '=', 1)
+                                                        ->where('branch_id', '=', $branch_id)
+                                                        ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                        ->where('child_status_id', '=', $child_status)
+                                                        ->orderBy('lead_sl_no', 'ASC')
+                                                        ->offset($offset)
+                                                        ->limit($limit)
+                                                        ->get();
+                            } elseif($parent_status != '' && $child_status != ''){
+                                $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at')
+                                                        ->where('status', '=', 1)
+                                                        ->where('branch_id', '=', $branch_id)
+                                                        ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                        ->where('parent_status_id', '=', $parent_status)
+                                                        ->where('child_status_id', '=', $child_status)
+                                                        ->orderBy('lead_sl_no', 'ASC')
+                                                        ->offset($offset)
+                                                        ->limit($limit)
+                                                        ->get();
+                            }
+
+                            if($leadNos){
+                                foreach($leadNos as $leadNo){
+
+                                    $apiResponse[] = [
+                                        'sl_no'                 => $leadNo->lead_sl_no,
+                                        'lead_no'               => '',
+                                        'company_name'          => '',
+                                        'contact_person_name'   => '',
+                                        'email'                 => '',
+                                        'phone_no'              => '',
+                                        'whatsapp_no'           => '',
+                                        'parent_status_id'      => '',
+                                        'parent_status_name'    => '',
+                                        'child_status_id'       => '',
+                                        'child_status_name'     => '',
+                                        'campaign_type_name'    => '',
+                                        'campaign_name'         => '',
+                                        'last_call'             => '',
+                                        'next_schedule'         => '',
+                                        'activity_count'        => '',
+                                    ];
+                                }
+                            }
+                            
+                            // Helper::pr($apiResponse);
 
                             $apiStatus          = TRUE;
                             http_response_code(200);
