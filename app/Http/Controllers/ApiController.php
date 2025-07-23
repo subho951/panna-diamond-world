@@ -12,6 +12,7 @@ use App\Models\DeleteAccountRequest;
 use App\Models\EmailLog;
 use App\Models\GeneralSetting;
 use App\Models\LeadStatus;
+use App\Models\LeadActivity;
 use App\Models\MasterLead;
 use App\Models\Page;
 use App\Models\Role;
@@ -1326,24 +1327,35 @@ class ApiController extends Controller
 
                             if($leadNos){
                                 foreach($leadNos as $leadNo){
+                                    $activity_count = LeadActivity::where('lead_sl_no', '=', $leadNo->lead_sl_no)->count();
+                                    $last_activity  = LeadActivity::where('lead_sl_no', '=', $leadNo->lead_sl_no)->orderBy('id', 'DESC')->first();
+                                    $next_schedule  = '';
+                                    if($activity_count > 0){
+                                        if($leadNo->next_followup_date != '' && $leadNo->next_followup_time != ''){
+                                            $next_schedule = date_format(date_create($leadNo->next_followup_date), "M d Y") . ', ' . date_format(date_create($leadNo->next_followup_time), "h:i a");
+                                        }
+                                    }
+                                    $getParentStatus    = LeadStatus::select('name')->where('id', '=', $leadNo->parent_status_id)->first();
+                                    $getChildStatus     = LeadStatus::select('name')->where('id', '=', $leadNo->child_status_id)->first();
+                                    $getMasterLead      = MasterLead::select('lead_no')->where('sl_no', '=', $leadNo->lead_sl_no)->first();
 
-                                    $apiResponse[] = [
+                                    $apiResponse[]      = [
                                         'sl_no'                 => $leadNo->lead_sl_no,
-                                        'lead_no'               => '',
-                                        'company_name'          => '',
+                                        'lead_no'               => (($getMasterLead)?$getMasterLead->name:''),
+                                        'company_name'          => $this->getHeaderValueByID($leadNo->lead_sl_no, 1),
                                         'contact_person_name'   => '',
                                         'email'                 => '',
                                         'phone_no'              => '',
                                         'whatsapp_no'           => '',
-                                        'parent_status_id'      => '',
-                                        'parent_status_name'    => '',
-                                        'child_status_id'       => '',
-                                        'child_status_name'     => '',
+                                        'parent_status_id'      => $leadNo->parent_status_id,
+                                        'parent_status_name'    => (($getParentStatus)?$getParentStatus->name:''),
+                                        'child_status_id'       => $leadNo->child_status_id,
+                                        'child_status_name'     => (($getChildStatus)?$getChildStatus->name:''),
                                         'campaign_type_name'    => '',
                                         'campaign_name'         => '',
-                                        'last_call'             => '',
-                                        'next_schedule'         => '',
-                                        'activity_count'        => '',
+                                        'last_call'             => (($activity_count > 0)?date_format(date_create($last_activity->created_at), "M d Y, h:i a"):''),
+                                        'next_schedule'         => $next_schedule,
+                                        'activity_count'        => $activity_count,
                                     ];
                                 }
                             }
@@ -1380,6 +1392,16 @@ class ApiController extends Controller
             }
         /* lead list */
     /* after login lead */
+    public function getHeaderValueByID($sl_no, $header_id){
+        $header_value = '';
+        $getHeaderValue = MasterLead::select('header_value')->where('sl_no', '=', $sl_no)->where('header_id', '=', $header_id)->first();
+        if($getHeaderValue){
+            $header_value = $getHeaderValue->header_value;
+        } else {
+            $header_value = '';
+        }
+        return $header_value;
+    }
     /*
     Get http response code
     Author : Subhomoy
