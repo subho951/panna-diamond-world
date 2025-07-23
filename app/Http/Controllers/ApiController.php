@@ -8,6 +8,8 @@ use Illuminate\Validation\Rule;
 
 use App\Models\Branch;
 use App\Models\BranchLead;
+use App\Models\CampaignType;
+use App\Models\Campaign;
 use App\Models\DeleteAccountRequest;
 use App\Models\EmailLog;
 use App\Models\GeneralSetting;
@@ -1284,7 +1286,7 @@ class ApiController extends Controller
                             }
 
                             if($parent_status == '' && $child_status == ''){
-                                $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at')
+                                $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
                                                         ->where('status', '=', 1)
                                                         ->where('branch_id', '=', $branch_id)
                                                         ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
@@ -1293,7 +1295,7 @@ class ApiController extends Controller
                                                         ->limit($limit)
                                                         ->get();
                             } elseif($parent_status != '' && $child_status == ''){
-                                $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at')
+                                $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
                                                         ->where('status', '=', 1)
                                                         ->where('branch_id', '=', $branch_id)
                                                         ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
@@ -1303,7 +1305,7 @@ class ApiController extends Controller
                                                         ->limit($limit)
                                                         ->get();
                             } elseif($parent_status == '' && $child_status != ''){
-                                $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at')
+                                $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
                                                         ->where('status', '=', 1)
                                                         ->where('branch_id', '=', $branch_id)
                                                         ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
@@ -1313,7 +1315,7 @@ class ApiController extends Controller
                                                         ->limit($limit)
                                                         ->get();
                             } elseif($parent_status != '' && $child_status != ''){
-                                $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at')
+                                $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
                                                         ->where('status', '=', 1)
                                                         ->where('branch_id', '=', $branch_id)
                                                         ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
@@ -1338,6 +1340,8 @@ class ApiController extends Controller
                                     $getParentStatus    = LeadStatus::select('name')->where('id', '=', $leadNo->parent_status_id)->first();
                                     $getChildStatus     = LeadStatus::select('name')->where('id', '=', $leadNo->child_status_id)->first();
                                     $getMasterLead      = MasterLead::select('lead_no')->where('sl_no', '=', $leadNo->lead_sl_no)->first();
+                                    $getCampaignType    = CampaignType::select('name')->where('id', '=', $leadNo->campaign_type_id)->first();
+                                    $getCampaign        = Campaign::select('name')->where('id', '=', $leadNo->campaign_id)->first();
 
                                     $apiResponse[]      = [
                                         'sl_no'                 => $leadNo->lead_sl_no,
@@ -1347,12 +1351,12 @@ class ApiController extends Controller
                                         'email'                 => $this->getHeaderValueByID($leadNo->lead_sl_no, 5),
                                         'phone_no'              => $this->getHeaderValueByID($leadNo->lead_sl_no, 4),
                                         'whatsapp_no'           => $this->getHeaderValueByID($leadNo->lead_sl_no, 14),
-                                        'parent_status_id'      => $leadNo->parent_status_id,
-                                        'parent_status_name'    => (($getParentStatus)?$getParentStatus->name:''),
-                                        'child_status_id'       => $leadNo->child_status_id,
-                                        'child_status_name'     => (($getChildStatus)?$getChildStatus->name:''),
-                                        'campaign_type_name'    => '',
-                                        'campaign_name'         => '',
+                                        'parent_status_id'      => (($leadNo->parent_status_id > 0)?$leadNo->parent_status_id:12),
+                                        'parent_status_name'    => (($getParentStatus)?$getParentStatus->name:'New'),
+                                        'child_status_id'       => (($leadNo->child_status_id > 0)?$leadNo->child_status_id:13),
+                                        'child_status_name'     => (($getChildStatus)?$getChildStatus->name:'New'),
+                                        'campaign_type_name'    => (($getCampaignType)?$getCampaignType->name:''),
+                                        'campaign_name'         => (($getCampaign)?$getCampaign->name:''),
                                         'last_call'             => (($activity_count > 0)?date_format(date_create($last_activity->created_at), "M d Y, h:i a"):''),
                                         'next_schedule'         => $next_schedule,
                                         'activity_count'        => $activity_count,
