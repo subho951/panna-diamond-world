@@ -1531,7 +1531,7 @@ class ApiController extends Controller
                                 $next_schedule  = '';
                                 if($activity_count > 0){
                                     if($leadNo->next_followup_date != '' && $leadNo->next_followup_time != ''){
-                                        $next_schedule = date_format(date_create($leadNo->next_followup_date), "M d Y") . ', ' . date_format(date_create($leadNo->next_followup_time), "h:i a");
+                                        $next_schedule = date_format(date_create($leadNo->next_followup_date), "M d, Y") . ', ' . date_format(date_create($leadNo->next_followup_time), "h:i A");
                                     }
                                 }
                                 $getParentStatus    = LeadStatus::select('name')->where('id', '=', $leadNo->parent_status_id)->first();
@@ -1539,6 +1539,46 @@ class ApiController extends Controller
                                 $getMasterLead      = MasterLead::select('lead_no')->where('sl_no', '=', $sl_no)->first();
                                 $getCampaignType    = CampaignType::select('name')->where('id', '=', $leadNo->campaign_type_id)->first();
                                 $getCampaign        = Campaign::select('name')->where('id', '=', $leadNo->campaign_id)->first();
+
+                                $activities         = [];
+                                $getActivities      = LeadActivity::where('lead_sl_no', '=', $sl_no)->first();
+                                if($getActivities){
+                                    foreach($getActivities as $getActivity){
+                                        $getPurpose         = Purpose::select('name')->where('id', '=', $getActivity->purpose_id)->first();
+                                        $getParentStatus    = LeadStatus::select('name')->where('id', '=', $getActivity->parent_status_id)->first();
+                                        $getChildStatus     = LeadStatus::select('name')->where('id', '=', $getActivity->child_status_id)->first();
+                                        $getTelecaller      = User::select('first_name', 'last_name')->where('id', '=', $getActivity->assigned_telecaller_id)->first();
+
+                                        $next_schedule_activity  = '';
+                                        if($getActivity->next_followup_date != '' && $getActivity->next_followup_time != ''){
+                                            $next_schedule_activity = date_format(date_create($getActivity->next_followup_date), "M d, Y") . ', ' . date_format(date_create($getActivity->next_followup_time), "h:i A");
+                                        }
+
+                                        $feedback_tags = [];
+                                        if($getActivity->feedback_tag_ids != ''){
+                                            $feedback_tag_ids  = json_decode($getActivity->feedback_tag_ids);
+                                            if(!empty($feedback_tag_ids)){
+                                                for($f=0;$f<count($feedback_tag_ids);$f++){
+                                                    $getTag             = FeedbackTag::select('name')->where('id', '=', $feedback_tag_ids[$f])->first();
+                                                    $feedback_tags[]    = (($getTag)?$getTag->name:'');
+                                                }
+                                            }
+                                        }
+
+                                        $activities[]         = [
+                                            'purpose_name'          => (($getPurpose)?$getPurpose->name:''),
+                                            'mood'                  => $getActivity->mood,
+                                            'comment'               => $getActivity->comment,
+                                            'note'                  => $getActivity->note,
+                                            'telecaller_name'       => (($getTelecaller)?$getTelecaller->first_name . ' ' . $getTelecaller->last_name:''),
+                                            'parent_status_name'    => (($getParentStatus)?$getParentStatus->name:''),
+                                            'child_status_name'     => (($getChildStatus)?$getChildStatus->name:''),
+                                            'activity_timestamp'    => date_format(date_create($getActivity->note), "M d, Y h:i A"),
+                                            'next_schedule'         => $next_schedule_activity,
+                                            'feedback_tags'         => $feedback_tags,
+                                        ];
+                                    }
+                                }
 
                                 $apiResponse        = [
                                     'sl_no'                 => $sl_no,
@@ -1556,8 +1596,9 @@ class ApiController extends Controller
                                     'campaign_name'         => (($getCampaign)?$getCampaign->name:''),
                                     'last_call'             => (($activity_count > 0)?date_format(date_create($last_activity->created_at), "M d Y, h:i a"):''),
                                     'next_schedule'         => $next_schedule,
-                                    'activity_count'        => $activity_count,
                                     'telecaller_name'       => $getUser->first_name . ' ' . $getUser->last_name,
+                                    'activity_count'        => $activity_count,
+                                    'activities'            => $activities,
                                 ];
                             }
 
