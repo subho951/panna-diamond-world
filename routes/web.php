@@ -18,6 +18,7 @@ use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\SourceController;
 use App\Http\Controllers\LeadHeaderController;
 use App\Http\Controllers\LeadStatusController;
+use App\Http\Controllers\MoodController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\UploadLeadController;
 use App\Http\Controllers\IndividualLeadController;
@@ -145,6 +146,13 @@ Route::middleware(['auth'])->group(function () {
             Route::get('lead-status/delete/{id}', [LeadStatusController::class, 'delete']);
             Route::get('lead-status/change-status/{id}', [LeadStatusController::class, 'change_status']);
         /* lead status */
+        /* mood */
+            Route::get('mood/list', [MoodController::class, 'list']);
+            Route::match(['get', 'post'], 'mood/add', [MoodController::class, 'add']);
+            Route::match(['get', 'post'], 'mood/edit/{id}', [MoodController::class, 'edit']);
+            Route::get('mood/delete/{id}', [MoodController::class, 'delete']);
+            Route::get('mood/change-status/{id}', [MoodController::class, 'change_status']);
+        /* mood */
     /* Masters */
     /* FAQs */
         /* faq category */

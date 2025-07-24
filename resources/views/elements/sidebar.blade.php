@@ -92,7 +92,7 @@ $role_id      = (($user)?$user->role_id:0);
 
   <?php if(in_array(13, $moduleIds) || in_array(14, $moduleIds) || in_array(15, $moduleIds) || in_array(16, $moduleIds) || in_array(17, $moduleIds) || in_array(18, $moduleIds) || in_array(19, $moduleIds) || in_array(20, $moduleIds)){?>
     <!-- Masters -->
-    <li class="menu-item active <?=(($pageSegment == 'country' || $pageSegment == 'state' || $pageSegment == 'city' || $pageSegment == 'campaign-type' || $pageSegment == 'campaign' || $pageSegment == 'source' || $pageSegment == 'lead-header' || $pageSegment == 'lead-status')?'open':'')?>">
+    <li class="menu-item active <?=(($pageSegment == 'country' || $pageSegment == 'state' || $pageSegment == 'city' || $pageSegment == 'campaign-type' || $pageSegment == 'campaign' || $pageSegment == 'source' || $pageSegment == 'lead-header' || $pageSegment == 'lead-status' || $pageSegment == 'mood')?'open':'')?>">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon fa-solid fa-database"></i>
         <div data-i18n="Masters">Masters</div>
@@ -158,6 +158,14 @@ $role_id      = (($user)?$user->role_id:0);
           <li class="menu-item <?=(($pageSegment == 'lead-status')?'active':'')?>">
             <a href="<?=url('/lead-status/list')?>" class="menu-link">
               <div data-i18n="Lead Status"><i class="fa-solid fa-arrow-right"></i> Lead Status</div>
+            </a>
+          </li>
+        <?php }?>
+
+        <?php if(in_array(20, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'mood')?'active':'')?>">
+            <a href="<?=url('/mood/list')?>" class="menu-link">
+              <div data-i18n="Moods"><i class="fa-solid fa-arrow-right"></i> Moods</div>
             </a>
           </li>
         <?php }?>
