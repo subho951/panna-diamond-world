@@ -58,7 +58,7 @@ $role_id      = (($user)?$user->role_id:0);
       </a>
     </li>
   <?php }?>
-  
+
   <?php if($role_id == 1){?>
     <!-- Access & Permission -->
     <li class="menu-item active <?=(($pageSegment == 'module' || $pageSegment == 'role' || $pageSegment == 'admin-user')?'open':'')?>">
@@ -105,7 +105,7 @@ $role_id      = (($user)?$user->role_id:0);
             </a>
           </li>
         <?php }?>
-        
+
         <?php if(in_array(14, $moduleIds)){?>
           <li class="menu-item <?=(($pageSegment == 'state')?'active':'')?>">
             <a href="<?=url('/state/list')?>" class="menu-link">
@@ -113,7 +113,7 @@ $role_id      = (($user)?$user->role_id:0);
             </a>
           </li>
         <?php }?>
-        
+
         <?php if(in_array(15, $moduleIds)){?>
           <li class="menu-item <?=(($pageSegment == 'city')?'active':'')?>">
             <a href="<?=url('/city/list')?>" class="menu-link">
@@ -121,7 +121,7 @@ $role_id      = (($user)?$user->role_id:0);
             </a>
           </li>
         <?php }?>
-        
+
         <?php if(in_array(16, $moduleIds)){?>
           <li class="menu-item <?=(($pageSegment == 'campaign-type')?'active':'')?>">
             <a href="<?=url('/campaign-type/list')?>" class="menu-link">
@@ -162,6 +162,7 @@ $role_id      = (($user)?$user->role_id:0);
           </li>
         <?php }?>
 
+
         <?php if(in_array(20, $moduleIds)){?>
           <li class="menu-item <?=(($pageSegment == 'mood')?'active':'')?>">
             <a href="<?=url('/mood/list')?>" class="menu-link">
@@ -169,10 +170,28 @@ $role_id      = (($user)?$user->role_id:0);
             </a>
           </li>
         <?php }?>
+
+        <?php if(in_array(24, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'feedback-tag')?'active':'')?>">
+            <a href="<?=url('/feedback-tag/list')?>" class="menu-link">
+              <div data-i18n="Feedback Tag"><i class="fa-solid fa-arrow-right"></i> Feedback Tag</div>
+            </a>
+          </li>
+        <?php }?>
+
+        <?php if(in_array(25, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'purpose')?'active':'')?>">
+            <a href="<?=url('/purpose/list')?>" class="menu-link">
+              <div data-i18n="Purpose"><i class="fa-solid fa-arrow-right"></i> Purpose</div>
+            </a>
+          </li>
+        <?php }?>
+
+
       </ul>
     </li>
   <?php }?>
-  
+
   <?php if(in_array(5, $moduleIds) || in_array(6, $moduleIds) || in_array(7, $moduleIds)){?>
     <!-- FAQs -->
     <li class="menu-item active <?=(($pageSegment == 'faq-category' || $pageSegment == 'faq-sub-category' || $pageSegment == 'faq')?'open':'')?>">
@@ -188,7 +207,7 @@ $role_id      = (($user)?$user->role_id:0);
             </a>
           </li>
         <?php }?>
-        
+
         <?php if(in_array(6, $moduleIds)){?>
           <li class="menu-item <?=(($pageSegment == 'faq-sub-category')?'active':'')?>">
             <a href="<?=url('/faq-sub-category/list')?>" class="menu-link">
@@ -196,7 +215,7 @@ $role_id      = (($user)?$user->role_id:0);
             </a>
           </li>
         <?php }?>
-        
+
         <?php if(in_array(7, $moduleIds)){?>
           <li class="menu-item <?=(($pageSegment == 'faq')?'active':'')?>">
             <a href="<?=url('/faq/list')?>" class="menu-link">
@@ -208,7 +227,7 @@ $role_id      = (($user)?$user->role_id:0);
       </ul>
     </li>
   <?php }?>
-  
+
   <?php if(in_array(8, $moduleIds)){?>
     <!-- CMS Pages -->
     <li class="menu-item <?=(($pageSegment == 'page')?'active':'')?>">
@@ -218,7 +237,7 @@ $role_id      = (($user)?$user->role_id:0);
       </a>
     </li>
   <?php }?>
-  
+
   <?php if(in_array(10, $moduleIds)){?>
     <!-- Email Logs -->
     <li class="menu-item <?=(($pageSegment == 'email-logs')?'active':'')?>">
@@ -228,7 +247,7 @@ $role_id      = (($user)?$user->role_id:0);
       </a>
     </li>
   <?php }?>
-  
+
   <?php if(in_array(11, $moduleIds)){?>
     <!-- Login Logs -->
     <li class="menu-item <?=(($pageSegment == 'login-logs')?'active':'')?>">
@@ -238,7 +257,7 @@ $role_id      = (($user)?$user->role_id:0);
       </a>
     </li>
   <?php }?>
-  
+
   <?php if(in_array(12, $moduleIds)){?>
     <!-- User Activity Logs -->
     <li class="menu-item <?=(($pageSegment == 'user-activity-logs')?'active':'')?>">
@@ -278,7 +297,7 @@ $role_id      = (($user)?$user->role_id:0);
       </a>
     </li>
   <?php }?>
-  
+
   <?php if(in_array(9, $moduleIds)){?>
     <!-- Settings -->
     <li class="menu-item <?=(($pageSegment == 'settings')?'active':'')?>">
@@ -288,7 +307,7 @@ $role_id      = (($user)?$user->role_id:0);
       </a>
     </li>
   <?php }?>
-  
+
    <!-- Lead List -->
    <li class="menu-item <?=(($pageSegment == 'lead-list')?'active':'')?>">
     <a href="<?=url('/lead-list')?>" class="menu-link">
@@ -296,7 +315,7 @@ $role_id      = (($user)?$user->role_id:0);
       <div data-i18n="Lead List">Lead List</div>
     </a>
   </li>
- 
+
   <!-- Log Out -->
   <li class="menu-item">
     <a href="<?=url('/logout')?>" class="menu-link">

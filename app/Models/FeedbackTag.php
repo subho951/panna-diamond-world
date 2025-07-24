@@ -9,3 +9,4 @@ class FeedbackTag extends Model
 {
     use SoftDeletes;
 }
+

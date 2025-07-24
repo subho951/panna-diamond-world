@@ -23,6 +23,8 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\UploadLeadController;
 use App\Http\Controllers\IndividualLeadController;
 use App\Http\Controllers\LeadListController;
+use App\Http\Controllers\FeedbackTagController;
+use App\Http\Controllers\PurposeController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -211,5 +213,20 @@ Route::middleware(['auth'])->group(function () {
     /* Lead List */
         Route::get('lead-list', [LeadListController::class, 'list']);
     /* Lead List */
-});
 
+    /* Feedback Tags */
+        Route::get('feedback-tag/list',[FeedbackTagController::class, 'list']);
+        Route::match(['get','post'], 'feedback-tag/add', [FeedbackTagController::class, 'add']);
+        Route::match(['get','post'], 'feedback-tag/edit/{id}', [FeedbackTagController::class, 'edit']);
+        Route::get('feedback-tag/delete/{id}', [FeedbackTagController::class, 'delete']);
+        Route::get('feedback-tag/change-status/{id}', [FeedbackTagController::class, 'change_status']);
+    /* Feedback Tags */
+
+    /* Purpose */
+        Route::get('purpose/list',[PurposeController::class, 'list']);
+        Route::match(['get','post'], 'purpose/add', [PurposeController::class, 'add']);
+        Route::match(['get','post'], 'purpose/edit/{id}', [PurposeController::class, 'edit']);
+        Route::get('purpose/delete/{id}', [PurposeController::class, 'delete']);
+        Route::get('purpose/change-status/{id}', [PurposeController::class, 'change_status']);
+    /* Purpose */
+});
