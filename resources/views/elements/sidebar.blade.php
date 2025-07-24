@@ -161,6 +161,23 @@ $role_id      = (($user)?$user->role_id:0);
             </a>
           </li>
         <?php }?>
+
+        <?php if(in_array(24, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'feedback-tag')?'active':'')?>">
+            <a href="<?=url('/feedback-tag/list')?>" class="menu-link">
+              <div data-i18n="Feedback Tag"><i class="fa-solid fa-arrow-right"></i> Feedback Tag</div>
+            </a>
+          </li>
+        <?php }?>
+
+        <?php if(in_array(25, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'purpose')?'active':'')?>">
+            <a href="<?=url('/purpose/list')?>" class="menu-link">
+              <div data-i18n="Purpose"><i class="fa-solid fa-arrow-right"></i> Purpose</div>
+            </a>
+          </li>
+        <?php }?>
+
       </ul>
     </li>
   <?php }?>
