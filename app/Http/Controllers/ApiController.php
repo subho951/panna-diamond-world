@@ -1544,6 +1544,8 @@ class ApiController extends Controller
                                 $getActivities      = LeadActivity::where('lead_sl_no', '=', $sl_no)->first();
                                 if($getActivities){
                                     foreach($getActivities as $getActivity){
+                                        echo $getActivity->purpose_id;
+                                        Helper::pr($getActivity);
                                         $getPurpose         = Purpose::select('name')->where('id', '=', $getActivity->purpose_id)->first();
                                         Helper::pr($getPurpose);
                                         $getParentStatus    = LeadStatus::select('name')->where('id', '=', $getActivity->parent_status_id)->first();
