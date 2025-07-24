@@ -65,7 +65,7 @@ $controllerRoute = $module['controller_route'];
                         </div>
                         <div class="col-md-6">
                             <label for="color" class="form-label">Color <small class="text-danger">*</small></label>
-                            <input class="form-control" type="text" id="color" name="color" value="<?=$color?>" required placeholder="Color" />
+                            <input class="form-control" type="color" id="color" name="color" value="<?=$color?>" required placeholder="Color" />
                         </div>
                     </div>
                     <div class="mt-4">
