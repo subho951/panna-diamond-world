@@ -28,5 +28,7 @@ use App\Http\Controllers\ApiController;
     Route::match(['get'], '/delete-account', [ApiController::class, 'deleteAccount']);
 
     Route::match(['get'], '/get-lead-status-list', [ApiController::class, 'getLeadStatusList']);
+    Route::match(['get'], '/get-followup-option', [ApiController::class, 'getFollowupOption']);
     Route::match(['post'], '/lead-list', [ApiController::class, 'leadList']);
+    Route::match(['post'], '/lead-details', [ApiController::class, 'leadDetail']);
 /* after login */
