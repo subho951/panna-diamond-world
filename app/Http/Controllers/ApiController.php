@@ -12,11 +12,13 @@ use App\Models\CampaignType;
 use App\Models\Campaign;
 use App\Models\DeleteAccountRequest;
 use App\Models\EmailLog;
+use App\Models\FeedbackTag;
 use App\Models\GeneralSetting;
 use App\Models\LeadStatus;
 use App\Models\LeadActivity;
 use App\Models\MasterLead;
 use App\Models\Page;
+use App\Models\Purpose;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\UserDevice;
@@ -1284,6 +1286,28 @@ class ApiController extends Controller
                                         'name'                => $getChildStat->name,
                                         'background_color'    => $getChildStat->background_color,
                                         'font_color'          => $getChildStat->font_color,
+                                    ];
+                                }
+                            }
+
+                            // call purposes
+                            $getPurposes = Purpose::select('id', 'name')->where('status', '=', 1)->orderBy('id', 'ASC')->get();
+                            if($getPurposes){
+                                foreach($getPurposes as $purpose){
+                                    $call_purpose[]            = [
+                                        'id'                  => $purpose->id,
+                                        'name'                => $purpose->name
+                                    ];
+                                }
+                            }
+
+                            // feedback tags
+                            $tags = FeedbackTag::select('id', 'name')->where('status', '=', 1)->orderBy('id', 'ASC')->get();
+                            if($tags){
+                                foreach($tags as $tag){
+                                    $feedback_tags[]            = [
+                                        'id'                  => $tag->id,
+                                        'name'                => $tag->name
                                     ];
                                 }
                             }
