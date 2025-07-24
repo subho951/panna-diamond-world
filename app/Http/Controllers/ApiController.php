@@ -1542,7 +1542,6 @@ class ApiController extends Controller
 
                                 $activities         = [];
                                 $getActivities      = LeadActivity::where('lead_sl_no', '=', $sl_no)->first();
-                                Helper::pr($getActivities);
                                 if($getActivities){
                                     foreach($getActivities as $getActivity){
                                         $getPurpose         = Purpose::select('name')->where('id', '=', $getActivity->purpose_id)->first();
@@ -1565,6 +1564,7 @@ class ApiController extends Controller
                                                 }
                                             }
                                         }
+                                        Helper::pr($feedback_tags);
 
                                         $activities[]         = [
                                             'purpose_name'          => (($getPurpose)?$getPurpose->name:''),
