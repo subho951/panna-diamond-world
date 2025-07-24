@@ -1495,6 +1495,101 @@ class ApiController extends Controller
                 $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
             }
         /* lead list */
+        /* lead details */
+            public function leadDetail(Request $request)
+            {
+                $apiStatus          = TRUE;
+                $apiMessage         = '';
+                $apiResponse        = [];
+                $apiExtraField      = '';
+                $apiExtraData       = '';
+                $requestData        = $request->all();
+                $requiredFields     = ['key', 'source', 'sl_no'];
+                $headerData         = $request->header();
+                if (!$this->validateArray($requiredFields, $requestData)){
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'All Data Are Not Present !!!';
+                }
+                if($headerData['key'][0] == env('PROJECT_KEY')){
+                    $app_access_token           = $headerData['authorization'][0];
+                    $getTokenValue              = $this->tokenAuth($app_access_token);
+                    if($getTokenValue['status']){
+                        $uId                    = $getTokenValue['data'][1];
+                        $expiry                 = date('d/m/Y H:i:s', $getTokenValue['data'][4]);
+                        $getUser                = User::where('id', '=', $uId)->first();
+
+                        $sl_no                  = $requestData['sl_no'];
+                        if($getUser){
+                            $leadNo                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
+                                                        ->where('status', '=', 1)
+                                                        ->where('lead_sl_no', '=', $sl_no)
+                                                        ->first();
+
+                            if($leadNo){
+                                $activity_count = LeadActivity::where('lead_sl_no', '=', $sl_no)->count();
+                                $last_activity  = LeadActivity::where('lead_sl_no', '=', $sl_no)->orderBy('id', 'DESC')->first();
+                                $next_schedule  = '';
+                                if($activity_count > 0){
+                                    if($leadNo->next_followup_date != '' && $leadNo->next_followup_time != ''){
+                                        $next_schedule = date_format(date_create($leadNo->next_followup_date), "M d Y") . ', ' . date_format(date_create($leadNo->next_followup_time), "h:i a");
+                                    }
+                                }
+                                $getParentStatus    = LeadStatus::select('name')->where('id', '=', $leadNo->parent_status_id)->first();
+                                $getChildStatus     = LeadStatus::select('name')->where('id', '=', $leadNo->child_status_id)->first();
+                                $getMasterLead      = MasterLead::select('lead_no')->where('sl_no', '=', $sl_no)->first();
+                                $getCampaignType    = CampaignType::select('name')->where('id', '=', $leadNo->campaign_type_id)->first();
+                                $getCampaign        = Campaign::select('name')->where('id', '=', $leadNo->campaign_id)->first();
+
+                                $apiResponse        = [
+                                    'sl_no'                 => $sl_no,
+                                    'lead_no'               => (($getMasterLead)?$getMasterLead->lead_no:''),
+                                    'company_name'          => $this->getHeaderValueByID($sl_no, 1),
+                                    'contact_person_name'   => $this->getHeaderValueByID($sl_no, 2),
+                                    'email'                 => $this->getHeaderValueByID($sl_no, 5),
+                                    'phone_no'              => $this->getHeaderValueByID($sl_no, 4),
+                                    'whatsapp_no'           => $this->getHeaderValueByID($sl_no, 14),
+                                    'parent_status_id'      => (($leadNo->parent_status_id > 0)?$leadNo->parent_status_id:12),
+                                    'parent_status_name'    => (($getParentStatus)?$getParentStatus->name:'New'),
+                                    'child_status_id'       => (($leadNo->child_status_id > 0)?$leadNo->child_status_id:13),
+                                    'child_status_name'     => (($getChildStatus)?$getChildStatus->name:'New'),
+                                    'campaign_type_name'    => (($getCampaignType)?$getCampaignType->name:''),
+                                    'campaign_name'         => (($getCampaign)?$getCampaign->name:''),
+                                    'last_call'             => (($activity_count > 0)?date_format(date_create($last_activity->created_at), "M d Y, h:i a"):''),
+                                    'next_schedule'         => $next_schedule,
+                                    'activity_count'        => $activity_count,
+                                    'telecaller_name'       => $getUser->first_name . ' ' . $getUser->last_name,
+                                ];
+                            }
+
+                            $apiStatus          = TRUE;
+                            http_response_code(200);
+                            $apiMessage         = 'Data Available !!!';
+                            $apiExtraField      = 'response_code';
+                            $apiExtraData       = http_response_code();
+                        } else {
+                            $apiStatus          = FALSE;
+                            http_response_code(200);
+                            $apiMessage         = 'User Not Found !!!';
+                            $apiExtraField      = 'response_code';
+                            $apiExtraData       = http_response_code();
+                        }
+                    } else {
+                        http_response_code(200);
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
+                        $apiStatus          = FALSE;
+                        $apiMessage         = 'Something Went Wrong !!!';
+                    }                                               
+                } else {
+                    http_response_code(200);
+                    $apiStatus          = FALSE;
+                    $apiMessage         = $this->getResponseCode(http_response_code());
+                    $apiExtraField      = 'response_code';
+                    $apiExtraData       = http_response_code();
+                }
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
+            }
+        /* lead details */
     /* after login lead */
     public function getHeaderValueByID($sl_no, $header_id){
         $header_value = '';
