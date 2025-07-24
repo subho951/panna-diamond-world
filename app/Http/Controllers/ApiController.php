@@ -1541,13 +1541,10 @@ class ApiController extends Controller
                                 $getCampaign        = Campaign::select('name')->where('id', '=', $leadNo->campaign_id)->first();
 
                                 $activities         = [];
-                                $getActivities      = LeadActivity::where('lead_sl_no', '=', $sl_no)->first();
+                                $getActivities      = LeadActivity::where('lead_sl_no', '=', $sl_no)->get();
                                 if($getActivities){
                                     foreach($getActivities as $getActivity){
-                                        
-                                        Helper::pr($getActivity);
                                         $getPurpose         = Purpose::select('name')->where('id', '=', $getActivity->purpose_id)->first();
-                                        Helper::pr($getPurpose);
                                         $getParentStatus    = LeadStatus::select('name')->where('id', '=', $getActivity->parent_status_id)->first();
                                         $getChildStatus     = LeadStatus::select('name')->where('id', '=', $getActivity->child_status_id)->first();
                                         $getTelecaller      = User::select('first_name', 'last_name')->where('id', '=', $getActivity->assigned_telecaller_id)->first();
@@ -1567,7 +1564,6 @@ class ApiController extends Controller
                                                 }
                                             }
                                         }
-                                        Helper::pr($feedback_tags);
 
                                         $activities[]         = [
                                             'purpose_name'          => (($getPurpose)?$getPurpose->name:''),
