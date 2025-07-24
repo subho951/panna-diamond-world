@@ -1360,6 +1360,7 @@ class ApiController extends Controller
                                         'last_call'             => (($activity_count > 0)?date_format(date_create($last_activity->created_at), "M d Y, h:i a"):''),
                                         'next_schedule'         => $next_schedule,
                                         'activity_count'        => $activity_count,
+                                        'telecaller_name'       => $getUser->first_name . ' ' . $getUser->last_name,
                                     ];
                                 }
                             }
