@@ -1545,6 +1545,7 @@ class ApiController extends Controller
                                 if($getActivities){
                                     foreach($getActivities as $getActivity){
                                         $getPurpose         = Purpose::select('name')->where('id', '=', $getActivity->purpose_id)->first();
+                                        Helper::pr($getPurpose);
                                         $getParentStatus    = LeadStatus::select('name')->where('id', '=', $getActivity->parent_status_id)->first();
                                         $getChildStatus     = LeadStatus::select('name')->where('id', '=', $getActivity->child_status_id)->first();
                                         $getTelecaller      = User::select('first_name', 'last_name')->where('id', '=', $getActivity->assigned_telecaller_id)->first();
