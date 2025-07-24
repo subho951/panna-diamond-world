@@ -17,6 +17,7 @@ use App\Models\GeneralSetting;
 use App\Models\LeadStatus;
 use App\Models\LeadActivity;
 use App\Models\MasterLead;
+use App\Models\Mood;
 use App\Models\Page;
 use App\Models\Purpose;
 use App\Models\Role;
@@ -1276,6 +1277,7 @@ class ApiController extends Controller
                             $call_status    = [];
                             $call_purpose   = [];
                             $feedback_tags  = [];
+                            $moods          = [];
 
                             // call status
                             $getChildStats = LeadStatus::select('id', 'name', 'background_color', 'font_color')->where('status', '=', 1)->where('parent_id', '>', 0)->orderBy('rank', 'ASC')->get();
@@ -1312,10 +1314,24 @@ class ApiController extends Controller
                                 }
                             }
 
+                            // moods
+                            $getMoods = Mood::select('id', 'name', 'emoji', 'color')->where('status', '=', 1)->orderBy('id', 'ASC')->get();
+                            if($getMoods){
+                                foreach($getMoods as $tag){
+                                    $moods[]            = [
+                                        'id'                  => $tag->id,
+                                        'name'                => $tag->name,
+                                        'emoji'               => $tag->emoji,
+                                        'color'               => $tag->color,
+                                    ];
+                                }
+                            }
+
                             $apiResponse = [
-                                'call_status'      => $call_status,
-                                'call_purpose'     => $call_purpose,
-                                'feedback_tags'    => $feedback_tags
+                                'call_status'       => $call_status,
+                                'call_purpose'      => $call_purpose,
+                                'feedback_tags'     => $feedback_tags,
+                                'moods'             => $moods,
                             ];
 
                             $apiStatus          = TRUE;
