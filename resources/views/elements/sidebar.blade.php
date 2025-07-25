@@ -114,13 +114,13 @@ $role_id      = (($user)?$user->role_id:0);
           </li>
         <?php }?>
 
-        <?php if(in_array(15, $moduleIds)){?>
+        <!-- <?php if(in_array(15, $moduleIds)){?>
           <li class="menu-item <?=(($pageSegment == 'city')?'active':'')?>">
             <a href="<?=url('/city/list')?>" class="menu-link">
               <div data-i18n="Cities"><i class="fa-solid fa-arrow-right"></i> Cities</div>
             </a>
           </li>
-        <?php }?>
+        <?php }?> -->
 
         <?php if(in_array(16, $moduleIds)){?>
           <li class="menu-item <?=(($pageSegment == 'campaign-type')?'active':'')?>">
