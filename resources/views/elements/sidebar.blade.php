@@ -92,7 +92,7 @@ $role_id      = (($user)?$user->role_id:0);
 
   <?php if(in_array(13, $moduleIds) || in_array(14, $moduleIds) || in_array(15, $moduleIds) || in_array(16, $moduleIds) || in_array(17, $moduleIds) || in_array(18, $moduleIds) || in_array(19, $moduleIds) || in_array(20, $moduleIds)){?>
     <!-- Masters -->
-    <li class="menu-item active <?=(($pageSegment == 'country' || $pageSegment == 'state' || $pageSegment == 'city' || $pageSegment == 'campaign-type' || $pageSegment == 'campaign' || $pageSegment == 'source' || $pageSegment == 'lead-header' || $pageSegment == 'lead-status' || $pageSegment == 'mood')?'open':'')?>">
+    <li class="menu-item active <?=(($pageSegment == 'country' || $pageSegment == 'state' || $pageSegment == 'city' || $pageSegment == 'campaign-type' || $pageSegment == 'campaign' || $pageSegment == 'source' || $pageSegment == 'lead-header' || $pageSegment == 'lead-status' || $pageSegment == 'feedback-tag' || $pageSegment == 'purpose' || $pageSegment == 'mood')?'open':'')?>">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon fa-solid fa-database"></i>
         <div data-i18n="Masters">Masters</div>
@@ -162,19 +162,10 @@ $role_id      = (($user)?$user->role_id:0);
           </li>
         <?php }?>
 
-
-        <?php if(in_array(20, $moduleIds)){?>
-          <li class="menu-item <?=(($pageSegment == 'mood')?'active':'')?>">
-            <a href="<?=url('/mood/list')?>" class="menu-link">
-              <div data-i18n="Moods"><i class="fa-solid fa-arrow-right"></i> Moods</div>
-            </a>
-          </li>
-        <?php }?>
-
         <?php if(in_array(24, $moduleIds)){?>
           <li class="menu-item <?=(($pageSegment == 'feedback-tag')?'active':'')?>">
             <a href="<?=url('/feedback-tag/list')?>" class="menu-link">
-              <div data-i18n="Feedback Tag"><i class="fa-solid fa-arrow-right"></i> Feedback Tag</div>
+              <div data-i18n="Feedback Tags"><i class="fa-solid fa-arrow-right"></i> Feedback Tags</div>
             </a>
           </li>
         <?php }?>
@@ -182,12 +173,18 @@ $role_id      = (($user)?$user->role_id:0);
         <?php if(in_array(25, $moduleIds)){?>
           <li class="menu-item <?=(($pageSegment == 'purpose')?'active':'')?>">
             <a href="<?=url('/purpose/list')?>" class="menu-link">
-              <div data-i18n="Purpose"><i class="fa-solid fa-arrow-right"></i> Purpose</div>
+              <div data-i18n="Purposes"><i class="fa-solid fa-arrow-right"></i> Purposes</div>
             </a>
           </li>
         <?php }?>
 
-
+        <?php if(in_array(26, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'mood')?'active':'')?>">
+            <a href="<?=url('/mood/list')?>" class="menu-link">
+              <div data-i18n="Moods"><i class="fa-solid fa-arrow-right"></i> Moods</div>
+            </a>
+          </li>
+        <?php }?>
       </ul>
     </li>
   <?php }?>
@@ -228,52 +225,12 @@ $role_id      = (($user)?$user->role_id:0);
     </li>
   <?php }?>
 
-  <?php if(in_array(8, $moduleIds)){?>
-    <!-- CMS Pages -->
-    <li class="menu-item <?=(($pageSegment == 'page')?'active':'')?>">
-      <a href="<?=url('/page/list')?>" class="menu-link">
-        <i class="menu-icon fa-solid fa-file-lines"></i>
-        <div data-i18n="CMS Pages">CMS Pages</div>
-      </a>
-    </li>
-  <?php }?>
-
-  <?php if(in_array(10, $moduleIds)){?>
-    <!-- Email Logs -->
-    <li class="menu-item <?=(($pageSegment == 'email-logs')?'active':'')?>">
-      <a href="<?=url('/email-logs')?>" class="menu-link">
-        <i class="menu-icon fa-solid fa-envelope"></i>
-        <div data-i18n="Email Logs">Email Logs</div>
-      </a>
-    </li>
-  <?php }?>
-
-  <?php if(in_array(11, $moduleIds)){?>
-    <!-- Login Logs -->
-    <li class="menu-item <?=(($pageSegment == 'login-logs')?'active':'')?>">
-      <a href="<?=url('/login-logs')?>" class="menu-link">
-        <i class="menu-icon fa-solid fa-right-to-bracket"></i>
-        <div data-i18n="Login Logs">Login Logs</div>
-      </a>
-    </li>
-  <?php }?>
-
-  <?php if(in_array(12, $moduleIds)){?>
-    <!-- User Activity Logs -->
-    <li class="menu-item <?=(($pageSegment == 'user-activity-logs')?'active':'')?>">
-      <a href="<?=url('/user-activity-logs')?>" class="menu-link">
-        <i class="menu-icon fa-solid fa-chart-line"></i>
-        <div data-i18n="User Activity Logs">User Activity Logs</div>
-      </a>
-    </li>
-  <?php }?>
-
   <?php if(in_array(21, $moduleIds)){?>
     <!-- Branch -->
     <li class="menu-item <?=(($pageSegment == 'branch')?'active':'')?>">
       <a href="<?=url('/branch/list') ?>" class="menu-link">
         <i class="menu-icon fa-solid fas fa-sitemap"></i>
-        <div data-i18n="Branch">Branch</div>
+        <div data-i18n="Branches">Branches</div>
       </a>
     </li>
   <?php }?>
@@ -283,7 +240,7 @@ $role_id      = (($user)?$user->role_id:0);
     <li class="menu-item <?=(($pageSegment == 'upload-lead')?'active':'')?>">
       <a href="<?=url('/upload-lead') ?>" class="menu-link">
         <i class="menu-icon fa-solid fas fa-file-upload"></i>
-        <div data-i18n="Upload Lead">Upload Lead</div>
+        <div data-i18n="Upload Leads">Upload Leads</div>
       </a>
     </li>
   <?php }?>
@@ -298,6 +255,59 @@ $role_id      = (($user)?$user->role_id:0);
     </li>
   <?php }?>
 
+  <!-- Lead List -->
+   <li class="menu-item <?=(($pageSegment == 'lead-list')?'active':'')?>">
+    <a href="<?=url('/lead-list')?>" class="menu-link">
+      <i class="menu-icon fa-solid fa-list"></i>
+      <div data-i18n="Lead List">Lead List</div>
+    </a>
+  </li>
+
+  <?php if(in_array(8, $moduleIds)){?>
+    <!-- CMS Pages -->
+    <li class="menu-item <?=(($pageSegment == 'page')?'active':'')?>">
+      <a href="<?=url('/page/list')?>" class="menu-link">
+        <i class="menu-icon fa-solid fa-file-lines"></i>
+        <div data-i18n="CMS Pages">CMS Pages</div>
+      </a>
+    </li>
+  <?php }?>
+
+  <?php if(in_array(10, $moduleIds) || in_array(11, $moduleIds) || in_array(12, $moduleIds)){?>
+    <!-- Logs -->
+    <li class="menu-item active <?=(($pageSegment == 'email-logs' || $pageSegment == 'login-logs' || $pageSegment == 'user-activity-logs')?'open':'')?>">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon fa-solid fa-circle-question"></i>
+        <div data-i18n="Logs">Logs</div>
+      </a>
+      <ul class="menu-sub">
+        <?php if(in_array(10, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'email-logs')?'active':'')?>">
+            <a href="<?=url('/email-logs')?>" class="menu-link">
+              <div data-i18n="Email Logs"><i class="fa-solid fa-arrow-right"></i> Email Logs</div>
+            </a>
+          </li>
+        <?php }?>
+
+        <?php if(in_array(11, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'login-logs')?'active':'')?>">
+            <a href="<?=url('/login-logs')?>" class="menu-link">
+              <div data-i18n="Login Logs"><i class="fa-solid fa-arrow-right"></i> Login Logs</div>
+            </a>
+          </li>
+        <?php }?>
+
+        <?php if(in_array(12, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'user-activity-logs')?'active':'')?>">
+            <a href="<?=url('/user-activity-logs')?>" class="menu-link">
+              <div data-i18n="User Activity Logs"><i class="fa-solid fa-arrow-right"></i> User Activity Logs</div>
+            </a>
+          </li>
+        <?php }?>
+      </ul>
+    </li>
+  <?php }?>
+  
   <?php if(in_array(9, $moduleIds)){?>
     <!-- Settings -->
     <li class="menu-item <?=(($pageSegment == 'settings')?'active':'')?>">
@@ -307,15 +317,7 @@ $role_id      = (($user)?$user->role_id:0);
       </a>
     </li>
   <?php }?>
-
-   <!-- Lead List -->
-   <li class="menu-item <?=(($pageSegment == 'lead-list')?'active':'')?>">
-    <a href="<?=url('/lead-list')?>" class="menu-link">
-      <i class="menu-icon fa-solid fa-list"></i>
-      <div data-i18n="Lead List">Lead List</div>
-    </a>
-  </li>
-
+  
   <!-- Log Out -->
   <li class="menu-item">
     <a href="<?=url('/logout')?>" class="menu-link">
