@@ -158,19 +158,22 @@ class UploadLeadController extends Controller
                     $total = 0;
                     $invalid = 0;
                     $duplicate = 0;
-                    $success = 0;
+                    $new = 0;
+                    $teleIndex = 0;
+                    
 
                     $seenPhones = []; // For checking duplicates in current file
                     $seenWhatsapp = []; // For checking duplicates in current file
 
-                    while (($data = fgetcsv($handle)) !== FALSE) {
+                    while (($data = fgetcsv($handle)) !== FALSE) 
+                    {
                         array_shift($data); // Remove first column (#)
                         $total++;
 
                         $status = 'Success';
                         $isInvalid = false;
                         $isDuplicate = false;
-                        $comment = '<span class="text-success">Success</span>';
+                        $comment = '<span class="text-success">New</span>';
                         $phoneValue = null;
 
                         // Build row associative array
@@ -185,11 +188,13 @@ class UploadLeadController extends Controller
                                     $commentArr[] =  $reqSlug;
                                     // $comment = 'Invalid: Missing ' . $reqSlug;
                                     // break;
+                                    $rowData[$reqSlug] = '<span class="text-danger">Not Found</span>';
                                 }
                             }
 
                             if (!empty($commentArr)) {
-                                $comment = '<span class="text-danger">Invalid: Missing ' . implode(', ', $commentArr) . '</span>';
+                                // $comment = '<span class="text-danger">Invalid: Missing ' . implode(', ', $commentArr) . '</span>';
+                                $comment = '<span class="text-danger">Invalid</span>';
                             }
                         }
 
@@ -207,6 +212,7 @@ class UploadLeadController extends Controller
                                     $isInvalid = true;
                                     // $comment = '<span class="text-danger">Invalid: Bad phone</span>';
                                     $invalidCommentArr[] = 'Bad phone-number' ;
+                                    $rowData['phone'] = '<span class="text-danger">Bad Phone Number</span>';
                                 }
                             }
     
@@ -247,6 +253,7 @@ class UploadLeadController extends Controller
                                     $isInvalid = true;
                                     // $comment = '<span class="text-danger">Invalid: Bad whatsapp</span>';
                                     $invalidCommentArr[] = 'Bad whatsapp-number' ;
+                                    $rowData['whatsapp-number'] = '<span class="text-danger">Bad Whatsapp Number</span>';
                                 }
                             }
     
@@ -278,33 +285,43 @@ class UploadLeadController extends Controller
 
                         if(!empty($invalidCommentArr))
                         {
-                            $comment = '<span class="text-danger">Invalid: ' . implode(', ', $invalidCommentArr) . '</span>';
+                            // $comment = '<span class="text-danger">Invalid: ' . implode(', ', $invalidCommentArr) . '</span>';
+                            $comment = '<span class="text-danger">Invalid</span>';
                         }
                         elseif(!empty($duplicateCommentArr)) // Duplicate check (only if not invalid)
                         {
-                            $comment = '<span class="text-warning">Duplicate: ' . implode(', ', $duplicateCommentArr) .'</span>';
+                            // $comment = '<span class="text-warning">Duplicate: ' . implode(', ', $duplicateCommentArr) .'</span>';
+                            $comment = '<span class="text-warning">Existing</span>';
                         }
 
                         // Decide status
                         if ($isInvalid) {
-                            $status = '❌';
+                            $status = '<i class="fa-solid fa-circle-xmark"></i>';
                             $invalid++;
+                            $telecallerAssign = 'no';
                         } elseif ($isDuplicate) {
-                            $status = '❌';
+                            $status = '<i class="fa-solid fa-star"></i>';
                             $duplicate++;
+                            $telecallerAssign = 'yes';
+                            $teleIndex++;
                         } else {
-                            $status = '✅';
-                            $success++;
+                            $status = '<i class="fa-solid fa-check"></i>';
+                            $new++;
+                            $telecallerAssign = 'yes';
+                            $teleIndex++;
                         }
 
-                        // Telecaller assignment only if success
-                        $telecallerName = ($status == '✅')
-                            ? $telecallerMap[$telecallerIds[($success - 1) % $telecallerCount]]
+                       
+
+                        // Telecaller assignment only if not invalid
+                        $telecallerName = ($telecallerAssign == 'yes')
+                            ? $telecallerMap[$telecallerIds[($teleIndex - 1) % $telecallerCount]]
                             : '---------------';
 
 
                         $rows[] = [
-                            'original' => $data,
+                            // 'original' => $data,
+                            'original' => $rowData,
                             'telecaller' => $telecallerName,
                             'status' => $status,
                             'comment' => $comment
@@ -318,7 +335,7 @@ class UploadLeadController extends Controller
                         'total' => $total,
                         'invalid' => $invalid,
                         'duplicate' => $duplicate,
-                        'success' => $success,
+                        'new' => $new,
                     ];
                     $data['branch_name'] = Branch::where('id', '=', $request->branch_id)->where('status', '=', 1)->value('name');
 
@@ -340,7 +357,7 @@ class UploadLeadController extends Controller
                     return redirect()->back()->with('error_message', 'Please Upload CSV File !!!');
                 }
             } else {
-                return redirect()->back()->with('error_message', 'Star Marked fields are required !!!');
+                return redirect()->back()->with('error_message', 'Star Marked Fields Are Required !!!');
             }
         }
     }
@@ -439,6 +456,9 @@ class UploadLeadController extends Controller
                     $lead_no = str_pad($sl_no, 8, '0', STR_PAD_LEFT);
 
                     $csvRow = [];
+                    $isDuplicatePhone = false;
+                    $isDuplicateWhatsapp = false;
+                    $sl_no_Duplicate = 0;
                     foreach ($csvArray as $key => $value) 
                     {
                         $slug = strtolower(Helper::clean(strip_tags($key)));
@@ -488,6 +508,8 @@ class UploadLeadController extends Controller
                                     $phone = MasterLead::where('header_id', '=', 4)->where('header_value', '=', $phoneValue)->where('status', '!=', 3)->exists();
                                     if ($phone) //true
                                     {
+                                        $isDuplicatePhone = true;
+                                        $sl_no_Duplicate =  MasterLead::where('header_id', '=', 4)->where('header_value', '=', $phoneValue)->where('status', '!=', 3)->value('sl_no');
                                         $skippedRows++;
                                         $csvRow = [];
                                         break;
@@ -513,6 +535,8 @@ class UploadLeadController extends Controller
                                     $whatsapp = MasterLead::where('header_id', '=', 14)->where('header_value', '=', $whatsappValue)->where('status', '!=', 3)->exists();
                                     if ($whatsapp) //true
                                     {
+                                        $isDuplicateWhatsapp = true;
+                                        $sl_no_Duplicate = MasterLead::where('header_id', '=', 14)->where('header_value', '=', $whatsappValue)->where('status', '!=', 3)->value('sl_no');
                                         $skippedRows++;
                                         $csvRow = [];
                                         break;
@@ -533,7 +557,8 @@ class UploadLeadController extends Controller
                         }
                     }
 
-                    if (!empty($csvRow)) {
+                    if (!empty($csvRow)) 
+                    {
                         $cellsPerRow = 0;
                         foreach ($csvRow as $cell)   //uploading 1 lead i.e., 1 csv row
                         {
@@ -562,6 +587,26 @@ class UploadLeadController extends Controller
                             }
 
                             $cellsPerRow++;
+                        }
+                    }
+
+                    if($isDuplicatePhone || $isDuplicateWhatsapp)
+                    {
+                        if($sl_no_Duplicate)
+                        {
+                            $duplicateData = MasterLead::where('sl_no', '=', $sl_no_Duplicate)->first();
+
+                            $branchLead =  new BranchLead();
+
+                            $branchLead->upload_id = $lastInsertId;
+                            $branchLead->master_lead_id = $duplicateData->id;
+                            $branchLead->lead_sl_no = $sl_no_Duplicate;
+                            $branchLead->branch_id = $uploadLead->branch_id;
+                            $branchLead->campaign_type_id = $uploadLead->campaign_type_id;
+                            $branchLead->campaign_id = $uploadLead->campaign_id;
+                            $branchLead->assigned_telecaller_id = 0;
+
+                            $branchLead->save();
                         }
                     }
                 }

@@ -32,7 +32,7 @@ $controllerRoute = $module['controller_route'];
             <div class="col-md-3 mb-2">
                 <div class="card text-center bg-warning">
                     <div class="card-body">
-                        <h6 style="margin-bottom: 3px;">Duplicate Leads</h6>
+                        <h6 style="margin-bottom: 3px;">Existing Leads</h6>
                         <h6 style="margin-bottom: 0;">{{ $counts['duplicate'] }}</h6>
                     </div>
                 </div>
@@ -40,8 +40,8 @@ $controllerRoute = $module['controller_route'];
             <div class="col-md-3 mb-2">
                 <div class="card text-center bg-success text-white">
                     <div class="card-body">
-                        <h6 style="margin-bottom: 3px;">Success Leads</h6>
-                        <h6 style="margin-bottom: 0;">{{ $counts['success'] }}</h6>
+                        <h6 style="margin-bottom: 3px;">New Leads</h6>
+                        <h6 style="margin-bottom: 0;">{{ $counts['new'] }}</h6>
                     </div>
                 </div>
             </div>
@@ -70,7 +70,7 @@ $controllerRoute = $module['controller_route'];
                             <tr>
                                 <th>Sl No.</th>
                                 <th>Status</th>
-                                <th>Comment</th>
+                                {{-- <th>Comment</th> --}}
                                 <th>Telecaller</th>
                                 @foreach ($headers as $header)
                                     <th>{{ $header }}</th>
@@ -81,11 +81,12 @@ $controllerRoute = $module['controller_route'];
                             @foreach ($rows as $index => $row)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $row['status'] }}</td>
-                                    <td>{!! $row['comment'] !!}</td>
+                                    <td>
+                                      <span>{!! $row['status'] !!} <strong>{!! $row['comment'] !!}</strong></span>
+                                    </td>
                                     <td>{{ $row['telecaller'] }}</td>
                                     @foreach ($row['original'] as $value)
-                                        <td>{{ $value }}</td>
+                                        <td>{!! $value !!}</td>
                                     @endforeach                                   
                                 </tr>
                             @endforeach
