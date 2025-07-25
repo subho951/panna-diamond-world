@@ -1564,6 +1564,7 @@ class ApiController extends Controller
                                         $getParentStatus    = LeadStatus::select('name')->where('id', '=', $getActivity->parent_status_id)->first();
                                         $getChildStatus     = LeadStatus::select('name')->where('id', '=', $getActivity->child_status_id)->first();
                                         $getTelecaller      = User::select('first_name', 'last_name')->where('id', '=', $getActivity->assigned_telecaller_id)->first();
+                                        $getMood            = Mood::select('name', 'emoji', 'color')->where('id', '=', $getActivity->mood)->first();
 
                                         $next_schedule_activity  = '';
                                         if($getActivity->next_followup_date != '' && $getActivity->next_followup_time != ''){
@@ -1583,7 +1584,6 @@ class ApiController extends Controller
 
                                         $activities[]         = [
                                             'purpose_name'          => (($getPurpose)?$getPurpose->name:''),
-                                            'mood'                  => $getActivity->mood,
                                             'comment'               => $getActivity->comment,
                                             'note'                  => $getActivity->note,
                                             'telecaller_name'       => (($getTelecaller)?$getTelecaller->first_name . ' ' . $getTelecaller->last_name:''),
@@ -1594,6 +1594,10 @@ class ApiController extends Controller
                                             'activity_timestamp'    => date_format(date_create($getActivity->note), "M d, Y h:i A"),
                                             'next_schedule'         => $next_schedule_activity,
                                             'feedback_tags'         => $feedback_tags,
+                                            'mood_id'               => $getActivity->mood,
+                                            'mood_name'             => (($getMood)?$getMood->name:''),
+                                            'mood_emoji'            => (($getMood)?$getMood->emoji:''),
+                                            'mood_color'            => (($getMood)?$getMood->color:''),
                                         ];
                                     }
                                 }
