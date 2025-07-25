@@ -277,7 +277,7 @@ $role_id      = (($user)?$user->role_id:0);
     <!-- Logs -->
     <li class="menu-item active <?=(($pageSegment == 'email-logs' || $pageSegment == 'login-logs' || $pageSegment == 'user-activity-logs')?'open':'')?>">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon fa-solid fa-circle-question"></i>
+        <i class="menu-icon fa-solid fa-history"></i>
         <div data-i18n="Logs">Logs</div>
       </a>
       <ul class="menu-sub">
