@@ -1662,7 +1662,7 @@ class ApiController extends Controller
                 $apiExtraField      = '';
                 $apiExtraData       = '';
                 $requestData        = $request->all();
-                $requiredFields     = ['key', 'source', 'sl_no', 'child_status_id', 'next_schedule_date', 'next_schedule_time', 'purpose_id', 'mood_id', 'comment'];
+                $requiredFields     = ['key', 'source', 'sl_no', 'child_status_id', 'next_schedule_date', 'next_schedule_time', 'purpose_id', 'mood_id'];
                 $headerData         = $request->header();
                 if (!$this->validateArray($requiredFields, $requestData)){
                     $apiStatus          = FALSE;
@@ -1684,7 +1684,7 @@ class ApiController extends Controller
                         $purpose_id                         = $requestData['purpose_id'];
                         $mood_id                            = $requestData['mood_id'];
                         $feedback_tags                      = $requestData['feedback_tags'];
-                        $note                               = $requestData['note'];
+                        // $note                               = $requestData['note'];
                         
                         if($getUser){
                             $leadNo                  = BranchLead::select('master_lead_id', 'lead_sl_no', 'upload_id', 'campaign_type_id', 'campaign_id', 'branch_id')
@@ -1708,7 +1708,7 @@ class ApiController extends Controller
                                     'mood'                      => $mood_id,
                                     'purpose_id'                => $purpose_id,
                                     'feedback_tag_ids'          => ((!empty($feedback_tags))?json_encode($feedback_tags):null),
-                                    'note'                      => $note,
+                                    // 'note'                      => $note,
                                     'next_followup_date'        => (($next_schedule_date != '')?date_format(date_create($next_schedule_date), "Y-m-d"):''),
                                     'next_followup_time'        => (($next_schedule_time != '')?date_format(date_create($next_schedule_time), "H:i:s"):''),
                                     'created_by'                => $uId,
