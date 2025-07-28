@@ -1790,34 +1790,52 @@ class ApiController extends Controller
                         $whatapp_no                         = $requestData['whatapp_no'];
                         
                         if($getUser){
-                            $leadNo                  = MasterLead::select('id', 'sl_no')->where('sl_no', '=', $sl_no)->first();
+                            $leadNo                     = MasterLead::select('id', 'sl_no')->where('sl_no', '=', $sl_no)->first();
                             if($leadNo){
-                                $fields2 = [
-                                    'header_value'      => $contact_person_name,
-                                    'updated_by'        => $uId,
-                                    'updated_at'        => date('Y-m-d H:i:s'),
-                                ];
-                                MasterLead::where('sl_no', '=', $sl_no)->where('header_id', '=', 2)->update($fields2);
+                                $checkEmail             = MasterLead::where('header_value', '=', $email)->where('header_id', '=', 5)->count();
+                                if($checkEmail){
+                                    $apiStatus          = FALSE;
+                                    http_response_code(200);
+                                    $apiMessage         = 'Email already exists in another lead. Please enter another !!!';
+                                    $apiExtraField      = 'response_code';
+                                    $apiExtraData       = http_response_code();
+                                } else {
+                                    $checkWhatsappNo             = MasterLead::where('header_value', '=', $email)->where('header_id', '=', 14)->count();
+                                    if($checkWhatsappNo){
+                                        $apiStatus          = FALSE;
+                                        http_response_code(200);
+                                        $apiMessage         = 'Whatsapp number already exists in another lead. Please enter another !!!';
+                                        $apiExtraField      = 'response_code';
+                                        $apiExtraData       = http_response_code();
+                                    } else {
+                                        $fields2 = [
+                                            'header_value'      => $contact_person_name,
+                                            'updated_by'        => $uId,
+                                            'updated_at'        => date('Y-m-d H:i:s'),
+                                        ];
+                                        MasterLead::where('sl_no', '=', $sl_no)->where('header_id', '=', 2)->update($fields2);
 
-                                $fields5 = [
-                                    'header_value'      => $email,
-                                    'updated_by'        => $uId,
-                                    'updated_at'        => date('Y-m-d H:i:s'),
-                                ];
-                                MasterLead::where('sl_no', '=', $sl_no)->where('header_id', '=', 5)->update($fields5);
+                                        $fields5 = [
+                                            'header_value'      => $email,
+                                            'updated_by'        => $uId,
+                                            'updated_at'        => date('Y-m-d H:i:s'),
+                                        ];
+                                        MasterLead::where('sl_no', '=', $sl_no)->where('header_id', '=', 5)->update($fields5);
 
-                                $fields14 = [
-                                    'header_value'      => $whatapp_no,
-                                    'updated_by'        => $uId,
-                                    'updated_at'        => date('Y-m-d H:i:s'),
-                                ];
-                                MasterLead::where('sl_no', '=', $sl_no)->where('header_id', '=', 14)->update($fields14);
+                                        $fields14 = [
+                                            'header_value'      => $whatapp_no,
+                                            'updated_by'        => $uId,
+                                            'updated_at'        => date('Y-m-d H:i:s'),
+                                        ];
+                                        MasterLead::where('sl_no', '=', $sl_no)->where('header_id', '=', 14)->update($fields14);
 
-                                $apiStatus          = TRUE;
-                                http_response_code(200);
-                                $apiMessage         = 'Lead Info Updated Successfully !!!';
-                                $apiExtraField      = 'response_code';
-                                $apiExtraData       = http_response_code();
+                                        $apiStatus          = TRUE;
+                                        http_response_code(200);
+                                        $apiMessage         = 'Lead Info Updated Successfully !!!';
+                                        $apiExtraField      = 'response_code';
+                                        $apiExtraData       = http_response_code();
+                                    }
+                                }
                             } else {
                                 $apiStatus          = FALSE;
                                 http_response_code(200);
