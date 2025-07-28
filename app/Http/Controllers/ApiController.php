@@ -1683,7 +1683,7 @@ class ApiController extends Controller
                         $next_schedule_time                 = $requestData['next_schedule_time'];
                         $purpose_id                         = $requestData['purpose_id'];
                         $mood_id                            = $requestData['mood_id'];
-                        $feedback_tags                      = json_decode($requestData['feedback_tags']);
+                        $feedback_tags                      = $requestData['feedback_tags'];
                         $note                               = $requestData['note'];
                         
                         if($getUser){
