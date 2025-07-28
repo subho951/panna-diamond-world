@@ -1792,7 +1792,7 @@ class ApiController extends Controller
                         if($getUser){
                             $leadNo                     = MasterLead::select('id', 'sl_no')->where('sl_no', '=', $sl_no)->first();
                             if($leadNo){
-                                $checkEmail             = MasterLead::where('header_value', '=', $email)->where('header_id', '=', 5)->count();
+                                $checkEmail             = MasterLead::where('header_value', '=', $email)->where('header_id', '=', 5)->where('sl_no', '!=', $sl_no)->count();
                                 if($checkEmail){
                                     $apiStatus          = FALSE;
                                     http_response_code(200);
@@ -1800,7 +1800,7 @@ class ApiController extends Controller
                                     $apiExtraField      = 'response_code';
                                     $apiExtraData       = http_response_code();
                                 } else {
-                                    $checkWhatsappNo             = MasterLead::where('header_value', '=', $whatapp_no)->where('header_id', '=', 14)->count();
+                                    $checkWhatsappNo             = MasterLead::where('header_value', '=', $whatapp_no)->where('header_id', '=', 14)->where('sl_no', '!=', $sl_no)->count();
                                     if($checkWhatsappNo){
                                         $apiStatus          = FALSE;
                                         http_response_code(200);
@@ -1809,25 +1809,25 @@ class ApiController extends Controller
                                         $apiExtraData       = http_response_code();
                                     } else {
                                         $fields2 = [
-                                            'header_value'      => $contact_person_name,
-                                            'updated_by'        => $uId,
-                                            'updated_at'        => date('Y-m-d H:i:s'),
+                                            'header_value'      => $contact_person_name
                                         ];
                                         MasterLead::where('sl_no', '=', $sl_no)->where('header_id', '=', 2)->update($fields2);
 
                                         $fields5 = [
-                                            'header_value'      => $email,
-                                            'updated_by'        => $uId,
-                                            'updated_at'        => date('Y-m-d H:i:s'),
+                                            'header_value'      => $email
                                         ];
                                         MasterLead::where('sl_no', '=', $sl_no)->where('header_id', '=', 5)->update($fields5);
 
                                         $fields14 = [
-                                            'header_value'      => $whatapp_no,
+                                            'header_value'      => $whatapp_no
+                                        ];
+                                        MasterLead::where('sl_no', '=', $sl_no)->where('header_id', '=', 14)->update($fields14);
+
+                                        $fields = [
                                             'updated_by'        => $uId,
                                             'updated_at'        => date('Y-m-d H:i:s'),
                                         ];
-                                        MasterLead::where('sl_no', '=', $sl_no)->where('header_id', '=', 14)->update($fields14);
+                                        MasterLead::where('sl_no', '=', $sl_no)->update($fields);
 
                                         $apiStatus          = TRUE;
                                         http_response_code(200);
