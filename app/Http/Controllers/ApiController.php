@@ -1710,7 +1710,7 @@ class ApiController extends Controller
                                     'feedback_tag_ids'          => ((!empty($feedback_tags))?json_encode($feedback_tags):null),
                                     'note'                      => $note,
                                     'next_followup_date'        => (($next_schedule_date != '')?date_format(date_create($next_schedule_date), "Y-m-d"):''),
-                                    'next_schedule_time'        => (($next_schedule_time != '')?date_format(date_create($next_schedule_time), "H:i:s"):''),
+                                    'next_followup_time'        => (($next_schedule_time != '')?date_format(date_create($next_schedule_time), "H:i:s"):''),
                                     'created_by'                => $uId,
                                     'updated_by'                => $uId,
                                 ];
