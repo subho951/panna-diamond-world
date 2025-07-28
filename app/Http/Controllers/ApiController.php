@@ -1653,6 +1653,119 @@ class ApiController extends Controller
                 $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
             }
         /* lead details */
+        /* update lead status */
+            public function updateLeadStatus(Request $request)
+            {
+                $apiStatus          = TRUE;
+                $apiMessage         = '';
+                $apiResponse        = [];
+                $apiExtraField      = '';
+                $apiExtraData       = '';
+                $requestData        = $request->all();
+                $requiredFields     = ['key', 'source', 'sl_no', 'child_status_id', 'next_schedule_date', 'next_schedule_time', 'purpose_id', 'mood_id', 'comment'];
+                $headerData         = $request->header();
+                if (!$this->validateArray($requiredFields, $requestData)){
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'All Data Are Not Present !!!';
+                }
+                if($headerData['key'][0] == env('PROJECT_KEY')){
+                    $app_access_token           = $headerData['authorization'][0];
+                    $getTokenValue              = $this->tokenAuth($app_access_token);
+                    if($getTokenValue['status']){
+                        $uId                    = $getTokenValue['data'][1];
+                        $expiry                 = date('d/m/Y H:i:s', $getTokenValue['data'][4]);
+                        $getUser                = User::where('id', '=', $uId)->first();
+
+                        $sl_no                              = $requestData['sl_no'];
+                        $child_status_id                    = $requestData['child_status_id'];
+                        $comment                            = $requestData['comment'];
+                        $next_schedule_date                 = $requestData['next_schedule_date'];
+                        $next_schedule_time                 = $requestData['next_schedule_time'];
+                        $purpose_id                         = $requestData['purpose_id'];
+                        $mood_id                            = $requestData['mood_id'];
+                        $feedback_tags                      = json_decode($requestData['feedback_tags']);
+                        $note                               = $requestData['note'];
+                        
+                        if($getUser){
+                            $leadNo                  = BranchLead::select('master_lead_id', 'lead_sl_no', 'upload_id', 'campaign_type_id', 'campaign_id', 'branch_id')
+                                                        ->where('status', '=', 1)
+                                                        ->where('lead_sl_no', '=', $sl_no)
+                                                        ->first();
+
+                            if($leadNo){
+                                $getParentStatus    = LeadStatus::select('parent_id')->where('id', '=', $child_status_id)->first();
+                                $fields = [
+                                    'upload_id'                 => $leadNo->upload_id,
+                                    'master_lead_id'            => $leadNo->master_lead_id,
+                                    'lead_sl_no'                => $leadNo->lead_sl_no,
+                                    'branch_id'                 => $leadNo->branch_id,
+                                    'campaign_type_id'          => $leadNo->campaign_type_id,
+                                    'campaign_id'               => $leadNo->campaign_id,
+                                    'assigned_telecaller_id'    => $uId,
+                                    'parent_status_id'          => (($getParentStatus)?$getParentStatus->parent_id:0),
+                                    'child_status_id'           => $child_status_id,
+                                    'comment'                   => $comment,
+                                    'mood'                      => $mood_id,
+                                    'purpose_id'                => $purpose_id,
+                                    'feedback_tag_ids'          => ((!empty($feedback_tags))?json_encode($feedback_tags):null),
+                                    'note'                      => $note,
+                                    'next_followup_date'        => (($next_schedule_date != '')?date_format(date_create($next_schedule_date), "Y-m-d"):''),
+                                    'next_schedule_time'        => (($next_schedule_time != '')?date_format(date_create($next_schedule_time), "H:i:s"):''),
+                                    'created_by'                => $uId,
+                                    'updated_by'                => $uId,
+                                ];
+                                Helper::pr($fields,0);
+                                // LeadActivity::insert($fields);
+
+                                $fields2 = [
+                                    'assigned_telecaller_id'    => $uId,
+                                    'parent_status_id'          => (($getParentStatus)?$getParentStatus->parent_id:0),
+                                    'child_status_id'           => $child_status_id,
+                                    'next_followup_date'        => (($next_schedule_date != '')?date_format(date_create($next_schedule_date), "Y-m-d"):''),
+                                    'next_followup_time'        => (($next_schedule_time != '')?date_format(date_create($next_schedule_time), "H:i:s"):''),
+                                ];
+                                Helper::pr($fields2);die;
+                                // BranchLead::where('lead_sl_no', '=', $sl_no)->update($fields);
+
+                                $apiStatus          = TRUE;
+                                http_response_code(200);
+                                $apiMessage         = 'Lead Status Updated Successfully !!!';
+                                $apiExtraField      = 'response_code';
+                                $apiExtraData       = http_response_code();
+                            } else {
+                                $apiStatus          = FALSE;
+                                http_response_code(200);
+                                $apiMessage         = 'Lead Not Found !!!';
+                                $apiExtraField      = 'response_code';
+                                $apiExtraData       = http_response_code();
+                            }
+                        } else {
+                            $apiStatus          = FALSE;
+                            http_response_code(200);
+                            $apiMessage         = 'User Not Found !!!';
+                            $apiExtraField      = 'response_code';
+                            $apiExtraData       = http_response_code();
+                        }
+                    } else {
+                        http_response_code(200);
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
+                        $apiStatus          = FALSE;
+                        $apiMessage         = 'Something Went Wrong !!!';
+                    }                                               
+                } else {
+                    http_response_code(200);
+                    $apiStatus          = FALSE;
+                    $apiMessage         = $this->getResponseCode(http_response_code());
+                    $apiExtraField      = 'response_code';
+                    $apiExtraData       = http_response_code();
+                }
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
+            }
+        /* update lead status */
+        /* update lead info */
+        
+        /* update lead info */
     /* after login lead */
     public function getHeaderValueByID($sl_no, $header_id){
         $header_value = '';
