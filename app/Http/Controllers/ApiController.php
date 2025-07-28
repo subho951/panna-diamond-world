@@ -1725,7 +1725,7 @@ class ApiController extends Controller
                                     'next_followup_time'        => (($next_schedule_time != '')?date_format(date_create($next_schedule_time), "H:i:s"):''),
                                 ];
                                 // Helper::pr($fields2);die;
-                                BranchLead::where('lead_sl_no', '=', $sl_no)->update($fields);
+                                BranchLead::where('lead_sl_no', '=', $sl_no)->update($fields2);
 
                                 $apiStatus          = TRUE;
                                 http_response_code(200);
