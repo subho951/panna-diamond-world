@@ -113,10 +113,12 @@ class UploadLeadController extends Controller
                     }
 
                     // Get headers from LeadHeader table in the correct order
-                    $expectedHeaders = LeadHeader::where('status', '=',1)
-                        ->orderBy('rank', 'asc')
-                        ->pluck('slug')
-                        ->toArray();
+                    // $expectedHeaders = LeadHeader::where('status', '=',1)
+                    //     ->orderBy('rank', 'asc')
+                    //     ->pluck('slug')
+                    //     ->toArray();
+
+                    $expectedHeaders = LeadHeader::where('status', '=',1)->pluck('slug')->toArray();
 
                     // Compare count first
                     if (count($expectedHeaders) !== count($sluggedHeaders)) {
@@ -124,18 +126,18 @@ class UploadLeadController extends Controller
                     }
 
                     // Compare each header in the same order
-                    if ($expectedHeaders !== $sluggedHeaders) {
-                        // Find differences for better error reporting
-                        $mismatched = [];
-                        foreach ($expectedHeaders as $index => $expectedHeader) {
-                            if (!isset($sluggedHeaders[$index]) || $sluggedHeaders[$index] !== $expectedHeader) {
-                                $mismatched[] = "Expected: {$expectedHeader}, Found: " . ($sluggedHeaders[$index] ?? 'MISSING');
-                            }
-                        }
+                    // if ($expectedHeaders !== $sluggedHeaders) {
+                    //     // Find differences for better error reporting
+                    //     $mismatched = [];
+                    //     foreach ($expectedHeaders as $index => $expectedHeader) {
+                    //         if (!isset($sluggedHeaders[$index]) || $sluggedHeaders[$index] !== $expectedHeader) {
+                    //             $mismatched[] = "Expected: {$expectedHeader}, Found: " . ($sluggedHeaders[$index] ?? 'MISSING');
+                    //         }
+                    //     }
 
-                        $errorDetails = implode('; ', $mismatched);
-                        return redirect()->back()->with('error_message', "Invalid CSV Header Format !!! Differences: {$errorDetails}");
-                    }
+                    //     $errorDetails = implode('; ', $mismatched);
+                    //     return redirect()->back()->with('error_message', "Invalid CSV Header Format !!! Differences: {$errorDetails}");
+                    // }
 
 
 
@@ -158,6 +160,7 @@ class UploadLeadController extends Controller
                     $total = 0;
                     $invalid = 0;
                     $duplicate = 0;
+                    $duplicateWRTCampaign = 0;
                     $new = 0;
                     $teleIndex = 0;
                     
@@ -172,9 +175,11 @@ class UploadLeadController extends Controller
 
                         $status = 'Success';
                         $isInvalid = false;
+                        $isDuplicateWRTCampaign = false;
                         $isDuplicate = false;
                         $comment = '<span class="text-success">New</span>';
                         $phoneValue = null;
+                        $sl_no_Duplicate = 0;
 
                         // Build row associative array
                         $rowData = array_combine($sluggedHeaders, $data);
@@ -219,6 +224,8 @@ class UploadLeadController extends Controller
                             // Duplicate check (only if not invalid)
                             if (!$isInvalid && $phoneValue) 
                             {
+                                $sl_no_Duplicate =  MasterLead::where('header_id', '=', 4)->where('header_value', '=', $phoneValue)->where('status', '!=', 3)->value('sl_no') ?? 0;
+
                                 if (in_array($phoneValue, $seenPhones)) 
                                 {
                                     $isDuplicate = true;
@@ -244,7 +251,7 @@ class UploadLeadController extends Controller
 
                         if(!empty($rowData['whatsapp-number']))
                         {
-                            // Phone validation
+                            // Whatsapp validation
                             if (!$isInvalid && isset($rowData['whatsapp-number'])) 
                             {
                                 $whatsappValue = preg_replace('/\D/', '', $rowData['whatsapp-number']);
@@ -260,6 +267,8 @@ class UploadLeadController extends Controller
                             // Duplicate check (only if not invalid)
                             if (!$isInvalid && $whatsappValue) 
                             {
+                                $sl_no_Duplicate = MasterLead::where('header_id', '=', 14)->where('header_value', '=', $whatsappValue)->where('status', '!=', 3)->value('sl_no') ?? 0;
+
                                 if (in_array($whatsappValue, $seenWhatsapp)) 
                                 {
                                     $isDuplicate = true;
@@ -293,18 +302,46 @@ class UploadLeadController extends Controller
                             // $comment = '<span class="text-warning">Duplicate: ' . implode(', ', $duplicateCommentArr) .'</span>';
                             $comment = '<span class="text-warning">Existing</span>';
                         }
+                        
+                        if($sl_no_Duplicate)
+                        {
+                            $duplicateData = MasterLead::where('sl_no', '=', $sl_no_Duplicate)->first();
+                
+                            //showing that, same lead is not inserted in BranchLead table w.r.t same campaign
+                            $campaign_check = false;
+                            if(($request->campaign_type_id != 0) && ($request->campaign_id != 0))
+                            {
+                                $campaign_check = BranchLead::where('campaign_type_id', '=', $request->campaign_type_id)->where('campaign_id', '=', $request->campaign_id)->where('master_lead_id', '=', $duplicateData->id)->where('status', '!=', 3)->exists();
+                            }
+
+                            if($campaign_check)
+                            {
+                                $isDuplicateWRTCampaign = true;
+                                $comment = '<span class="text-secondary">Exists w.r.t Campaign</span>';
+                            }
+                        }
 
                         // Decide status
                         if ($isInvalid) {
                             $status = '<i class="fa-solid fa-circle-xmark"></i>';
                             $invalid++;
                             $telecallerAssign = 'no';
-                        } elseif ($isDuplicate) {
+
+                        }
+                        elseif($isDuplicateWRTCampaign)
+                        {
+                            $status = '<i class="fa-regular fa-calendar-check"></i>';
+                            $duplicateWRTCampaign++;
+                            $telecallerAssign = 'no';
+
+                        }
+                        elseif ($isDuplicate) {
                             $status = '<i class="fa-solid fa-star"></i>';
                             $duplicate++;
                             $telecallerAssign = 'yes';
                             $teleIndex++;
-                        } else {
+                        }
+                        else {
                             $status = '<i class="fa-solid fa-check"></i>';
                             $new++;
                             $telecallerAssign = 'yes';
@@ -335,6 +372,7 @@ class UploadLeadController extends Controller
                         'total' => $total,
                         'invalid' => $invalid,
                         'duplicate' => $duplicate,
+                        'duplicateWRTCampaign' => $duplicateWRTCampaign,
                         'new' => $new,
                     ];
                     $data['branch_name'] = Branch::where('id', '=', $request->branch_id)->where('status', '=', 1)->value('name');
@@ -448,6 +486,7 @@ class UploadLeadController extends Controller
 
                 $skippedRows = 0;
                 $insertedRows = 0;
+                $totalLeadAssignedToTelecaller = 0;
 
                 for ($i = 0; $i < $maxLength; $i++) 
                 {
@@ -584,6 +623,7 @@ class UploadLeadController extends Controller
                                 $branchLead->assigned_telecaller_id = 0;
 
                                 $branchLead->save();
+                                $totalLeadAssignedToTelecaller++;
                             }
 
                             $cellsPerRow++;
@@ -595,18 +635,30 @@ class UploadLeadController extends Controller
                         if($sl_no_Duplicate)
                         {
                             $duplicateData = MasterLead::where('sl_no', '=', $sl_no_Duplicate)->first();
+                
+                            //Restricting that, same lead is not inserted in BranchLead table w.r.t same campaign
+                            $campaign_check = false;
+                            if(($uploadLead->campaign_type_id != 0) && ($uploadLead->campaign_id != 0))
+                            {
+                                $campaign_check = BranchLead::where('campaign_type_id', '=', $uploadLead->campaign_type_id)->where('campaign_id', '=', $uploadLead->campaign_id)->where('master_lead_id', '=', $duplicateData->id)->where('status', '!=', 3)->exists();
+                            }
+                           
+                            if(!$campaign_check) // !false
+                            {
+                                $branchLead =  new BranchLead();
 
-                            $branchLead =  new BranchLead();
+                                $branchLead->upload_id = $lastInsertId;
+                                $branchLead->master_lead_id = $duplicateData->id;
+                                $branchLead->lead_sl_no = $sl_no_Duplicate;
+                                $branchLead->branch_id = $uploadLead->branch_id;
+                                $branchLead->campaign_type_id = $uploadLead->campaign_type_id;
+                                $branchLead->campaign_id = $uploadLead->campaign_id;
+                                $branchLead->assigned_telecaller_id = 0;
 
-                            $branchLead->upload_id = $lastInsertId;
-                            $branchLead->master_lead_id = $duplicateData->id;
-                            $branchLead->lead_sl_no = $sl_no_Duplicate;
-                            $branchLead->branch_id = $uploadLead->branch_id;
-                            $branchLead->campaign_type_id = $uploadLead->campaign_type_id;
-                            $branchLead->campaign_id = $uploadLead->campaign_id;
-                            $branchLead->assigned_telecaller_id = 0;
+                                $branchLead->save();
+                                $totalLeadAssignedToTelecaller++;
+                            }
 
-                            $branchLead->save();
                         }
                     }
                 }
@@ -629,10 +681,11 @@ class UploadLeadController extends Controller
                 $uploadLead->total_upload = $maxLength;
                 $uploadLead->success_upload = $insertedRows;
                 $uploadLead->failed_upload = $skippedRows;
+                $uploadLead->total_assigned = $totalLeadAssignedToTelecaller;
                 $uploadLead->update();
 
 
-                return redirect($this->data['controller_route'])->with('success_message',  $insertedRows . ' Lead(s) Uploaded Successfully !!!' . ($skippedRows > 0 ? ' And ' . $skippedRows . ' Lead(s) Skipped !!!' : ''));
+                return redirect($this->data['controller_route'])->with('success_message',  $insertedRows . ' Lead(s) Uploaded Successfully !!!' . ($skippedRows > 0 ? ' And ' . $skippedRows . ' Lead(s) Skipped !!!' : '') . ' And ' . $totalLeadAssignedToTelecaller . ' Lead(s) Assigned To Telecaller(s) !!!');
             } else {
                 return redirect()->back()->with('error_message', 'All Fields Required !!!');
             }

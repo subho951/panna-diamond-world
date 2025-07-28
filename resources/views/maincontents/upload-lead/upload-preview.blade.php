@@ -12,6 +12,16 @@ $controllerRoute = $module['controller_route'];
                 <?= $page_header ?>
             </h6>
         </div>
+
+        @if(!empty($counts['duplicateWRTCampaign']))
+        <div class="alert alert-danger alert-dismissible autohide" role="alert">
+            <h6 class="alert-heading mb-1"><i class="bx bx-xs bx-store align-top me-2"></i>Warning!</h6>
+            <span>{{$counts['duplicateWRTCampaign']}} Leads Are Duplicate In The Same Campaign.</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+            </button>
+        </div>
+        @endif
+
         <div class="row mb-2">
             <div class="col-md-3 mb-2">
                 <div class="card text-center">

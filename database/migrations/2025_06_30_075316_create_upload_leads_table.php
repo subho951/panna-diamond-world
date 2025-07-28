@@ -22,6 +22,7 @@ return new class extends Migration
             $table->bigInteger('total_upload')->default(0);
             $table->bigInteger('success_upload')->default(0);
             $table->bigInteger('failed_upload')->default(0);
+            $table->bigInteger('total_assigned')->default(0);
             $table->longText('filename');
             $table->tinyInteger('status')->default(1);
             $table->integer('created_by')->default(1);
