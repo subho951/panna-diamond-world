@@ -22,7 +22,11 @@ return new class extends Migration
             $table->bigInteger('assigned_telecaller_id');
             $table->bigInteger('parent_status_id');
             $table->bigInteger('child_status_id');
-            $table->longText('comment');
+            $table->longText('comment')->nullable();
+            $table->bigInteger('mood')->default(0);
+            $table->bigInteger('purpose_id')->default(0);
+            $table->longText('feedback_tag_ids')->nullable();
+            $table->longText('note')->nullable();
             $table->string('next_followup_date');
             $table->string('next_followup_time');
             $table->tinyInteger('status')->default(1);
