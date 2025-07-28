@@ -112,6 +112,7 @@ $controllerRoute = $module['controller_route'];
                                         <th>Total Leads</th>
                                         <th>Success Leads</th>
                                         <th>Failed Leads</th>
+                                        <th>Assigned Leads</th>
                                         <th>Lead Date</th>
                                         <th>Action</th>
                                     </tr>
@@ -144,6 +145,7 @@ $controllerRoute = $module['controller_route'];
                                         <td>{{ $leadRow->total_upload }}</td>
                                         <td>{{ $leadRow->success_upload }}</td>
                                         <td>{{ $leadRow->failed_upload }}</td>
+                                        <td>{{ $leadRow->total_assigned }}</td>
                                         <td>{{ $leadRow->lead_date }}</td>
                                         
                                         <td>
