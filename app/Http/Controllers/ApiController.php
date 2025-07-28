@@ -1714,8 +1714,8 @@ class ApiController extends Controller
                                     'created_by'                => $uId,
                                     'updated_by'                => $uId,
                                 ];
-                                Helper::pr($fields,0);
-                                // LeadActivity::insert($fields);
+                                // Helper::pr($fields,0);
+                                LeadActivity::insert($fields);
 
                                 $fields2 = [
                                     'assigned_telecaller_id'    => $uId,
@@ -1724,8 +1724,8 @@ class ApiController extends Controller
                                     'next_followup_date'        => (($next_schedule_date != '')?date_format(date_create($next_schedule_date), "Y-m-d"):''),
                                     'next_followup_time'        => (($next_schedule_time != '')?date_format(date_create($next_schedule_time), "H:i:s"):''),
                                 ];
-                                Helper::pr($fields2);die;
-                                // BranchLead::where('lead_sl_no', '=', $sl_no)->update($fields);
+                                // Helper::pr($fields2);die;
+                                BranchLead::where('lead_sl_no', '=', $sl_no)->update($fields);
 
                                 $apiStatus          = TRUE;
                                 http_response_code(200);
