@@ -1800,7 +1800,7 @@ class ApiController extends Controller
                                     $apiExtraField      = 'response_code';
                                     $apiExtraData       = http_response_code();
                                 } else {
-                                    $checkWhatsappNo             = MasterLead::where('header_value', '=', $email)->where('header_id', '=', 14)->count();
+                                    $checkWhatsappNo             = MasterLead::where('header_value', '=', $whatapp_no)->where('header_id', '=', 14)->count();
                                     if($checkWhatsappNo){
                                         $apiStatus          = FALSE;
                                         http_response_code(200);
