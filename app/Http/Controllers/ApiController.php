@@ -1405,6 +1405,8 @@ class ApiController extends Controller
                                                         ->where('status', '=', 1)
                                                         ->where('branch_id', '=', $branch_id)
                                                         ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                        ->where('parent_status_id', '=', 0)
+                                                        ->where('child_status_id', '=', 0)
                                                         ->orderBy('lead_sl_no', 'ASC')
                                                         ->offset($offset)
                                                         ->limit($limit)
