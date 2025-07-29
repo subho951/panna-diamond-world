@@ -1552,8 +1552,8 @@ class ApiController extends Controller
                                         $next_schedule = date_format(date_create($leadNo->next_followup_date), "M d, Y") . ', ' . date_format(date_create($leadNo->next_followup_time), "h:i A");
                                     }
                                 }
-                                $getParentStatus    = LeadStatus::select('name')->where('id', '=', $leadNo->parent_status_id)->first();
-                                $getChildStatus     = LeadStatus::select('name')->where('id', '=', $leadNo->child_status_id)->first();
+                                $getParentStatusMain    = LeadStatus::select('name')->where('id', '=', $leadNo->parent_status_id)->first();
+                                $getChildStatusMain     = LeadStatus::select('name')->where('id', '=', $leadNo->child_status_id)->first();
                                 $getMasterLead      = MasterLead::select('lead_no')->where('sl_no', '=', $sl_no)->first();
                                 $getCampaignType    = CampaignType::select('name')->where('id', '=', $leadNo->campaign_type_id)->first();
                                 $getCampaign        = Campaign::select('name')->where('id', '=', $leadNo->campaign_id)->first();
@@ -1613,9 +1613,9 @@ class ApiController extends Controller
                                     'phone_no'              => $this->getHeaderValueByID($sl_no, 4),
                                     'whatsapp_no'           => $this->getHeaderValueByID($sl_no, 14),
                                     'parent_status_id'      => (($leadNo->parent_status_id > 0)?$leadNo->parent_status_id:12),
-                                    'parent_status_name'    => (($getParentStatus)?$getParentStatus->name:'New'),
+                                    'parent_status_name'    => (($getParentStatusMain)?$getParentStatusMain->name:'New'),
                                     'child_status_id'       => (($leadNo->child_status_id > 0)?$leadNo->child_status_id:13),
-                                    'child_status_name'     => (($getChildStatus)?$getChildStatus->name:'New'),
+                                    'child_status_name'     => (($getChildStatusMain)?$getChildStatusMain->name:'New'),
                                     'campaign_type_name'    => (($getCampaignType)?$getCampaignType->name:''),
                                     'campaign_name'         => (($getCampaign)?$getCampaign->name:''),
                                     'last_call'             => (($activity_count > 0)?date_format(date_create($last_activity->created_at), "M d Y, h:i a"):''),
@@ -1742,8 +1742,8 @@ class ApiController extends Controller
                                                 $next_schedule = date_format(date_create($leadNo->next_followup_date), "M d, Y") . ', ' . date_format(date_create($leadNo->next_followup_time), "h:i A");
                                             }
                                         }
-                                        $getParentStatus    = LeadStatus::select('name')->where('id', '=', $leadNo->parent_status_id)->first();
-                                        $getChildStatus     = LeadStatus::select('name')->where('id', '=', $leadNo->child_status_id)->first();
+                                        $getParentStatusMain    = LeadStatus::select('name')->where('id', '=', $leadNo->parent_status_id)->first();
+                                        $getChildStatusMain     = LeadStatus::select('name')->where('id', '=', $leadNo->child_status_id)->first();
                                         $getMasterLead      = MasterLead::select('lead_no')->where('sl_no', '=', $sl_no)->first();
                                         $getCampaignType    = CampaignType::select('name')->where('id', '=', $leadNo->campaign_type_id)->first();
                                         $getCampaign        = Campaign::select('name')->where('id', '=', $leadNo->campaign_id)->first();
@@ -1803,9 +1803,9 @@ class ApiController extends Controller
                                             'phone_no'              => $this->getHeaderValueByID($sl_no, 4),
                                             'whatsapp_no'           => $this->getHeaderValueByID($sl_no, 14),
                                             'parent_status_id'      => (($leadNo->parent_status_id > 0)?$leadNo->parent_status_id:12),
-                                            'parent_status_name'    => (($getParentStatus)?$getParentStatus->name:'New'),
+                                            'parent_status_name'    => (($getParentStatusMain)?$getParentStatusMain->name:'New'),
                                             'child_status_id'       => (($leadNo->child_status_id > 0)?$leadNo->child_status_id:13),
-                                            'child_status_name'     => (($getChildStatus)?$getChildStatus->name:'New'),
+                                            'child_status_name'     => (($getChildStatusMain)?$getChildStatusMain->name:'New'),
                                             'campaign_type_name'    => (($getCampaignType)?$getCampaignType->name:''),
                                             'campaign_name'         => (($getCampaign)?$getCampaign->name:''),
                                             'last_call'             => (($activity_count > 0)?date_format(date_create($last_activity->created_at), "M d Y, h:i a"):''),
