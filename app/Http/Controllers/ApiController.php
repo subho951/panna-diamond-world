@@ -1557,7 +1557,7 @@ class ApiController extends Controller
                                 $getCampaign        = Campaign::select('name')->where('id', '=', $leadNo->campaign_id)->first();
 
                                 $activities         = [];
-                                $getActivities      = LeadActivity::where('lead_sl_no', '=', $sl_no)->get();
+                                $getActivities      = LeadActivity::where('lead_sl_no', '=', $sl_no)->orderBy('id', 'DESC')->get();
                                 if($getActivities){
                                     foreach($getActivities as $getActivity){
                                         $getPurpose         = Purpose::select('name')->where('id', '=', $getActivity->purpose_id)->first();
@@ -1585,13 +1585,13 @@ class ApiController extends Controller
                                         $activities[]         = [
                                             'purpose_name'          => (($getPurpose)?$getPurpose->name:''),
                                             'comment'               => $getActivity->comment,
-                                            'note'                  => $getActivity->note,
+                                            // 'note'                  => $getActivity->note,
                                             'telecaller_name'       => (($getTelecaller)?$getTelecaller->first_name . ' ' . $getTelecaller->last_name:''),
                                             'parent_status_id'      => $getActivity->parent_status_id,
                                             'parent_status_name'    => (($getParentStatus)?$getParentStatus->name:''),
                                             'child_status_id'       => $getActivity->child_status_id,
                                             'child_status_name'     => (($getChildStatus)?$getChildStatus->name:''),
-                                            'activity_timestamp'    => date_format(date_create($getActivity->note), "M d, Y h:i A"),
+                                            'activity_timestamp'    => date_format(date_create($getActivity->created_at), "M d, Y h:i A"),
                                             'next_schedule'         => $next_schedule_activity,
                                             'feedback_tags'         => $feedback_tags,
                                             'mood_id'               => $getActivity->mood,
