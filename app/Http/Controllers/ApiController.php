@@ -1206,8 +1206,6 @@ class ApiController extends Controller
                                             $child_status[]            = [
                                                 'child_status_id'                  => $getChildStat->id,
                                                 'child_status_name'                => $getChildStat->name,
-                                                'child_status_background_color'    => $getChildStat->background_color,
-                                                'child_status_font_color'          => $getChildStat->font_color,
                                             ];
                                         }
                                     }
@@ -1215,8 +1213,6 @@ class ApiController extends Controller
                                     $apiResponse[]            = [
                                         'parent_status_id'                  => $getParentStat->id,
                                         'parent_status_name'                => $getParentStat->name,
-                                        'parent_status_background_color'    => $getParentStat->background_color,
-                                        'parent_status_font_color'          => $getParentStat->font_color,
                                         'child_status'                      => $child_status,
                                     ];
                                 }
