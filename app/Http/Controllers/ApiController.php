@@ -1196,27 +1196,48 @@ class ApiController extends Controller
                         $expiry     = date('d/m/Y H:i:s', $getTokenValue['data'][4]);
                         $getUser    = User::where('id', '=', $uId)->first();
                         if($getUser){
-                            $getParentStats = LeadStatus::select('id', 'name', 'background_color', 'font_color')->where('status', '=', 1)->where('parent_id', '=', 0)->orderBy('rank', 'ASC')->get();
+                            $assigned_telecaller_id = $uId;
+                            $lead_count             = [];
+                            $last_activities        = [];
+                            $getParentStats         = LeadStatus::select('id', 'name', 'background_color', 'font_color')->where('status', '=', 1)->where('parent_id', '=', 0)->orderBy('rank', 'ASC')->get();
                             if($getParentStats){
                                 foreach($getParentStats as $getParentStat){
+                                    $parentLeadCount = BranchLead::
+                                                                where('status', '=', 1)
+                                                                ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                                ->where('parent_status_id', '=', $getParentStat->id)
+                                                                ->count();
                                     $child_status = [];
                                     $getChildStats = LeadStatus::select('id', 'name', 'background_color', 'font_color')->where('status', '=', 1)->where('parent_id', '=', $getParentStat->id)->orderBy('rank', 'ASC')->get();
                                     if($getChildStats){
                                         foreach($getChildStats as $getChildStat){
+                                            $childLeadCount = BranchLead::
+                                                                where('status', '=', 1)
+                                                                ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                                ->where('parent_status_id', '=', $getParentStat->id)
+                                                                ->where('child_status_id', '=', $getChildStat->id)
+                                                                ->count();
                                             $child_status[]            = [
                                                 'child_status_id'                  => $getChildStat->id,
                                                 'child_status_name'                => $getChildStat->name,
+                                                'child_lead_count'                 => $childLeadCount,
                                             ];
                                         }
                                     }
 
-                                    $apiResponse[]            = [
+                                    $lead_count[]            = [
                                         'parent_status_id'                  => $getParentStat->id,
                                         'parent_status_name'                => $getParentStat->name,
+                                        'parent_lead_count'                 => $parentLeadCount,
                                         'child_status'                      => $child_status,
                                     ];
                                 }
                             }
+
+                            $apiResponse = [
+                                'lead_count'        => $lead_count,
+                                'last_activities'   => $last_activities,
+                            ];
 
                             $apiStatus          = TRUE;
                             http_response_code(200);
