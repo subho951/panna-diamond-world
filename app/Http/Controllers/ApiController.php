@@ -1216,7 +1216,7 @@ class ApiController extends Controller
                                             $childLeadCount = BranchLead::
                                                                 where('status', '=', 1)
                                                                 ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
-                                                                ->where('parent_status_id', '=', $getParentStat->id)
+                                                                ->where('parent_status_id', '=', $parent_id)
                                                                 ->where('child_status_id', '=', $child_id)
                                                                 ->count();
                                             $child_status[]            = [
