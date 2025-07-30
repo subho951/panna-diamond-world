@@ -1243,6 +1243,7 @@ class ApiController extends Controller
                                         $getChildStatus     = LeadStatus::select('name')->where('id', '=', $getActivity->child_status_id)->first();
                                         $getTelecaller      = User::select('first_name', 'last_name')->where('id', '=', $getActivity->assigned_telecaller_id)->first();
                                         $getMood            = Mood::select('name', 'emoji', 'color')->where('id', '=', $getActivity->mood)->first();
+                                        $getMasterLead      = MasterLead::select('lead_no')->where('sl_no', '=', $getActivity->lead_sl_no)->first();
 
                                         $next_schedule_activity  = '';
                                         if($getActivity->next_followup_date != '' && $getActivity->next_followup_time != ''){
@@ -1261,6 +1262,7 @@ class ApiController extends Controller
                                         }
 
                                         $last_activities[]         = [
+                                            'lead_no'               => (($getMasterLead)?$getMasterLead->lead_no:''),
                                             'purpose_name'          => (($getPurpose)?$getPurpose->name:''),
                                             'comment'               => $getActivity->comment,
                                             'telecaller_name'       => (($getTelecaller)?$getTelecaller->first_name . ' ' . $getTelecaller->last_name:''),
