@@ -1202,20 +1202,22 @@ class ApiController extends Controller
                             $getParentStats         = LeadStatus::select('id', 'name', 'background_color', 'font_color')->where('status', '=', 1)->where('parent_id', '=', 0)->orderBy('rank', 'ASC')->get();
                             if($getParentStats){
                                 foreach($getParentStats as $getParentStat){
+                                    $parent_id = (($getParentStat->id != 12)?$getParentStat->id:0);
                                     $parentLeadCount = BranchLead::
                                                                 where('status', '=', 1)
                                                                 ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
-                                                                ->where('parent_status_id', '=', $getParentStat->id)
+                                                                ->where('parent_status_id', '=', $parent_id)
                                                                 ->count();
                                     $child_status = [];
                                     $getChildStats = LeadStatus::select('id', 'name', 'background_color', 'font_color')->where('status', '=', 1)->where('parent_id', '=', $getParentStat->id)->orderBy('rank', 'ASC')->get();
                                     if($getChildStats){
                                         foreach($getChildStats as $getChildStat){
+                                            $child_id = (($getChildStat->id != 13)?$getChildStat->id:0);
                                             $childLeadCount = BranchLead::
                                                                 where('status', '=', 1)
                                                                 ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
                                                                 ->where('parent_status_id', '=', $getParentStat->id)
-                                                                ->where('child_status_id', '=', $getChildStat->id)
+                                                                ->where('child_status_id', '=', $child_id)
                                                                 ->count();
                                             $child_status[]            = [
                                                 'child_status_id'                  => $getChildStat->id,
