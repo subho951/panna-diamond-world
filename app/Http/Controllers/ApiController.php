@@ -1264,7 +1264,13 @@ class ApiController extends Controller
                                         }
 
                                         $last_activities[]         = [
+                                            'sl_no'                 => $getActivity->lead_sl_no,
                                             'lead_no'               => (($getMasterLead)?$getMasterLead->lead_no:''),
+                                            'company_name'          => $this->getHeaderValueByID($getActivity->lead_sl_no, 1),
+                                            'contact_person_name'   => $this->getHeaderValueByID($getActivity->lead_sl_no, 2),
+                                            'email'                 => $this->getHeaderValueByID($getActivity->lead_sl_no, 5),
+                                            'phone_no'              => $this->getHeaderValueByID($getActivity->lead_sl_no, 4),
+                                            'whatsapp_no'           => $this->getHeaderValueByID($getActivity->lead_sl_no, 14),
                                             'purpose_name'          => (($getPurpose)?$getPurpose->name:''),
                                             'comment'               => $getActivity->comment,
                                             'telecaller_name'       => (($getTelecaller)?$getTelecaller->first_name . ' ' . $getTelecaller->last_name:''),
