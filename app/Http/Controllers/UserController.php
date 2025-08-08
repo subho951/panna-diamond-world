@@ -91,7 +91,7 @@ class UserController extends Controller
             //     return redirect('delete-account')->with('error_message', 'Please enter valid data');
                 
             // }
-            return redirect('delete-account')->with('success_message', 'Delete account request submitted successfully');
+            return redirect('delete-account-request')->with('success_message', 'Delete account request submitted successfully');
         }        
     }
 }
