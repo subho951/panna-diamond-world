@@ -21,6 +21,10 @@ class UserController extends Controller
 {
     protected $siteAuthService;
     protected $data;
+    function __construct()
+    {
+        $this->siteAuthService = new SiteAuthService();
+    }
     
     public function page($slug){
         $data['setting']                = GeneralSetting::where('id', '=', 1)->first();
