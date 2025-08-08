@@ -32,6 +32,7 @@ use App\Http\Controllers\PurposeController;
 
 // GET route – to display the page
 Route::get('/test-email-function', [AuthController::class, 'showEmailTestPage']);
+Route::get('/page/{id}', [UserController::class, 'page']);
 
 // POST route – to send the email
 Route::post('/test-email-function', [AuthController::class, 'testEmailFunction']);
