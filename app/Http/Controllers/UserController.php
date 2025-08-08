@@ -27,7 +27,7 @@ class UserController extends Controller
         $data['page_content']           = Page::where('page_slug', '=', $slug)->first();
         $title                          = (($data['page_content'])?$data['page_content']->page_name:'');
         $page_name                      = 'page-content';
-        $data = $this->siteAuthService->admin_after_login_layout($title, $page_name, $data);
+        $data = $this->siteAuthService->admin_before_login_layout($title, $page_name, $data);
         return view('maincontents.' . $page_name, $data);
     }
 }
