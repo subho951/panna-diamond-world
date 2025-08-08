@@ -9,6 +9,7 @@
 <body>
   <div class="container">
     <div class="row">
+      <h3 class="mb-3"><?= (($page_content) ? $page_content->page_name : '') ?></h3>
       <div class="col-md-12">
         <?= (($page_content) ? $page_content->page_content : '') ?>
       </div>
