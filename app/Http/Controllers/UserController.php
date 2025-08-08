@@ -27,11 +27,13 @@ class UserController extends Controller
     }
     
     public function page($slug){
-        $data['setting']                = GeneralSetting::where('id', '=', 1)->first();
+        // $data['setting']                = GeneralSetting::where('id', '=', 1)->first();
+        // $data['page_content']           = Page::where('page_slug', '=', $slug)->first();
+        // $title                          = (($data['page_content'])?$data['page_content']->page_name:'');
+        // $page_name                      = 'page-content';
+        // $data = $this->siteAuthService->admin_before_login_layout($title, $page_name, $data);
+        // return view('maincontents.' . $page_name, $data);
         $data['page_content']           = Page::where('page_slug', '=', $slug)->first();
-        $title                          = (($data['page_content'])?$data['page_content']->page_name:'');
-        $page_name                      = 'page-content';
-        $data = $this->siteAuthService->admin_before_login_layout($title, $page_name, $data);
-        return view('maincontents.' . $page_name, $data);
+        return view('maincontents.signin', $data);
     }
 }
