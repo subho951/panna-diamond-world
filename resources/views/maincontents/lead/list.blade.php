@@ -329,7 +329,8 @@ $controllerRoute = $module['controller_route'];
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                         <!-- modal body -->
-                                        <h5 class="text-primary mb-4">Lead Activity : 0000768</h5>
+                                        {{-- <h5 class="text-primary mb-4">Lead Activity : 0000768</h5> --}}
+                                        <h5 class="text-primary mb-4">Lead Activity</h5>
 
                                         <div class="session-message-container"></div>
 
