@@ -33,6 +33,8 @@ use App\Http\Controllers\PurposeController;
 // GET route – to display the page
 Route::get('/test-email-function', [AuthController::class, 'showEmailTestPage']);
 Route::get('/page-content/{id}', [UserController::class, 'page']);
+Route::get('/delete-account-request', [UserController::class, 'deleteAccountRequest']);
+Route::post('/delete-account-update', [UserController::class, 'deleteaccount'])->name('delete-account.store');
 
 // POST route – to send the email
 Route::post('/test-email-function', [AuthController::class, 'testEmailFunction']);
