@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <div class="row">
-            <h3 class="mb-3">Delete Account Request</h3>
+            <h3 class="mb-3" style="text-align: center;">Delete Account Request</h3>
             <div class="col-md-12">
                 @if(session('success_message'))
                 <div class="alert alert-success">
