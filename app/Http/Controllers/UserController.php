@@ -34,6 +34,6 @@ class UserController extends Controller
         // $data = $this->siteAuthService->admin_before_login_layout($title, $page_name, $data);
         // return view('maincontents.' . $page_name, $data);
         $data['page_content']           = Page::where('page_slug', '=', $slug)->first();
-        return view('maincontents.signin', $data);
+        return view('maincontents.page-content', $data);
     }
 }
