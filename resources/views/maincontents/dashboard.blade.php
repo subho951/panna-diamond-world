@@ -11,7 +11,7 @@ use App\Helpers\Helper;
       <h3 class="mt-2 main_heading">Welcome to <?=Helper::getSettingValue('site_name')?> masteradmin panel</h2>
     </div>
 
-    <!-- Average Daily Sales -->
+    {{-- <!-- Average Daily Sales -->
     <div class="col-xxl-2 col-xl-2 col-md-6 col-sm-6">
       <div class="card h-100">
         <div class="card-header pb-3">
@@ -159,7 +159,7 @@ use App\Helpers\Helper;
         </div>
       </div>
     </div>
-    <!--/ Projects table -->
+    <!--/ Projects table --> --}}
   </div>
 </div>
 <!-- / Content -->
