@@ -24,7 +24,7 @@ class AdminUserController extends Controller
     {
         $this->siteAuthService = new SiteAuthService();
         $this->data = array(
-            'title'             => 'Admin User',
+            'title'             => 'User',
             'controller'        => 'AdminUserController',
             'controller_route'  => 'admin-user',
             'primary_key'       => 'id',

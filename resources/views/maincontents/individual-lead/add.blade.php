@@ -201,7 +201,7 @@ $controllerRoute = $module['controller_route'];
                                                     
                                                 @endif
                                                 
-                                                @if($leadHeaderRow->input_type == 'CHECKBOX')
+                                                {{-- @if($leadHeaderRow->input_type == 'CHECKBOX')
                                                 <div class="col-md-6 mb-3">
                                                     <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
                                                     <input type="checkbox" class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif>
@@ -213,7 +213,7 @@ $controllerRoute = $module['controller_route'];
                                                     <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
                                                     <input type="radio" class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif>
                                                 </div>
-                                                @endif
+                                                @endif --}}
                                                 
                                                 @if($leadHeaderRow->input_type == 'DATE')
                                                 <div class="col-md-6 mb-3">

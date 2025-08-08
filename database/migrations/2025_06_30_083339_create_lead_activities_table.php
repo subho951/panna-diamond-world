@@ -27,8 +27,8 @@ return new class extends Migration
             $table->bigInteger('purpose_id')->default(0);
             $table->longText('feedback_tag_ids')->nullable();
             $table->longText('note')->nullable();
-            $table->string('next_followup_date');
-            $table->string('next_followup_time');
+            $table->string('next_followup_date')->nullable();
+            $table->string('next_followup_time')->nullable();
             $table->tinyInteger('status')->default(1);
             $table->integer('created_by')->default(1);
             $table->integer('updated_by')->default(1);
