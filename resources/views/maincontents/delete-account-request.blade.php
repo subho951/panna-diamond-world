@@ -23,7 +23,7 @@
                 </div>
                 @endif
 
-                <form method="POST" action="{{ route('delete-account.store') }}" class="w-50 mx-auto mt-4">
+                <form method="POST" action="<?=url('/delete-account-update')?>" class="w-50 mx-auto mt-4">
                     @csrf
 
                     <div class="form-group">
