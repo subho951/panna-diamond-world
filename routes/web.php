@@ -210,8 +210,22 @@ Route::middleware(['auth'])->group(function () {
         Route::post( 'individual-lead/fetch-state', [IndividualLeadController::class, 'fetchState']);
         Route::post( 'individual-lead/fetch-phone-code', [IndividualLeadController::class, 'fetchPhoneCode']);
     /* Individual Lead */
+
     /* Lead List */
         Route::get('lead-list', [LeadListController::class, 'list']);
+        Route::match(['get', 'post'],'lead-list/edit/{id}', [LeadListController::class, 'edit']);
+        Route::get('lead-list/delete/{id}', [LeadListController::class, 'delete']);
+        Route::get('lead-list/change-status/{id}', [LeadListController::class, 'change_status']);
+        Route::get('lead-list/fetch-lead-status', [LeadListController::class, 'fetchLeadStatus']);
+        Route::get('lead-list/fetch-call-purpose', [LeadListController::class, 'fetchCallPurpose']);
+        Route::get('lead-list/fetch-mood', [LeadListController::class, 'fetchMood']);
+        Route::get('lead-list/fetch-feedback-tag', [LeadListController::class, 'fetchFeedbackTag']);
+        Route::post('lead-list/update-lead-status', [LeadListController::class, 'updateLeadStatus']);
+        Route::post('lead-list/fetch-lead-history', [LeadListController::class, 'fetchLeadHistory']);
+        Route::post('lead-list/fetch-lead-detail', [LeadListController::class, 'fetchLeadDetail']);
+        Route::post('lead-list/fetch-lead-added-updated', [LeadListController::class, 'fetchLeadAddedUpdated']);
+
+
     /* Lead List */
 
     /* Feedback Tags */

@@ -54,9 +54,13 @@ class IndividualLeadController extends Controller
         $isRequiredArr = LeadHeader::where('is_required', '=', 1)->where('status', '=', 1)->pluck('slug')->toArray();
 
         if ($request->isMethod('post')) {
+            // dd($request);
             $postData = $request->all();
+
+            $postData["campaign_type_id"] = (isset($postData['campaign_type_id']) ? strip_tags($postData['campaign_type_id']) : 0);
+            $postData["campaign_id"] = (isset($postData['campaign_id']) ? strip_tags($postData['campaign_id']) : 0);
             // dd($postData);
-          
+
             $rules = [];            
             $postData = array_slice($postData, 1, null, true); //remove the first element before looping i.e., the _token
             foreach ($postData as $key => $value) 
@@ -133,6 +137,8 @@ class IndividualLeadController extends Controller
 
                 // dd($postData);
                 $leadRow = [];
+                $notDuplicate = true;
+
                 foreach ($postData as $key => $value) {
                     $slug = $key;
                     $header_id = LeadHeader::where('slug', '=', $slug)->where('status', '=', 1)->first()->id  ?? '';
@@ -144,18 +150,79 @@ class IndividualLeadController extends Controller
                             "header_value" => !empty($value) ? strip_tags($value) : NULL,
                             "upload_id"  => 0,
                             "sl_no" => $sl_no,
-                            "lead_no" => $lead_no
+                            "lead_no" => $lead_no,
+                            "created_by" => session('user_data')['user_id'],
+                            "updated_by" => session('user_data')['user_id'],
                         ];
 
                         if ($slug == 'phone')   //validating with respect to phone
                         {
                             if(!empty($value))
                             {
+                                // Check if it's already exists
                                 $phone = MasterLead::where('header_id', '=', 4)->where('header_value', '=', strip_tags($value))->where('status', '!=', 3)->exists();
                                 if ($phone) //true
                                 {
-                                    $leadCell = [];
-                                    return redirect()->back()->with('error_message', 'This Lead Already Exists With Respect To Phone Number !!!');
+                                    $sl_no_Duplicate =  MasterLead::where('header_id', '=', 4)->where('header_value', '=', strip_tags($value))->where('status', '!=', 3)->value('sl_no');
+
+                                    if($sl_no_Duplicate)
+                                    {
+                                        $duplicateData = MasterLead::where('sl_no', '=', $sl_no_Duplicate)->first();
+                            
+                                        //Restricting that, same lead is not inserted in BranchLead table w.r.t same campaign
+                                        if(($postData["campaign_type_id"] != 0) && ($postData["campaign_id"] != 0))
+                                        {
+                                            if(BranchLead::where('campaign_type_id', '=', $postData["campaign_type_id"])->where('campaign_id', '=', $postData["campaign_id"])->where('master_lead_id', '=', $duplicateData->id)->where('status', '!=', 3)->exists())
+                                            {          
+                                                $leadCell = [];
+                                                return redirect()->back()->with('error_message', 'This Lead Already Exists In That Campaign !!!');
+                                            }
+                                            elseif(BranchLead::where('campaign_type_id', '!=', $postData["campaign_type_id"])->where('campaign_id', '!=', $postData["campaign_id"])->where('master_lead_id', '=', $duplicateData->id)->where('status', '!=', 3)->exists())
+                                            {
+                                                // insertion allowed
+                                                $leadCell = [];
+                                                $notDuplicate = false;
+
+                                                $dupLeadRow = [];
+                                                $dupLeadRow['master_lead_id'] = $duplicateData->id ;
+                                                $dupLeadRow['lead_sl_no'] = $duplicateData->sl_no ;
+                                                break;
+                                            }
+                                        }
+                                        elseif(($postData["campaign_type_id"] == 0) && ($postData["campaign_id"] == 0))
+                                        {
+                                            
+                                            if(BranchLead::where('lead_sl_no', '=', $sl_no_Duplicate)->where('master_lead_id', '=', $duplicateData->id)->where('campaign_type_id', '=', 0)->where('campaign_id', '=', 0)->exists()) // true
+                                            {
+                                                //without selecting campaign and also exist in db without campaign
+                                                $leadCell = [];
+                                                return redirect()->back()->with('error_message', 'This Lead Already Exists !!!');
+                                            }
+
+                                            if(BranchLead::where('lead_sl_no', '=', $sl_no_Duplicate)->where('master_lead_id', '=', $duplicateData->id)->where('campaign_type_id', '!=', 0)->where('campaign_id', '!=', 0)->exists()) // true
+                                            {
+                                                //without selecting campaign and also exist in db with another campaign
+                                                // insertion allowed
+                                                $leadCell = [];
+                                                $notDuplicate = false;
+                                                
+                                                $dupLeadRow = [];
+                                                $dupLeadRow['master_lead_id'] = $duplicateData->id ;
+                                                $dupLeadRow['lead_sl_no'] = $duplicateData->sl_no ;
+                                                break;
+                                                
+                                            }
+
+                                            if((BranchLead::where('lead_sl_no', '=', $sl_no_Duplicate)->where('master_lead_id', '=', $duplicateData->id)->where('campaign_type_id', '=', 0)->where('campaign_id', '=', 0)->exists()) && (BranchLead::where('lead_sl_no', '=', $sl_no_Duplicate)->where('master_lead_id', '=', $duplicateData->id)->where('campaign_type_id', '!=', 0)->where('campaign_id', '!=', 0)->exists())) // true
+                                            {   
+                                                //both
+                                                $leadCell = [];
+                                                return redirect()->back()->with('error_message', 'This Lead Already Exists !!!');
+                                            }
+
+                                        }
+                                    }
+
                                 }
                             }
                         }
@@ -164,11 +231,69 @@ class IndividualLeadController extends Controller
                         {
                             if(!empty($value))
                             {
+                                // Check if it's already exists
                                 $whatsapp = MasterLead::where('header_id', '=', 14)->where('header_value', '=', strip_tags($value))->where('status', '!=', 3)->exists();
                                 if ($whatsapp) //true
                                 {
-                                    $leadCell = [];
-                                    return redirect()->back()->with('error_message', 'This Lead Already Exists With Respect To WhatsApp Number !!!');
+                                    $sl_no_Duplicate = MasterLead::where('header_id', '=', 14)->where('header_value', '=', strip_tags($value))->where('status', '!=', 3)->value('sl_no');
+
+                                    if($sl_no_Duplicate)
+                                    {
+                                        $duplicateData = MasterLead::where('sl_no', '=', $sl_no_Duplicate)->first();
+                            
+                                        //Restricting that, same lead is not inserted in BranchLead table w.r.t same campaign
+                                        if(($postData["campaign_type_id"] != 0) && ($postData["campaign_id"] != 0))
+                                        {
+                                            if(BranchLead::where('campaign_type_id', '=', $postData["campaign_type_id"])->where('campaign_id', '=', $postData["campaign_id"])->where('master_lead_id', '=', $duplicateData->id)->where('status', '!=', 3)->exists())
+                                            {
+                                                $leadCell = [];
+                                                return redirect()->back()->with('error_message', 'This Lead Already Exists In That Campaign !!!');
+                                            }
+                                            elseif(BranchLead::where('campaign_type_id', '!=', $postData["campaign_type_id"])->where('campaign_id', '!=', $postData["campaign_id"])->where('master_lead_id', '=', $duplicateData->id)->where('status', '!=', 3)->exists())
+                                            {
+                                                 // insertion allowed
+                                                 $leadCell = [];
+                                                 $notDuplicate = false;
+                                                 
+                                                 $dupLeadRow = [];
+                                                 $dupLeadRow['master_lead_id'] = $duplicateData->id ;
+                                                 $dupLeadRow['lead_sl_no'] = $duplicateData->sl_no ;
+                                                 break;
+                                            }
+                                        }
+                                        elseif(($postData["campaign_type_id"] == 0) && ($postData["campaign_id"] == 0))
+                                        {
+                                            
+                                            if(BranchLead::where('lead_sl_no', '=', $sl_no_Duplicate)->where('master_lead_id', '=', $duplicateData->id)->where('campaign_type_id', '=', 0)->where('campaign_id', '=', 0)->exists()) // true
+                                            {
+                                                //without selecting campaign and also exist in db without campaign
+                                                $leadCell = [];
+                                                return redirect()->back()->with('error_message', 'This Lead Already Exists !!!');
+                                            }
+
+                                            if(BranchLead::where('lead_sl_no', '=', $sl_no_Duplicate)->where('master_lead_id', '=', $duplicateData->id)->where('campaign_type_id', '!=', 0)->where('campaign_id', '!=', 0)->exists()) // true
+                                            {
+                                                //without selecting campaign and also exist in db with another campaign
+                                                 // insertion allowed
+                                                 $leadCell = [];
+                                                 $notDuplicate = false;
+                                                 
+                                                 $dupLeadRow = [];
+                                                 $dupLeadRow['master_lead_id'] = $duplicateData->id ;
+                                                 $dupLeadRow['lead_sl_no'] = $duplicateData->sl_no ;
+                                                 break;
+                                                
+                                            }
+
+                                            if((BranchLead::where('lead_sl_no', '=', $sl_no_Duplicate)->where('master_lead_id', '=', $duplicateData->id)->where('campaign_type_id', '=', 0)->where('campaign_id', '=', 0)->exists()) && (BranchLead::where('lead_sl_no', '=', $sl_no_Duplicate)->where('master_lead_id', '=', $duplicateData->id)->where('campaign_type_id', '!=', 0)->where('campaign_id', '!=', 0)->exists())) // true
+                                            {   
+                                                //both
+                                                $leadCell = [];
+                                                return redirect()->back()->with('error_message', 'This Lead Already Exists !!!');
+                                            }
+
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -179,7 +304,7 @@ class IndividualLeadController extends Controller
                     }
                 }
 
-                if (!empty($leadRow)) {
+                if (!empty($leadRow) && $notDuplicate) {
                     $cellsPerRow = 0;
                     foreach ($leadRow as $cell)   //uploading 1 lead coming from form
                     {
@@ -190,6 +315,8 @@ class IndividualLeadController extends Controller
                         $masterLead->upload_id        = $cell["upload_id"];
                         $masterLead->sl_no            = $cell["sl_no"];
                         $masterLead->lead_no          = $cell["lead_no"];
+                        $masterLead->created_by = session('user_data')['user_id'];
+                        $masterLead->updated_by = session('user_data')['user_id'];
 
                         $masterLead->save();
 
@@ -203,6 +330,8 @@ class IndividualLeadController extends Controller
                             $branchLead->campaign_type_id = $postData["campaign_type_id"] ?? 0;
                             $branchLead->campaign_id = $postData["campaign_id"] ?? 0;
                             $branchLead->assigned_telecaller_id = $postData["telecaller_id"];
+                            $branchLead->created_by = session('user_data')['user_id'];
+                            $branchLead->updated_by = session('user_data')['user_id'];
 
                             $branchLead->save();
                         }
@@ -211,6 +340,26 @@ class IndividualLeadController extends Controller
                     }
 
                     return redirect($this->data['controller_route'] . '/add')->with('success_message',  'Lead Added Successfully !!!');
+                }
+                elseif(!empty($dupLeadRow))
+                {
+
+                    $branchLead =  new BranchLead();
+
+                    $branchLead->upload_id = 0;
+                    $branchLead->master_lead_id = $dupLeadRow['master_lead_id'] ; 
+                    $branchLead->lead_sl_no = $dupLeadRow['lead_sl_no'] ;
+                    $branchLead->branch_id = $postData["branch_id"];
+                    $branchLead->campaign_type_id = $postData["campaign_type_id"] ?? 0;
+                    $branchLead->campaign_id = $postData["campaign_id"] ?? 0;
+                    $branchLead->assigned_telecaller_id = $postData["telecaller_id"];
+                    $branchLead->created_by = session('user_data')['user_id'];
+                    $branchLead->updated_by = session('user_data')['user_id'];
+
+                    $branchLead->save();
+                    
+                    return redirect($this->data['controller_route'] . '/add')->with('success_message',  'Lead Added Successfully !!!');
+
                 } else {
                     return redirect()->back()->with('error_message', 'Lead Insertion Failed !!!');
                 }

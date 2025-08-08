@@ -52,7 +52,7 @@ class UploadLeadController extends Controller
         $data['campaign_types']         = CampaignType::where('status', '=', 1)->get();
 
         //listing purpose
-        $uploadedLeadsArr               = UploadLead::where('status', '!=', 3)->get();
+        $uploadedLeadsArr               = UploadLead::where('status', '!=', 3)->orderBy('id', 'desc')->get();
         $leadListArr = [];
         foreach ($uploadedLeadsArr as $leadRow) {
             $leadRow['branch_name'] = Branch::where('id', '=', $leadRow->branch_id)->value('name') ?? 'N/A';
@@ -161,6 +161,8 @@ class UploadLeadController extends Controller
                     $invalid = 0;
                     $duplicate = 0;
                     $duplicateWRTCampaign = 0;
+                    $duplicateWOCampaign = 0;
+                    $duplicateInFile = 0;
                     $new = 0;
                     $teleIndex = 0;
                     
@@ -176,8 +178,10 @@ class UploadLeadController extends Controller
                         $status = 'Success';
                         $isInvalid = false;
                         $isDuplicateWRTCampaign = false;
+                        $isDuplicateWOCampaign = false;
                         $isDuplicate = false;
-                        $comment = '<span class="text-success">New</span>';
+                        $isDuplicateInFile = false;
+                        $comment = '<span class="text-info">New</span>';
                         $phoneValue = null;
                         $sl_no_Duplicate = 0;
 
@@ -300,7 +304,15 @@ class UploadLeadController extends Controller
                         elseif(!empty($duplicateCommentArr)) // Duplicate check (only if not invalid)
                         {
                             // $comment = '<span class="text-warning">Duplicate: ' . implode(', ', $duplicateCommentArr) .'</span>';
-                            $comment = '<span class="text-warning">Existing</span>';
+                            if( (in_array('phone-number already in file' , $duplicateCommentArr) ) || ( in_array('whatsapp-number already in file' , $duplicateCommentArr)) )
+                            {
+                                $isDuplicateInFile = true;
+                                $comment = '<span class="text-secondary">Already In File</span>';
+                            }
+                            else
+                            {
+                                $comment = '<span class="text-warning">Existing</span>';
+                            }
                         }
                         
                         if($sl_no_Duplicate)
@@ -313,11 +325,58 @@ class UploadLeadController extends Controller
                             {
                                 $campaign_check = BranchLead::where('campaign_type_id', '=', $request->campaign_type_id)->where('campaign_id', '=', $request->campaign_id)->where('master_lead_id', '=', $duplicateData->id)->where('status', '!=', 3)->exists();
                             }
+                            elseif(($request->campaign_type_id == 0) && ($request->campaign_id == 0))
+                            {
+                                $isDuplicateWOCampaign = true;
+
+                                if(BranchLead::where('lead_sl_no', '=', $sl_no_Duplicate)->where('master_lead_id', '=', $duplicateData->id)->where('campaign_type_id', '=', 0)->where('campaign_id', '=', 0)->exists()) // true
+                                {
+                                    //without selecting campaign and also exist in db without campaign
+                                    $isDuplicateWOCampaign = true;
+                                    $comment = '<span class="text-warning">Already Exists</span>';
+                                    if( (in_array('phone-number already in file' , $duplicateCommentArr) ) || ( in_array('whatsapp-number already in file' , $duplicateCommentArr)) )
+                                    {
+                                        $isDuplicateInFile = true;
+                                        $comment = '<span class="text-secondary">Already In File</span>';
+                                    }
+                                }
+
+                                if(BranchLead::where('lead_sl_no', '=', $sl_no_Duplicate)->where('master_lead_id', '=', $duplicateData->id)->where('campaign_type_id', '!=', 0)->where('campaign_id', '!=', 0)->exists()) // true
+                                {
+                                    // without selecting campaign and also exist in db with another campaign
+                                    // insertion allowed in BranchLead
+                                    $comment = '<span class="text-warning">Existing</span>';
+                                    $isDuplicate = true;
+                                    $isDuplicateWOCampaign = false;
+                                    if( (in_array('phone-number already in file' , $duplicateCommentArr) ) || ( in_array('whatsapp-number already in file' , $duplicateCommentArr)) )
+                                    {
+                                        $isDuplicateInFile = true;
+                                        $comment = '<span class="text-secondary">Already In File</span>';
+                                    }
+                                }
+
+                                if((BranchLead::where('lead_sl_no', '=', $sl_no_Duplicate)->where('master_lead_id', '=', $duplicateData->id)->where('campaign_type_id', '=', 0)->where('campaign_id', '=', 0)->exists()) && (BranchLead::where('lead_sl_no', '=', $sl_no_Duplicate)->where('master_lead_id', '=', $duplicateData->id)->where('campaign_type_id', '!=', 0)->where('campaign_id', '!=', 0)->exists())) // true
+                                {   
+                                    //both
+                                    $isDuplicateWOCampaign = true;
+                                    $comment = '<span class="text-warning">Already Exists</span>';
+                                    if( (in_array('phone-number already in file' , $duplicateCommentArr) ) || ( in_array('whatsapp-number already in file' , $duplicateCommentArr)) )
+                                    {
+                                        $isDuplicateInFile = true;
+                                        $comment = '<span class="text-secondary">Already In File</span>';
+                                    }
+                                }
+                            }
 
                             if($campaign_check)
                             {
                                 $isDuplicateWRTCampaign = true;
-                                $comment = '<span class="text-secondary">Exists w.r.t Campaign</span>';
+                                $comment = '<span class="text-warning">Exists w.r.t. Campaign</span>';
+                                if( (in_array('phone-number already in file' , $duplicateCommentArr) ) || ( in_array('whatsapp-number already in file' , $duplicateCommentArr)) )
+                                {
+                                    $isDuplicateInFile = true;
+                                    $comment = '<span class="text-secondary">Already In File</span>';
+                                }
                             }
                         }
 
@@ -328,10 +387,26 @@ class UploadLeadController extends Controller
                             $telecallerAssign = 'no';
 
                         }
+                        elseif($isDuplicateInFile)
+                        {
+                            $status = '<i class="fa-regular fa-calendar-check"></i>';
+                            $duplicateInFile++;
+                            $telecallerAssign = 'no';
+
+                        }
+                        elseif($isDuplicateWOCampaign)
+                        {
+                            $status = '<i class="fa-regular fa-calendar-check"></i>';
+                            $duplicateWOCampaign++;
+                            $duplicate++;
+                            $telecallerAssign = 'no';
+
+                        }
                         elseif($isDuplicateWRTCampaign)
                         {
                             $status = '<i class="fa-regular fa-calendar-check"></i>';
                             $duplicateWRTCampaign++;
+                            $duplicate++;
                             $telecallerAssign = 'no';
 
                         }
@@ -373,7 +448,10 @@ class UploadLeadController extends Controller
                         'invalid' => $invalid,
                         'duplicate' => $duplicate,
                         'duplicateWRTCampaign' => $duplicateWRTCampaign,
+                        'duplicateWOCampaign'=> $duplicateWOCampaign,
+                        'duplicateInFile' => $duplicateInFile,
                         'new' => $new,
+                        'assinableLead' => $teleIndex,
                     ];
                     $data['branch_name'] = Branch::where('id', '=', $request->branch_id)->where('status', '=', 1)->value('name');
 
@@ -510,7 +588,9 @@ class UploadLeadController extends Controller
                                 "header_value" => !empty($value[$i]) ? strip_tags($value[$i]) : NULL,
                                 "upload_id"  => $lastInsertId,
                                 "sl_no" => $sl_no,
-                                "lead_no" => $lead_no
+                                "lead_no" => $lead_no,
+                                "created_by" => session('user_data')['user_id'],
+                                "updated_by" => session('user_data')['user_id'],
                             ];
 
                             //handling required fields
@@ -608,6 +688,8 @@ class UploadLeadController extends Controller
                             $masterLead->upload_id        = $cell["upload_id"];
                             $masterLead->sl_no            = $cell["sl_no"];
                             $masterLead->lead_no          = $cell["lead_no"];
+                            $masterLead->created_by = session('user_data')['user_id'];
+                            $masterLead->updated_by = session('user_data')['user_id'];
 
                             $masterLead->save();
 
@@ -621,6 +703,8 @@ class UploadLeadController extends Controller
                                 $branchLead->campaign_type_id = $uploadLead->campaign_type_id;
                                 $branchLead->campaign_id = $uploadLead->campaign_id;
                                 $branchLead->assigned_telecaller_id = 0;
+                                $branchLead->created_by = session('user_data')['user_id'];
+                                $branchLead->updated_by = session('user_data')['user_id'];
 
                                 $branchLead->save();
                                 $totalLeadAssignedToTelecaller++;
@@ -642,21 +726,53 @@ class UploadLeadController extends Controller
                             {
                                 $campaign_check = BranchLead::where('campaign_type_id', '=', $uploadLead->campaign_type_id)->where('campaign_id', '=', $uploadLead->campaign_id)->where('master_lead_id', '=', $duplicateData->id)->where('status', '!=', 3)->exists();
                             }
+                            elseif(($uploadLead->campaign_type_id == 0) && ($uploadLead->campaign_id == 0))
+                            {
+                                $campaign_check = false;
+                                
+                                if(BranchLead::where('lead_sl_no', '=', $sl_no_Duplicate)->where('master_lead_id', '=', $duplicateData->id)->where('campaign_type_id', '=', 0)->where('campaign_id', '=', 0)->exists()) // true
+                                {
+                                    //without selecting campaign and also exist in db without campaign
+                                    $campaign_check = true;
+                                }
+
+                                if(BranchLead::where('lead_sl_no', '=', $sl_no_Duplicate)->where('master_lead_id', '=', $duplicateData->id)->where('campaign_type_id', '!=', 0)->where('campaign_id', '!=', 0)->exists()) // true
+                                {
+                                    //without selecting campaign and also exist in db with another campaign
+                                    $campaign_check = false; // insertion allowed
+                                }
+
+                                if((BranchLead::where('lead_sl_no', '=', $sl_no_Duplicate)->where('master_lead_id', '=', $duplicateData->id)->where('campaign_type_id', '=', 0)->where('campaign_id', '=', 0)->exists()) && (BranchLead::where('lead_sl_no', '=', $sl_no_Duplicate)->where('master_lead_id', '=', $duplicateData->id)->where('campaign_type_id', '!=', 0)->where('campaign_id', '!=', 0)->exists())) // true
+                                {   
+                                    //both
+                                    $campaign_check = true;
+                                }
+
+                            }
                            
                             if(!$campaign_check) // !false
                             {
-                                $branchLead =  new BranchLead();
-
-                                $branchLead->upload_id = $lastInsertId;
-                                $branchLead->master_lead_id = $duplicateData->id;
-                                $branchLead->lead_sl_no = $sl_no_Duplicate;
-                                $branchLead->branch_id = $uploadLead->branch_id;
-                                $branchLead->campaign_type_id = $uploadLead->campaign_type_id;
-                                $branchLead->campaign_id = $uploadLead->campaign_id;
-                                $branchLead->assigned_telecaller_id = 0;
-
-                                $branchLead->save();
-                                $totalLeadAssignedToTelecaller++;
+                                //Preventing same lead from a single csv can't be inserted in BranchLead table
+                                $upload_id_check = false;
+                                $upload_id_check = BranchLead::where('master_lead_id', '=', $duplicateData->id)->where('upload_id', '=' , $lastInsertId)->where('status', '!=', 3)->exists();
+                                
+                                if(!$upload_id_check) // !false
+                                {                                 
+                                    $branchLead =  new BranchLead();
+    
+                                    $branchLead->upload_id = $lastInsertId;
+                                    $branchLead->master_lead_id = $duplicateData->id;
+                                    $branchLead->lead_sl_no = $sl_no_Duplicate;
+                                    $branchLead->branch_id = $uploadLead->branch_id;
+                                    $branchLead->campaign_type_id = $uploadLead->campaign_type_id;
+                                    $branchLead->campaign_id = $uploadLead->campaign_id;
+                                    $branchLead->assigned_telecaller_id = 0;
+                                    $branchLead->created_by = session('user_data')['user_id'];
+                                    $branchLead->updated_by = session('user_data')['user_id'];
+    
+                                    $branchLead->save();
+                                    $totalLeadAssignedToTelecaller++;
+                                }
                             }
 
                         }

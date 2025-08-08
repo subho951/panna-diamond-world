@@ -82,7 +82,7 @@ $role_id      = (($user)?$user->role_id:0);
 
         <li class="menu-item <?=(($pageSegment == 'admin-user')?'active':'')?>">
           <a href="<?=url('/admin-user/list')?>" class="menu-link">
-            <div data-i18n="Admin Users"><i class="fa-solid fa-arrow-right"></i> Admin Users</div>
+            <div data-i18n="Users"><i class="fa-solid fa-arrow-right"></i> Users</div>
           </a>
         </li>
 

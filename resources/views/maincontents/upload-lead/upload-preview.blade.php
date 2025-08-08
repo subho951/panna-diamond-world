@@ -13,17 +13,24 @@ $controllerRoute = $module['controller_route'];
             </h6>
         </div>
 
-        @if(!empty($counts['duplicateWRTCampaign']))
-        <div class="alert alert-danger alert-dismissible autohide" role="alert">
-            <h6 class="alert-heading mb-1"><i class="bx bx-xs bx-store align-top me-2"></i>Warning!</h6>
-            <span>{{$counts['duplicateWRTCampaign']}} Leads Are Duplicate In The Same Campaign.</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-            </button>
-        </div>
+        @if((!empty($counts['duplicateWRTCampaign'])) || (!empty($counts['duplicateInFile'])))
+            <div class="alert alert-secondary alert-dismissible autohide" role="alert">
+                <h6 class="alert-heading mb-1"><i class="bx bx-xs bx-store align-top me-2"></i>Warning!</h6>
+                @if(!empty($counts['duplicateWRTCampaign']))
+                    <span>{{$counts['duplicateWRTCampaign']}} Lead(s) Duplicate In The Same Campaign !!!</span>
+                    <br>
+                @endif
+                
+                @if(!empty($counts['duplicateInFile']))
+                    <span>{{$counts['duplicateInFile']}} Lead(s) Duplicate In The Same File !!!</span>
+                @endif
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         @endif
 
-        <div class="row mb-2">
-            <div class="col-md-3 mb-2">
+
+        <div class="row mb-2 d-flex justify-content-center flex-wrap">
+            <div class="mb-2" style="min-width: 150px; flex: 1 1 20%;">
                 <div class="card text-center">
                     <div class="card-body">
                         <h6 style="margin-bottom: 3px;">Total Leads</h6>
@@ -31,7 +38,7 @@ $controllerRoute = $module['controller_route'];
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-2">
+            <div class="mb-2" style="min-width: 150px; flex: 1 1 20%;">
                 <div class="card text-center bg-danger text-white">
                     <div class="card-body">
                         <h6 style="margin-bottom: 3px;">Invalid Leads</h6>
@@ -39,7 +46,7 @@ $controllerRoute = $module['controller_route'];
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-2">
+            <div class="mb-2" style="min-width: 150px; flex: 1 1 20%;">
                 <div class="card text-center bg-warning">
                     <div class="card-body">
                         <h6 style="margin-bottom: 3px;">Existing Leads</h6>
@@ -47,15 +54,24 @@ $controllerRoute = $module['controller_route'];
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-2">
-                <div class="card text-center bg-success text-white">
+            <div class="mb-2" style="min-width: 150px; flex: 1 1 20%;">
+                <div class="card text-center bg-info text-white">
                     <div class="card-body">
                         <h6 style="margin-bottom: 3px;">New Leads</h6>
                         <h6 style="margin-bottom: 0;">{{ $counts['new'] }}</h6>
                     </div>
                 </div>
             </div>
+            <div class="mb-2" style="min-width: 150px; flex: 1 1 20%;">
+                <div class="card text-center bg-success text-white">
+                    <div class="card-body">
+                        <h6 style="margin-bottom: 3px;">Assignable Leads</h6>
+                        <h6 style="margin-bottom: 0;">{{ $counts['assinableLead'] }}</h6>
+                    </div>
+                </div>
+            </div>
         </div>
+    
 
         <h5 class="mb-2">Lead Title: {{ $lead_title }} | Branch Name: {{ $branch_name }} | Lead Date:
             {{ $lead_date }}</h5>
