@@ -72,7 +72,7 @@ $controllerRoute = $module['controller_route'];
                         <div class="col-md-6 mb-3">
                             <label for="branch_id" class="form-label">Branch <small class="text-danger">*</small></label>
                             <select class="select2 form-select" type="text" id="branch_id" name="branch_id"  required>
-                                <option value="" selected>Select Branch</option>
+                                <option value="" selected disabled>Select Branch</option>
                                 <?php if($branches){ foreach($branches as $branch){?>
                                     <option value="<?=$branch->id?>" <?=(($branch->id === $branch_id)? 'selected':'')?>><?=$branch->name?></option>
                                 <?php } }?>
@@ -90,7 +90,12 @@ $controllerRoute = $module['controller_route'];
 
                         <div class="col-md-6 mb-3">
                             <label for="country_code" class="form-label">Country Code <small class="text-danger">*</small></label>
-                            <input class="form-control" type="text" id="country_code" name="country_code" value="<?=$country_code?>" required placeholder="Country Code" />
+                            <select class="select2 form-select" type="text" id="country_code" name="country_code" required>
+                                <option value="" selected disabled>Select Country Code</option>
+                                <?php if($country){ foreach($country as $countryRow){?>
+                                    <option value="<?=$countryRow->phone_code?>" <?=(($countryRow->phone_code === $country_code)? 'selected':'')?>><?=$countryRow->phone_code?></option>
+                                <?php } }?>
+                            </select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="phone" class="form-label">Phone <small class="text-danger">*</small></label>

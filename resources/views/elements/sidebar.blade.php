@@ -122,6 +122,15 @@ $role_id      = (($user)?$user->role_id:0);
           </li>
         <?php }?> -->
 
+        <?php if(in_array(21, $moduleIds)){?>
+          <!-- Branch -->
+          <li class="menu-item <?=(($pageSegment == 'branch')?'active':'')?>">
+            <a href="<?=url('/branch/list') ?>" class="menu-link">
+              <div data-i18n="Branches"><i class="fa-solid fa-arrow-right"></i> Branches</div>
+            </a>
+          </li>
+        <?php }?>
+
         <?php if(in_array(16, $moduleIds)){?>
           <li class="menu-item <?=(($pageSegment == 'campaign-type')?'active':'')?>">
             <a href="<?=url('/campaign-type/list')?>" class="menu-link">
@@ -146,13 +155,13 @@ $role_id      = (($user)?$user->role_id:0);
           </li>
         <?php }?>
 
-        <?php if(in_array(19, $moduleIds)){?>
+        {{-- <?php if(in_array(19, $moduleIds)){?>
           <li class="menu-item <?=(($pageSegment == 'lead-header')?'active':'')?>">
             <a href="<?=url('/lead-header/list')?>" class="menu-link">
               <div data-i18n="Lead Headers"><i class="fa-solid fa-arrow-right"></i> Lead Headers</div>
             </a>
           </li>
-        <?php }?>
+        <?php }?> --}}
 
         <?php if(in_array(20, $moduleIds)){?>
           <li class="menu-item <?=(($pageSegment == 'lead-status')?'active':'')?>">
@@ -189,51 +198,8 @@ $role_id      = (($user)?$user->role_id:0);
     </li>
   <?php }?>
 
-  <?php if(in_array(5, $moduleIds) || in_array(6, $moduleIds) || in_array(7, $moduleIds)){?>
-    <!-- FAQs -->
-    <li class="menu-item active <?=(($pageSegment == 'faq-category' || $pageSegment == 'faq-sub-category' || $pageSegment == 'faq')?'open':'')?>">
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon fa-solid fa-circle-question"></i>
-        <div data-i18n="FAQs">FAQs</div>
-      </a>
-      <ul class="menu-sub">
-        <?php if(in_array(5, $moduleIds)){?>
-          <li class="menu-item <?=(($pageSegment == 'faq-category')?'active':'')?>">
-            <a href="<?=url('/faq-category/list')?>" class="menu-link">
-              <div data-i18n="FAQ Categories"><i class="fa-solid fa-arrow-right"></i> FAQ Categories</div>
-            </a>
-          </li>
-        <?php }?>
+  
 
-        <?php if(in_array(6, $moduleIds)){?>
-          <li class="menu-item <?=(($pageSegment == 'faq-sub-category')?'active':'')?>">
-            <a href="<?=url('/faq-sub-category/list')?>" class="menu-link">
-              <div data-i18n="FAQ Sub Categories"><i class="fa-solid fa-arrow-right"></i> FAQ Sub Categories</div>
-            </a>
-          </li>
-        <?php }?>
-
-        <?php if(in_array(7, $moduleIds)){?>
-          <li class="menu-item <?=(($pageSegment == 'faq')?'active':'')?>">
-            <a href="<?=url('/faq/list')?>" class="menu-link">
-              <div data-i18n="FAQs"><i class="fa-solid fa-arrow-right"></i> FAQs</div>
-            </a>
-          </li>
-        <?php }?>
-
-      </ul>
-    </li>
-  <?php }?>
-
-  <?php if(in_array(21, $moduleIds)){?>
-    <!-- Branch -->
-    <li class="menu-item <?=(($pageSegment == 'branch')?'active':'')?>">
-      <a href="<?=url('/branch/list') ?>" class="menu-link">
-        <i class="menu-icon fa-solid fas fa-sitemap"></i>
-        <div data-i18n="Branches">Branches</div>
-      </a>
-    </li>
-  <?php }?>
 
   <?php if(in_array(22, $moduleIds)){?>
     <!-- Upload Lead -->
@@ -255,22 +221,14 @@ $role_id      = (($user)?$user->role_id:0);
     </li>
   <?php }?>
 
+  <?php if(in_array(27, $moduleIds)){?>
   <!-- Lead List -->
-   <li class="menu-item <?=(($pageSegment == 'lead-list')?'active':'')?>">
+  <li class="menu-item <?=(($pageSegment == 'lead-list')?'active':'')?>">
     <a href="<?=url('/lead-list')?>" class="menu-link">
       <i class="menu-icon fa-solid fa-list"></i>
       <div data-i18n="Lead List">Lead List</div>
     </a>
   </li>
-
-  <?php if(in_array(8, $moduleIds)){?>
-    <!-- CMS Pages -->
-    <li class="menu-item <?=(($pageSegment == 'page')?'active':'')?>">
-      <a href="<?=url('/page/list')?>" class="menu-link">
-        <i class="menu-icon fa-solid fa-file-lines"></i>
-        <div data-i18n="CMS Pages">CMS Pages</div>
-      </a>
-    </li>
   <?php }?>
 
   <?php if(in_array(10, $moduleIds) || in_array(11, $moduleIds) || in_array(12, $moduleIds)){?>
@@ -314,6 +272,52 @@ $role_id      = (($user)?$user->role_id:0);
       <a href="<?=url('/settings')?>" class="menu-link">
         <i class="menu-icon fa-solid fa-gear"></i>
         <div data-i18n="Settings">Settings</div>
+      </a>
+    </li>
+  <?php }?>
+
+  <?php if(in_array(5, $moduleIds) || in_array(6, $moduleIds) || in_array(7, $moduleIds)){?>
+    <!-- FAQs -->
+    <li class="menu-item active <?=(($pageSegment == 'faq-category' || $pageSegment == 'faq-sub-category' || $pageSegment == 'faq')?'open':'')?>">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon fa-solid fa-circle-question"></i>
+        <div data-i18n="FAQs">FAQs</div>
+      </a>
+      <ul class="menu-sub">
+        <?php if(in_array(5, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'faq-category')?'active':'')?>">
+            <a href="<?=url('/faq-category/list')?>" class="menu-link">
+              <div data-i18n="FAQ Categories"><i class="fa-solid fa-arrow-right"></i> FAQ Categories</div>
+            </a>
+          </li>
+        <?php }?>
+
+        <?php if(in_array(6, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'faq-sub-category')?'active':'')?>">
+            <a href="<?=url('/faq-sub-category/list')?>" class="menu-link">
+              <div data-i18n="FAQ Sub Categories"><i class="fa-solid fa-arrow-right"></i> FAQ Sub Categories</div>
+            </a>
+          </li>
+        <?php }?>
+
+        <?php if(in_array(7, $moduleIds)){?>
+          <li class="menu-item <?=(($pageSegment == 'faq')?'active':'')?>">
+            <a href="<?=url('/faq/list')?>" class="menu-link">
+              <div data-i18n="FAQs"><i class="fa-solid fa-arrow-right"></i> FAQs</div>
+            </a>
+          </li>
+        <?php }?>
+
+      </ul>
+    </li>
+  <?php }?>
+
+  <?php if(in_array(8, $moduleIds)){?>
+    <!-- CMS Pages -->
+    <li class="menu-item <?=(($pageSegment == 'page')?'active':'')?>">
+      <a href="<?=url('/page/list')?>" class="menu-link">
+        <i class="menu-icon fa-solid fa-file-lines"></i>
+        <div data-i18n="CMS Pages">CMS Pages</div>
       </a>
     </li>
   <?php }?>

@@ -809,6 +809,7 @@ class LeadListController extends Controller
                 $leadHistoryArr[] = $leadHistory;
             }
 
+
             return response()->json($leadHistoryArr);
         }
     }
@@ -851,6 +852,20 @@ class LeadListController extends Controller
             $arr['created_at'] = $branchLeadArr->created_at?->format('M d, Y h:i A') ?? '';
             $arr['updated_at'] = $branchLeadArr->updated_at?->format('M d, Y h:i A') ?? '';
             
+            return response()->json($arr);
+        }
+    }
+
+    public function fetchLeadActivityCount(Request $request)
+    {
+        if ($request->isMethod('post'))
+        {
+            $id = Helper::decoded($request->branchLead_id); //BranchLead ID
+            $branchLeadArr = BranchLead::find($id);
+            $arr = [];
+            $arr['lead_activity_count'] = LeadActivity::where('lead_sl_no', '=', $branchLeadArr->lead_sl_no)->where('status', '!=', 3)->count();
+            $arr['lead_no'] = MasterLead::where('sl_no', '=', $branchLeadArr->lead_sl_no)->where('status', '!=', 3)->first()->lead_no ?? '';
+
             return response()->json($arr);
         }
     }

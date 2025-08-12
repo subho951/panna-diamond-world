@@ -243,8 +243,9 @@ $controllerRoute = $module['controller_route'];
                                                     data-bs-target="#callModal" title="Call" data-id="{{Helper::encoded($eachLeadArr->id)}}">
                                                     <i class="fa-solid fa-headset"></i>&nbsp;<span>Call</span>
                                                 </button>
+                                                
+                                                @if(session('user_data')['role_id'] != 3)
                                                 <br>
-                                               
                                                 <a href="{{url($controllerRoute.'/edit/'. Helper::encoded($eachLeadArr->id))}}" class="btn btn-sm btn-primary mb-1" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
@@ -271,6 +272,7 @@ $controllerRoute = $module['controller_route'];
                                                     title="Transfer Lead To Another User">
                                                     <i class="fas fa-exchange-alt"></i>
                                                 </a>
+                                                @endif
                                             </td>
                                         </tr>
                                         @endforeach
@@ -329,10 +331,11 @@ $controllerRoute = $module['controller_route'];
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                         <!-- modal body -->
-                                        {{-- <h5 class="text-primary mb-4">Lead Activity : 0000768</h5> --}}
-                                        <h5 class="text-primary mb-4">Lead Activity</h5>
+                                        <h5 class="text-primary mb-4 leadActivity">
+                                            
+                                        </h5>
 
-                                        <div class="session-message-container"></div>
+                                        {{-- <div class="session-message-container"></div> --}}
 
                                         <div class="row">
                                             <!-- Left info side -->
@@ -351,28 +354,7 @@ $controllerRoute = $module['controller_route'];
                                           
                                               <!-- Lead Card -->
                                               <div id="leadDisplay" class="border border-primary rounded p-3 bg-label-light text-primary mb-4">
-                                                {{-- <div class="d-flex justify-content-between align-items-start mb-2">
-                                                  <div>
-                                                    <p class="mb-1 fw-bold">
-                                                      <span class="badge badge-center rounded-pill bg-label-secondary text-dark"><i class="fa-solid fa-user"></i></span> Paras
-                                                    </p>
-                                                    <p class="mb-1">
-                                                      <span class="badge badge-center rounded-pill bg-label-secondary text-dark"><i class="fa-solid fa-phone"></i></span> 9831887018
-                                                    </p>
-                                                    <p class="mb-1 text-uppercase">
-                                                      <span class="badge badge-center rounded-pill bg-label-secondary text-dark"><i class="fa-solid fa-building"></i></span> PRASEEDA EXIM LLP
-                                                    </p>
-                                                    <p class="mb-1">
-                                                      <a href="mailto:praseedae6@gmail.com" class="text-decoration-none text-primary">
-                                                        <span class="badge badge-center rounded-pill bg-label-secondary text-dark"><i class="fa-solid fa-envelope"></i></span>
-                                                        praseedae6@gmail.com
-                                                      </a>
-                                                    </p>
-                                                  </div>
-                                                  <button class="btn btn-sm btn-outline-dark" type="button" onclick="toggleEdit(true)">
-                                                    <i class="fa-solid fa-pen-to-square"></i> Edit
-                                                  </button>
-                                                </div> --}}
+                                                
                                               </div>
                                           
                                               <!-- Edit Form -->
@@ -497,6 +479,7 @@ $controllerRoute = $module['controller_route'];
         }
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
     <script>
     $(document).ready(function(){
 
@@ -505,17 +488,122 @@ $controllerRoute = $module['controller_route'];
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
         });
+
+        //Pagination
+        document.getElementById('perPageSelect').addEventListener('change', function() {
+            const url = new URL(window.location.href);
+            url.searchParams.set('perPage', this.value);
+            url.searchParams.set('page', 1); // reset to first page
+            window.location.href = url.toString();
+        });
     
         let baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
         const base_url = document.querySelector('meta[name="baseurl"]').getAttribute('content');
 
         //handling call modal
+        let id = ""; //BranchLead ID, global scope
         $(document).on('click', '.callButton', function()
         {
             // console.log('call modal launched');
 
-            let id = $(this).data('id'); //BranchLead ID
+            id = $(this).data('id'); //BranchLead ID
             fetchLeadHistory(id); //BranchLead ID
+            fetchLeadActivityCount(id); //BranchLead ID
+            
+            //fetch lead details
+            $.ajax({
+            url: base_url + '/lead-list/fetch-lead-detail',
+            type: 'POST',
+            data: {branchLead_id : id},
+            success: function(eachLeadArr) 
+            {
+                // console.log(eachLeadArr);
+
+                // Convert array into an easy lookup object: { fieldName: { value, visible } }
+                let leadData = {};
+                eachLeadArr.forEach(item => {
+                    let key = Object.keys(item).find(k => k !== 'is_visible_in_lead_list'); // get the actual field key
+                    leadData[key] = {
+                        value: item[key],
+                        visible: item.is_visible_in_lead_list === 'YES'
+                    };
+                });
+
+                // Build the HTML only for fields that are non-empty and visible
+                let html = `
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            ${leadData['contact-person-name']?.value && leadData['contact-person-name']?.visible ? `
+                                <p class="mb-1 fw-bold">
+                                    <span class="badge badge-center rounded-pill bg-label-secondary text-dark">
+                                        <i class="fa-solid fa-user"></i>
+                                    </span> ${leadData['contact-person-name'].value}
+                                </p>` : ''}
+
+                            ${leadData['phone']?.value && leadData['phone']?.visible ? `
+                                <p class="mb-1">
+                                    <span class="badge badge-center rounded-pill bg-label-secondary text-dark">
+                                        <i class="fa-solid fa-phone"></i>
+                                    </span> ${leadData['phone'].value}
+                                </p>` : ''}
+
+                            ${leadData['email']?.value && leadData['email']?.visible ? `
+                                <p class="mb-1">
+                                    <a href="mailto:${leadData['email'].value}" class="text-decoration-none text-primary">
+                                        <span class="badge badge-center rounded-pill bg-label-secondary text-dark">
+                                            <i class="fa-solid fa-envelope"></i>
+                                        </span>
+                                        ${leadData['email'].value}
+                                    </a>
+                                </p>` : ''}
+
+                            ${leadData['whatsapp-number']?.value && leadData['whatsapp-number']?.visible ? `
+                                <p class="mb-1">
+                                    <span class="badge badge-center rounded-pill bg-label-secondary text-dark">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </span> ${leadData['whatsapp-number'].value}
+                                </p>` : ''}
+                        </div>
+                    </div>
+                `;
+
+                $('#leadDisplay').empty().append(html);
+            },
+            error: function(err) {
+                console.error('Fetch failed:', err);
+            }
+        });
+
+            //fetch lead added updated
+            $.ajax({
+                url: base_url + '/lead-list/fetch-lead-added-updated',
+                type: 'POST',
+                data: {branchLead_id : id},
+                success: function(res) 
+                {
+                    // console.log(res);
+
+                    $('.creaded_updated').empty();
+
+                    let html = `<div class="col-md-6">`;
+
+                    if (res.added_by_name && res.added_by_name.trim() !== '') {
+                        html += `<p class="mb-1 small">Added By: <strong>${res.added_by_name}</strong></p>`;
+                    }
+
+                    if (res.created_at && res.created_at.trim() !== '') {
+                        html += `<p class="mb-1 small">Added On: <strong>${res.created_at}</strong></p>`;
+                    }
+
+                    html += `</div>`;
+
+                    $('.creaded_updated').append(html);
+                },
+                error: function(err) {
+                    console.error('Fetch failed:', err);
+                }
+            });
+
 
             // fetch lead status
             $.ajax({
@@ -566,7 +654,7 @@ $controllerRoute = $module['controller_route'];
                     $("#mood").empty();
                     $("#mood").append(`<option value="" selected disabled>Select Mood</option>`);
                     res.forEach(mood => {
-                        $("#mood").append(`<option value="${mood.id}">${mood.emoji} ${mood.name}</option>`);
+                        $("#mood").append(`<option value="${mood.id}"  ${mood.name === 'Neutral' ? 'selected' : ''} >${mood.emoji} ${mood.name}</option>`);
                     });
                 },
                 error: function (err) {
@@ -634,348 +722,308 @@ $controllerRoute = $module['controller_route'];
 
             });
 
+        
+       
+        });
 
-
-            // update lead status
-            $(document).on('submit', '#updateLeadStatusForm', function(e)
-            {
-                e.preventDefault();
-                formData = new FormData(this);
-
-                let selectedStatus = $("#leadStatus option:selected");
-                if(selectedStatus != "")
+        //fetch lead activity count and sl no.
+        function fetchLeadActivityCount(id)
+        {
+            $.ajax({
+                url: base_url + '/lead-list/fetch-lead-activity-count',
+                type: 'POST',
+                data: {branchLead_id : id},
+                success: function(res)
                 {
-                    formData.append("parent_status_id", selectedStatus.data("parent_status_id"));
-                    formData.append("child_status_id", selectedStatus.data("child_status_id"));
+                    // console.log(res);
+                    $('.leadActivity').empty();
+                    $('.leadActivity').append(`
+                        Lead Activity(${res.lead_activity_count}) : <span class="badge bg-label-primary">${res.lead_no}</span>
+                    `);
                 }
-
-                formData.append("branchLead_id", id);
-
-                // console.log(formData);
-
-                $.ajax({
-                    url: base_url + '/lead-list/update-lead-status',
-                    type: 'POST',
-                    data: formData,
-                    processData: false, // prevent jQuery from transforming the data into a query string
-                    contentType: false, // prevent jQuery from overriding the Content-Type header
-                    success: function(res)
-                    {
-                        let alertHTML = '';
-
-                        if (res.success_message) {
-                            alertHTML = `
-                            <div class="alert alert-success alert-dismissible autohide" role="alert">
-                                <h6 class="alert-heading mb-1">
-                                    <i class="bx bx-xs bx-desktop align-top me-2"></i>Success!
-                                </h6>
-                                <span>${res.success_message}</span>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>`;
-                        }
-
-                        if (res.error_message) {
-                            alertHTML = `
-                            <div class="alert alert-danger alert-dismissible autohide" role="alert">
-                                <h6 class="alert-heading mb-1">
-                                    <i class="bx bx-xs bx-store align-top me-2"></i>Error!
-                                </h6>
-                                <span>${res.error_message}</span>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>`;
-                        }
-
-                        fetchLeadHistory(id); //BranchLead ID
-
-                        $('.session-message-container').html(alertHTML);
-
-                        // Auto hide after 5s
-                        setTimeout(() => {
-                            $('.autohide').fadeOut('slow', function () {
-                                $(this).remove();
-                            });
-                        }, 6000);
-
-                        $('#updateLeadStatusForm')[0].reset(); // resets basic form inputs
-
-                        // Reset select manually
-                        $('#leadStatus').val('').trigger('change'); 
-                        $('#nextFollowUpDate').val('');
-                        $('#nextFollowUpTime').val('');
-                        $('#callPurpose').val('').trigger('change');
-                        $('#mood').val('').trigger('change');
-                        $('#feedbackTag').val('').trigger('change');
-                    }
-                    ,
-                    error: function(err)
-                    {
-                        console.error('Update failed:', err);
-                    }
-                });
-                
+                ,
+                error: function(err)
+                {
+                    console.log(err);
+                }
             });
+        }
+        
+        
+        // fetch lead history from lead activity
+        $('.leadHistoryContainer').empty();
+        function fetchLeadHistory(id) //BranchLead ID
+        {
+            $.ajax({
+                url: base_url + '/lead-list/fetch-lead-history',
+                type: 'POST',
+                data: {branchLead_id : id},
+                success: function(leadHistoryArr)
+                {
+                    // console.log(leadHistoryArr);
+                    if (leadHistoryArr.length != 0)
+                    {
+                        $('.leadHistoryContainer').empty();
 
+                        leadHistoryArr.forEach(leadHistoryRow => 
+                        {   
+                            // handling lead status 
+                            let statusBadgesHTML = '';
 
-            // fetch lead history from lead activity
-            $('.leadHistoryContainer').empty();
-            function fetchLeadHistory(id) //BranchLead ID
-            {
-                $.ajax({
-                   url: base_url + '/lead-list/fetch-lead-history',
-                   type: 'POST',
-                   data: {branchLead_id : id},
-                   success: function(leadHistoryArr)
-                   {
-                        // console.log(leadHistoryArr);
-                        if (leadHistoryArr.length != 0)
-                        {
-                            $('.leadHistoryContainer').empty();
+                            if(leadHistoryRow.parentStatus?.background_color && leadHistoryRow.parentStatus?.font_color && leadHistoryRow.parentStatus?.name) 
+                            {
+                                statusBadgesHTML += `
+                                    <span class="badge bg-glow me-1 mt-1 ms-1" style="background-color: ${leadHistoryRow.parentStatus.background_color}; color: ${leadHistoryRow.parentStatus.font_color}; font-size: 11px;">
+                                        ${leadHistoryRow.parentStatus.name}
+                                    </span>`;
+                            }
 
-                            leadHistoryArr.forEach(leadHistoryRow => 
-                            {   
-                                // handling lead status 
-                                let statusBadgesHTML = '';
+                            if(leadHistoryRow.childStatus?.background_color && leadHistoryRow.childStatus?.font_color && leadHistoryRow.childStatus?.name) 
+                            {
+                                statusBadgesHTML += `
+                                    <span class="badge bg-glow me-1 mt-1" style="background-color: ${leadHistoryRow.childStatus.background_color}; color: ${leadHistoryRow.childStatus.font_color}; font-size: 11px;">
+                                        ${leadHistoryRow.childStatus.name}
+                                    </span>`;
+                            }
 
-                                if(leadHistoryRow.parentStatus?.background_color && leadHistoryRow.parentStatus?.font_color && leadHistoryRow.parentStatus?.name) 
-                                {
-                                    statusBadgesHTML += `
-                                        <span class="badge bg-glow me-1 mt-1 ms-1" style="background-color: ${leadHistoryRow.parentStatus.background_color}; color: ${leadHistoryRow.parentStatus.font_color}; font-size: 11px;">
-                                            ${leadHistoryRow.parentStatus.name}
-                                        </span>`;
-                                }
+                            let statusBadgeWrapper = statusBadgesHTML ? `<div class="d-flex align-items-center flex-wrap gap-1 mt-1">
+                                <span class="badge badge-center rounded-pill bg-white text-primary">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                </span>${statusBadgesHTML}</div>` : '';
 
-                                if(leadHistoryRow.childStatus?.background_color && leadHistoryRow.childStatus?.font_color && leadHistoryRow.childStatus?.name) 
-                                {
-                                    statusBadgesHTML += `
-                                        <span class="badge bg-glow me-1 mt-1" style="background-color: ${leadHistoryRow.childStatus.background_color}; color: ${leadHistoryRow.childStatus.font_color}; font-size: 11px;">
-                                            ${leadHistoryRow.childStatus.name}
-                                        </span>`;
-                                }
-
-                                let statusBadgeWrapper = statusBadgesHTML ? `<div class="d-flex align-items-center flex-wrap gap-1 mt-1">
-                                    <span class="badge badge-center rounded-pill bg-white text-primary">
-                                        <i class="fa-solid fa-circle-info"></i>
-                                    </span>${statusBadgesHTML}</div>` : '';
-
-     
-                                $('.leadHistoryContainer').append(`
-                                    <div class="bg-label-success rounded p-3 mb-3">
-                                        <div class="row align-items-center">
-                                            
-                                            ${leadHistoryRow.last_call ? `
-                                                <div class="col">
-                                                    <div class="d-flex align-items-center small">
-                                                        <span class="badge badge-center rounded-pill bg-white text-primary">
-                                                            <i class="fa-solid fa-headset"></i>
-                                                        </span>
-                                                        <span class="text-primary ms-1" style="font-size: 11px;">
-                                                            Last Call: <strong>${leadHistoryRow.last_call}</strong>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            ` : ''}
-
-                                            ${leadHistoryRow.assigned_telecaller_name ? `
-                                                <div class="col-auto text-end">
-                                                    <span class="fw-semibold text-primary" style="font-size: 12px;">
-                                                        ${leadHistoryRow.assigned_telecaller_name}
+    
+                            $('.leadHistoryContainer').append(`
+                                <div class="bg-label-success rounded p-3 mb-3">
+                                    <div class="row align-items-center">
+                                        
+                                        ${leadHistoryRow.last_call ? `
+                                            <div class="col">
+                                                <div class="d-flex align-items-center small">
+                                                    <span class="badge badge-center rounded-pill bg-white text-primary">
+                                                        <i class="fa-solid fa-headset"></i>
+                                                    </span>
+                                                    <span class="text-primary ms-1" style="font-size: 11px;">
+                                                        Last Call: <strong>${leadHistoryRow.last_call}</strong>
                                                     </span>
                                                 </div>
-                                            ` : ''}
-    
-                                        </div>
-
-                                        ${leadHistoryRow.purpose_name ? `
-                                            <div class="small mt-2">
-                                                <span class="badge badge-center rounded-pill bg-white text-primary">
-                                                    <i class="fa-solid fa-note-sticky"></i>
-                                                </span>
-                                                <span class="ms-1 text-primary" style="font-size: 11px;">
-                                                    Purpose: <strong>${leadHistoryRow.purpose_name}</strong>
-                                                </span>
-                                            </div>
-                                        ` : ''}
-                                        
-                                        ${leadHistoryRow.campaign_type_name && leadHistoryRow.campaign_name ? `
-                                            <div class="d-flex align-items-center flex-wrap gap-1 mt-1">
-                                                <span class="badge badge-center rounded-pill bg-white text-primary">
-                                                    <i class="fa-solid fa-bullhorn"></i>
-                                                </span>
-                                                <span class="badge bg-label-dark bg-glow me-1 mt-1 ms-1" style="font-size: 11px;">${leadHistoryRow.campaign_type_name}</span>
-                                                <span class="badge bg-label-dark bg-glow me-1 mt-1" style="font-size: 11px;">${leadHistoryRow.campaign_name}</span>
                                             </div>
                                         ` : ''}
 
-                                        ${statusBadgeWrapper}
-                            
-                                        ${leadHistoryRow.comment ? `
-                                            <div class="small mt-2">
-                                                <span class="badge badge-center rounded-pill bg-white text-primary">
-                                                    <i class="fa-solid fa-comment-dots"></i>
-                                                </span>
-                                                <span class="ms-1" style="font-size: 11px;">
-                                                   Comment: <strong>${leadHistoryRow.comment} </strong>
-                                                </span>
-                                            </div>
-                                        ` : ''}
-
-                                        ${leadHistoryRow.mood && leadHistoryRow.mood.emoji && leadHistoryRow.mood.name && leadHistoryRow.mood.color ? `
-                                            <div class="small mt-2">
-                                                <span class="badge badge-center rounded-pill bg-white text-primary">
-                                                    ${leadHistoryRow.mood.emoji}
-                                                </span>
-                                                <span class="ms-1 badge rounded-pill bg-white bg-glow" style="color: ${leadHistoryRow.mood.color}; font-size: 11px;">
-                                                    <strong>${leadHistoryRow.mood.name}</strong>
-                                                </span>
-                                            </div>
-                                        ` : ''}
-
-                                        ${Array.isArray(leadHistoryRow.feedbackTagNameArr) && leadHistoryRow.feedbackTagNameArr.length > 0 ? `
-                                            <div class="d-flex align-items-center flex-wrap gap-1 mt-1">
-                                                <span class="badge badge-center rounded-pill bg-white text-primary me-1">
-                                                    <i class="fa-solid fa-clipboard-list"></i>
-                                                </span>
-                                                ${leadHistoryRow.feedbackTagNameArr.map(tag => `
-                                                    <span class="badge bg-glow rounded-pill bg-dark text-white me-1 mt-1" style="font-size: 11px;">${tag}</span>
-                                                `).join('')}
-                                            </div>
-                                        ` : ''}
-                                                     
-                                        ${leadHistoryRow.next_followup_date || leadHistoryRow.next_followup_time ? `
-                                            <div class="text-secondary d-flex align-items-center small mt-1">
-                                                <span class="badge badge-center rounded-pill bg-white text-primary">
-                                                    <i class="fa-solid fa-clock-rotate-left"></i>
-                                                </span>
-                                                <span class="ms-1" style="font-size: 11px;">
-                                                    Next Schedule: <strong>${leadHistoryRow.next_followup_date} ${leadHistoryRow.next_followup_time}</strong>
+                                        ${leadHistoryRow.assigned_telecaller_name ? `
+                                            <div class="col-auto text-end">
+                                                <span class="fw-semibold text-primary" style="font-size: 12px;">
+                                                    ${leadHistoryRow.assigned_telecaller_name}
                                                 </span>
                                             </div>
                                         ` : ''}
 
                                     </div>
-                                `);
-                            });
-                        }
-                        else
-                        {
-                            $('.leadHistoryContainer').empty();
-                            $('.leadHistoryContainer').append(`
-                                
-                                <div class="d-flex justify-content-center align-items-center" style="height: 100%; min-height: 150px;">
-                                    <p class="fw-semibold text-danger m-0" style="font-size: 12px;">No Activity Found.</p>
-                                </div>
-                                
-                            `);
-                        }
-                   }
-                   ,
-                   error: function(err)
-                   {
-                       console.error('Fetch failed:', err);
-                   }
 
-                });
+                                    ${leadHistoryRow.purpose_name ? `
+                                        <div class="small mt-2">
+                                            <span class="badge badge-center rounded-pill bg-white text-primary">
+                                                <i class="fa-solid fa-note-sticky"></i>
+                                            </span>
+                                            <span class="ms-1 text-primary" style="font-size: 11px;">
+                                                Purpose: <strong>${leadHistoryRow.purpose_name}</strong>
+                                            </span>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    ${leadHistoryRow.campaign_type_name && leadHistoryRow.campaign_name ? `
+                                        <div class="d-flex align-items-center flex-wrap gap-1 mt-1">
+                                            <span class="badge badge-center rounded-pill bg-white text-primary">
+                                                <i class="fa-solid fa-bullhorn"></i>
+                                            </span>
+                                            <span class="badge bg-label-dark bg-glow me-1 mt-1 ms-1" style="font-size: 11px;">${leadHistoryRow.campaign_type_name}</span>
+                                            <span class="badge bg-label-dark bg-glow me-1 mt-1" style="font-size: 11px;">${leadHistoryRow.campaign_name}</span>
+                                        </div>
+                                    ` : ''}
+
+                                    ${statusBadgeWrapper}
+                        
+                                    ${leadHistoryRow.comment ? `
+                                        <div class="small mt-2">
+                                            <span class="badge badge-center rounded-pill bg-white text-primary">
+                                                <i class="fa-solid fa-comment-dots"></i>
+                                            </span>
+                                            <span class="ms-1" style="font-size: 11px;">
+                                                Comment: <strong>${leadHistoryRow.comment} </strong>
+                                            </span>
+                                        </div>
+                                    ` : ''}
+
+                                    ${leadHistoryRow.mood && leadHistoryRow.mood.emoji && leadHistoryRow.mood.name && leadHistoryRow.mood.color ? `
+                                        <div class="small mt-2">
+                                            <span class="badge badge-center rounded-pill bg-white text-primary">
+                                                ${leadHistoryRow.mood.emoji}
+                                            </span>
+                                            <span class="ms-1 badge rounded-pill bg-white bg-glow" style="color: ${leadHistoryRow.mood.color}; font-size: 11px;">
+                                                <strong>${leadHistoryRow.mood.name}</strong>
+                                            </span>
+                                        </div>
+                                    ` : ''}
+
+                                    ${Array.isArray(leadHistoryRow.feedbackTagNameArr) && leadHistoryRow.feedbackTagNameArr.length > 0 ? `
+                                        <div class="d-flex align-items-center flex-wrap gap-1 mt-1">
+                                            <span class="badge badge-center rounded-pill bg-white text-primary me-1">
+                                                <i class="fa-solid fa-clipboard-list"></i>
+                                            </span>
+                                            ${leadHistoryRow.feedbackTagNameArr.map(tag => `
+                                                <span class="badge bg-glow rounded-pill bg-dark text-white me-1 mt-1" style="font-size: 11px;">${tag}</span>
+                                            `).join('')}
+                                        </div>
+                                    ` : ''}
+                                                    
+                                    ${leadHistoryRow.next_followup_date || leadHistoryRow.next_followup_time ? `
+                                        <div class="text-secondary d-flex align-items-center small mt-1">
+                                            <span class="badge badge-center rounded-pill bg-white text-primary">
+                                                <i class="fa-solid fa-clock-rotate-left"></i>
+                                            </span>
+                                            <span class="ms-1" style="font-size: 11px;">
+                                                Next Schedule: <strong>${leadHistoryRow.next_followup_date} ${leadHistoryRow.next_followup_time}</strong>
+                                            </span>
+                                        </div>
+                                    ` : ''}
+
+                                </div>
+                            `);
+                        });
+                    }
+                    else
+                    {
+                        $('.leadHistoryContainer').empty();
+                        $('.leadHistoryContainer').append(`
+                            
+                            <div class="d-flex justify-content-center align-items-center" style="height: 100%; min-height: 150px;">
+                                <p class="fw-semibold text-danger m-0" style="font-size: 12px;">No Activity Found.</p>
+                            </div>
+                            
+                        `);
+                    }
+                }
+                ,
+                error: function(err)
+                {
+                    console.error('Fetch failed:', err);
+                }
+
+            });
+        }
+    
+        
+        // update lead status
+        $(document).on('submit', '#updateLeadStatusForm', function(e)
+        {
+            e.preventDefault();
+            formData = new FormData(this);
+
+            let selectedStatus = $("#leadStatus option:selected");
+            if(selectedStatus != "")
+            {
+                formData.append("parent_status_id", selectedStatus.data("parent_status_id"));
+                formData.append("child_status_id", selectedStatus.data("child_status_id"));
             }
 
-            //fetch lead details
+            formData.append("branchLead_id", id);
+
+            // console.log(formData);
+
             $.ajax({
-                url: base_url + '/lead-list/fetch-lead-detail',
+                url: base_url + '/lead-list/update-lead-status',
                 type: 'POST',
-                data: {branchLead_id : id},
-                success: function(eachLeadArr) 
+                data: formData,
+                processData: false, // prevent jQuery from transforming the data into a query string
+                contentType: false, // prevent jQuery from overriding the Content-Type header
+                success: function(res)
                 {
-                    // console.log(eachLeadArr);
+                    // let alertHTML = '';
 
-                    // Convert array into an easy lookup object: { fieldName: { value, visible } }
-                    let leadData = {};
-                    eachLeadArr.forEach(item => {
-                        let key = Object.keys(item).find(k => k !== 'is_visible_in_lead_list'); // get the actual field key
-                        leadData[key] = {
-                            value: item[key],
-                            visible: item.is_visible_in_lead_list === 'YES'
-                        };
-                    });
-
-                    // Build the HTML only for fields that are non-empty and visible
-                    let html = `
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                ${leadData['contact-person-name']?.value && leadData['contact-person-name']?.visible ? `
-                                    <p class="mb-1 fw-bold">
-                                        <span class="badge badge-center rounded-pill bg-label-secondary text-dark">
-                                            <i class="fa-solid fa-user"></i>
-                                        </span> ${leadData['contact-person-name'].value}
-                                    </p>` : ''}
-
-                                ${leadData['phone']?.value && leadData['phone']?.visible ? `
-                                    <p class="mb-1">
-                                        <span class="badge badge-center rounded-pill bg-label-secondary text-dark">
-                                            <i class="fa-solid fa-phone"></i>
-                                        </span> ${leadData['phone'].value}
-                                    </p>` : ''}
-
-                                ${leadData['email']?.value && leadData['email']?.visible ? `
-                                    <p class="mb-1">
-                                        <a href="mailto:${leadData['email'].value}" class="text-decoration-none text-primary">
-                                            <span class="badge badge-center rounded-pill bg-label-secondary text-dark">
-                                                <i class="fa-solid fa-envelope"></i>
-                                            </span>
-                                            ${leadData['email'].value}
-                                        </a>
-                                    </p>` : ''}
-
-                                ${leadData['whatsapp-number']?.value && leadData['whatsapp-number']?.visible ? `
-                                    <p class="mb-1">
-                                        <span class="badge badge-center rounded-pill bg-label-secondary text-dark">
-                                            <i class="fa-brands fa-whatsapp"></i>
-                                        </span> ${leadData['whatsapp-number'].value}
-                                    </p>` : ''}
-                            </div>
-                        </div>
-                    `;
-
-                    $('#leadDisplay').empty().append(html);
-                },
-                error: function(err) {
-                    console.error('Fetch failed:', err);
-                }
-            });
-       
-            //fetch lead added updated
-            $.ajax({
-                url: base_url + '/lead-list/fetch-lead-added-updated',
-                type: 'POST',
-                data: {branchLead_id : id},
-                success: function(res) 
-                {
-                    // console.log(res);
-
-                    $('.creaded_updated').empty();
-
-                    let html = `<div class="col-md-6">`;
-
-                    if (res.added_by_name && res.added_by_name.trim() !== '') {
-                        html += `<p class="mb-1 small">Added By: <strong>${res.added_by_name}</strong></p>`;
+                    if (res.success_message) {
+                        // alertHTML = `
+                        // <div class="alert alert-success alert-dismissible autohide" role="alert">
+                        //     <h6 class="alert-heading mb-1">
+                        //         <i class="bx bx-xs bx-desktop align-top me-2"></i>Success!
+                        //     </h6>
+                        //     <span>${res.success_message}</span>
+                        //     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        // </div>`;
+                        toastAlert('success', res.success_message);
                     }
 
-                    if (res.created_at && res.created_at.trim() !== '') {
-                        html += `<p class="mb-1 small">Added On: <strong>${res.created_at}</strong></p>`;
+                    if (res.error_message) {
+                        // alertHTML = `
+                        // <div class="alert alert-danger alert-dismissible autohide" role="alert">
+                        //     <h6 class="alert-heading mb-1">
+                        //         <i class="bx bx-xs bx-store align-top me-2"></i>Error!
+                        //     </h6>
+                        //     <span>${res.error_message}</span>
+                        //     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        // </div>`;
+                        toastAlert('error', res.error_message);
                     }
 
-                    html += `</div>`;
+                    fetchLeadHistory(id); //BranchLead ID
+                    fetchLeadActivityCount(id); //BranchLead ID
 
-                    $('.creaded_updated').append(html);
-                },
-                error: function(err) {
-                    console.error('Fetch failed:', err);
+                    // $('.session-message-container').html(alertHTML);
+
+                    // Auto hide after 5s
+                    setTimeout(() => {
+                        $('.autohide').fadeOut('slow', function () {
+                            $(this).remove();
+                        });
+                    }, 6000);
+
+                    $('#updateLeadStatusForm')[0].reset(); // resets basic form inputs
+
+                    // Reset select manually
+                    $('#leadStatus').val('').trigger('change'); 
+                    $('#nextFollowUpDate').val('');
+                    $('#nextFollowUpTime').val('');
+                    $('#callPurpose').val('').trigger('change');
+                    $('#mood').val('').trigger('change');
+                    $('#feedbackTag').val('').trigger('change');
+                }
+                ,
+                error: function(err)
+                {
+                    console.error('Update failed:', err);
                 }
             });
+            
         });
-    
-    
+
     });
     </script>
-    
+    <script>
+        function toastAlert(type, message, redirectStatus = false, redirectUrl = ''){
+          toastr.options = {
+              "closeButton": true,
+              "debug": true,
+              "newestOnTop": false,
+              "progressBar": true,
+              "positionClass": "toast-bottom-left",
+              "preventDuplicates": false,
+              "showDuration": "3000",
+              "hideDuration": "1000000",
+              "timeOut": "5000",
+              "extendedTimeOut": "1000",
+              "showEasing": "swing",
+              "hideEasing": "linear",
+              "showMethod": "fadeIn",
+              "hideMethod": "fadeOut"
+          }
+          toastr[type](message);
+          if(redirectStatus){        
+              setTimeout(function(){ window.location = redirectUrl; }, 5000);
+          }
+        }
+        // toastAlert('success', 'suceess message');
+        // toastAlert('error', 'error message');
+        // toastAlert('warning', 'warning message');
+        // toastAlert('info', 'info message');
+    </script>
 @endsection
 @section('scripts')
     <script src="<?= config('constants.admin_assets_url') ?>assets/js/lead-list.js"></script>

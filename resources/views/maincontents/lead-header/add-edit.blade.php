@@ -37,12 +37,14 @@ $controllerRoute = $module['controller_route'];
                 $rank                       = $row->rank;
                 $is_visible_in_lead_list    = $row->is_visible_in_lead_list;
                 $status                     = $row->status;
+                $is_required                = $row->is_required;
             } else {
                 $name                       = '';
                 $input_type                 = '';
                 $rank                       = '';
                 $is_visible_in_lead_list    = '';
                 $status                     = '';
+                $is_required                = '';
             }
             ?>
             <div class="card-body">
@@ -67,25 +69,34 @@ $controllerRoute = $module['controller_route'];
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label for="rank" class="form-label">Rank <small class="text-danger">*</small></label>
+                            <label for="rank" class="form-label">Order <small class="text-danger">*</small></label>
                             <select class="select2 form-select" type="text" id="rank" name="rank" required>
-                                <option value="" selected>Select Rank</option>
+                                <option value="" selected>Select Order</option>
                                 <?php for($y=1; $y<=20; $y++){?>
                                     <option value="<?=$y?>" <?=(($y == $rank)?'selected':'')?>><?=$y?></option>
                                 <?php }?>
                             </select>
                         </div>
 
-                        <div class="col-md-6 mt-3">
+                        <div class="col-md-4 mt-3">
+                            <label for="is_required" class="form-label">Mandatory <small class="text-danger">*</small></label>
+                            <select class="select2 form-select" type="text" id="is_required" name="is_required" required>
+                                <option value="" selected disabled>Select Mandatory Type</option>
+                                <option value="1" <?=(($is_required == "1")?'selected':'')?>>YES</option>
+                                <option value="0" <?=(($is_required == "0")?'selected':'')?>>NO</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 mt-3">
                             <label for="is_visible_in_lead_list" class="form-label d-block">Is Visible In Lead List <small class="text-danger">*</small></label>
-                            <div class="form-check form-switch mt-0 ">
+                            <div class="form-check form-switch mt-3 ">
                                 <input class="form-check-input" type="checkbox" name="is_visible_in_lead_list" role="switch" id="is_visible_in_lead_list" <?=(($is_visible_in_lead_list == 'YES')?'checked':'')?>>
                                 <label class="form-check-label" for="is_visible_in_lead_list">YES</label>
                             </div>
                         </div>
-                        <div class="col-md-6 mt-3">
+                        <div class="col-md-4 mt-3">
                             <label for="status" class="form-label d-block">Status <small class="text-danger">*</small></label>
-                            <div class="form-check form-switch mt-0 ">
+                            <div class="form-check form-switch mt-3 ">
                                 <input class="form-check-input" type="checkbox" name="status" role="switch" id="status" <?=(($status == 1)?'checked':'')?>>
                                 <label class="form-check-label" for="status">Active</label>
                             </div>

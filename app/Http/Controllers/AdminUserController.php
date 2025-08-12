@@ -9,6 +9,7 @@ use App\Models\GeneralSetting;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Branch;
+use App\Models\Country;
 use App\Models\UserActivity;
 use App\Services\SiteAuthService;
 use App\Helpers\Helper;
@@ -110,6 +111,9 @@ class AdminUserController extends Controller
             $data['row']                    = [];
             $data['roles']                  = Role::select('id', 'role_name')->where('status', '=', 1)->get();
             $data['branches']               = Branch::select('id', 'name')->where('status', '=', 1)->get();
+
+            $data['country']                = Country::where('status', '=', 1)->get();
+
             $data                           = $this->siteAuthService ->admin_after_login_layout($title,$page_name,$data);
             return view('maincontents.' . $page_name, $data);
         }
@@ -123,6 +127,8 @@ class AdminUserController extends Controller
             $data['row']                    = User::where($this->data['primary_key'], '=', $id)->first();
             $data['roles']                  = Role::select('id', 'role_name')->where('status', '=', 1)->get();
             $data['branches']               = Branch::select('id', 'name')->where('status', '=', 1)->get();
+
+            $data['country']                = Country::where('status', '=', 1)->get();
 
             if($request->isMethod('post')){
                 $postData = $request->all();

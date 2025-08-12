@@ -73,6 +73,7 @@ use App\Helpers\Helper;
     <script src="<?=config('constants.admin_assets_url')?>assets/vendor/libs/i18n/i18n.js"></script>
     <script src="<?=config('constants.admin_assets_url')?>assets/vendor/libs/typeahead-js/typeahead.js"></script>
     <script src="<?=config('constants.admin_assets_url')?>assets/vendor/js/menu.js"></script>
+    
 
     <!-- endbuild -->
 
@@ -184,5 +185,6 @@ use App\Helpers\Helper;
       }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/lightbox2@2.11.4/dist/js/lightbox.min.js"></script>
+    
   </body>
 </html>

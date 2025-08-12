@@ -48,6 +48,7 @@ class LeadHeaderController extends Controller
                     'name'                      => 'required',
                     'input_type'                => 'required',
                     'rank'                      => 'required',
+                    'is_required'               => 'required',
                 ];
                 if($this->validate($request, $rules)){
                     /* user activity */
@@ -67,6 +68,7 @@ class LeadHeaderController extends Controller
                         'slug'                          => strtolower(Helper::clean(strip_tags($postData['name']))),
                         'input_type'                    => strip_tags($postData['input_type']),
                         'rank'                          => strip_tags($postData['rank']),
+                        'is_required'                   => strip_tags($postData['is_required']),
                         'is_visible_in_lead_list'       => ((array_key_exists("is_visible_in_lead_list",$postData))?'YES':'NO'),
                         'status'                        => ((array_key_exists("status",$postData))?1:0),
                     ];
@@ -97,6 +99,7 @@ class LeadHeaderController extends Controller
                     'name'                      => 'required',
                     'input_type'                => 'required',
                     'rank'                      => 'required',
+                    'is_required'               => 'required',
                 ];
                 if($this->validate($request, $rules)){
                     $fields = [
@@ -104,6 +107,7 @@ class LeadHeaderController extends Controller
                         'slug'                          => strtolower(Helper::clean(strip_tags($postData['name']))),
                         'input_type'                    => strip_tags($postData['input_type']),
                         'rank'                          => strip_tags($postData['rank']),
+                        'is_required'                   => strip_tags($postData['is_required']),
                         'is_visible_in_lead_list'       => ((array_key_exists("is_visible_in_lead_list",$postData))?'YES':'NO'),
                         'status'                        => ((array_key_exists("status",$postData))?1:0),
                     ];
