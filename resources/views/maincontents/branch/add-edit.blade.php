@@ -33,6 +33,7 @@ $controllerRoute = $module['controller_route'];
             <?php
             if($row){
                 $name               = $row->name;
+                $prefix             = $row->prefix;
                 $email              = $row->email;
                 $phone_code         = $row->phone_code;
                 $phone              = $row->phone;
@@ -41,6 +42,7 @@ $controllerRoute = $module['controller_route'];
                 $status             = $row->status;
             } else {
                 $name               = '';
+                $prefix             = '';
                 $email              = '';
                 $phone_code         = '';
                 $phone              = '';
@@ -57,6 +59,12 @@ $controllerRoute = $module['controller_route'];
                             <label for="name" class="form-label">Name <small class="text-danger">*</small></label>
                             <input class="form-control" type="text" id="name" name="name" value="<?=$name?>" autofocus required placeholder="Name" />
                         </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="prefix" class="form-label">Prefix <small class="text-danger">*</small></label>
+                            <input class="form-control" type="text" id="prefix" name="prefix" value="<?=$prefix?>" required placeholder="Prefix" 
+                            minlength="3" maxlength="5"
+                            />
+                        </div>
 
                         <div class="col-md-6 mb-3">
                             <label for="email" class="form-label">Email <small class="text-danger">*</small></label>
@@ -66,7 +74,12 @@ $controllerRoute = $module['controller_route'];
 
                         <div class="col-md-6 mb-3">
                             <label for="phone_code" class="form-label">Country Code <small class="text-danger">*</small></label>
-                            <input class="form-control" type="text" id="phone_code" name="phone_code" value="<?=$phone_code?>" required placeholder="Country Code" />
+                            <select class="select2 form-select" type="text" id="phone_code" name="phone_code" required>
+                                <option value="" selected disabled>Select Country Code</option>
+                                <?php if($country){ foreach($country as $countryRow){?>
+                                    <option value="<?=$countryRow->phone_code?>" <?=(($countryRow->phone_code === $phone_code)? 'selected':'')?>><?=$countryRow->phone_code?></option>
+                                <?php } }?>
+                            </select>
                         </div>
 
                         <div class="col-md-6 mb-3">

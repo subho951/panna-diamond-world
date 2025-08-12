@@ -462,6 +462,9 @@ class UploadLeadController extends Controller
                     $data['campaign_type_id'] = $request->campaign_type_id;
                     $data['campaign_id'] = $request->campaign_id;
                     $data['tempFile'] = $fullPath;
+                    
+                    $data['campaign_type_name'] = CampaignType::where('id', '=', $request->campaign_type_id)->where('status', '!=', 3)->value('name') ?? '';
+                    $data['campaign_name'] = Campaign::where('id', '=', $request->campaign_id)->where('status', '!=', 3)->value('name') ?? '';
 
                     $data['module']                 = $this->data;
                     $title         = 'Preview' . ' ' . $this->data['title'];
@@ -580,6 +583,7 @@ class UploadLeadController extends Controller
                     {
                         $slug = strtolower(Helper::clean(strip_tags($key)));
                         $header_id = LeadHeader::where('slug', '=', $slug)->where('status', '=', 1)->first()->id  ?? '';
+                        
                         if ($header_id) 
                         {
                             $csvCell = [];
@@ -667,7 +671,8 @@ class UploadLeadController extends Controller
 
 
                             $csvRow[] = $csvCell;
-                        } else {
+                        }
+                        else {
 
                             $deleteLead = UploadLead::find($lastInsertId);
                             unlink(public_path('uploads/lead/' . $deleteLead->filename));

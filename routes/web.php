@@ -227,6 +227,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('lead-list/fetch-lead-history', [LeadListController::class, 'fetchLeadHistory']);
         Route::post('lead-list/fetch-lead-detail', [LeadListController::class, 'fetchLeadDetail']);
         Route::post('lead-list/fetch-lead-added-updated', [LeadListController::class, 'fetchLeadAddedUpdated']);
+        Route::post('lead-list/fetch-lead-activity-count', [LeadListController::class, 'fetchLeadActivityCount']);
 
 
     /* Lead List */

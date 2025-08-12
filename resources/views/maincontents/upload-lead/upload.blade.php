@@ -83,7 +83,7 @@ $controllerRoute = $module['controller_route'];
                                 <div class="col-md-6 mb-3">
                                     <label for="lead_file" class="form-label">Lead File <small class="text-danger">*</small>
                                         <small class="text-danger">(Only csv file are allowed to upload)</small>
-                                        <a href="<?= url('public/uploads/sample-lead-file.csv') ?>" class="text-primary" target="_blank">Sample File</a>
+                                        {{-- <a href="<?= url('public/uploads/sample-lead-file.csv') ?>" class="text-primary" target="_blank">Sample File</a> --}}
                                     </label>
                                     <input class="form-control" type="file" id="lead_file" name="lead_file" accept=".csv" required />
                                 </div>

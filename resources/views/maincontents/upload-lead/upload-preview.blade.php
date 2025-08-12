@@ -76,6 +76,12 @@ $controllerRoute = $module['controller_route'];
         <h5 class="mb-2">Lead Title: {{ $lead_title }} | Branch Name: {{ $branch_name }} | Lead Date:
             {{ $lead_date }}</h5>
 
+        @if(!empty($campaign_type_name) && !empty($campaign_name))
+            <div class="mb-2">
+                <span class="badge bg-label-primary me-1">{{$campaign_type_name}}</span> <span class="badge bg-label-primary">{{$campaign_name}}</span>
+            </div>
+        @endif
+
         <form method="POST" action="<?= url($controllerRoute . '/store') ?>" enctype="multipart/form-data">
             @csrf
             

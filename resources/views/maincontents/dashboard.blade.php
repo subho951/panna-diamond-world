@@ -167,4 +167,34 @@ use App\Helpers\Helper;
 @section('scripts')
 <!-- Page JS -->
 <script src="<?=config('constants.admin_assets_url')?>assets/js/dashboards-crm.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+<script>
+  function toastAlert(type, message, redirectStatus = false, redirectUrl = ''){
+    toastr.options = {
+        "closeButton": true,
+        "debug": true,
+        "newestOnTop": false,
+        "progressBar": true,
+        "positionClass": "toast-bottom-left",
+        "preventDuplicates": false,
+        "showDuration": "3000",
+        "hideDuration": "1000000",
+        "timeOut": "5000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+    toastr[type](message);
+    if(redirectStatus){        
+        setTimeout(function(){ window.location = redirectUrl; }, 3000);
+    }
+  }
+  // toastAlert('success', 'suceess message');
+  // toastAlert('error', 'error message');
+  // toastAlert('warning', 'warning message');
+  // toastAlert('info', 'info message');
+</script>
 @endsection

@@ -10,6 +10,7 @@ use App\Models\GeneralSetting;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Branch;
+use App\Models\Country;
 use App\Models\UserActivity;
 use App\Services\SiteAuthService;
 use App\Helpers\Helper;
@@ -50,6 +51,7 @@ class BranchController extends Controller
             $postData = $request->all();
             $rules = [
                 'name'                  => 'required',
+                'prefix'                => 'required|min:3|max:5',
                 'email'                 => 'required|regex:/^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/',
                 'phone_code'            => 'required',
                 'phone'                 => 'required|digits:10',
@@ -71,6 +73,7 @@ class BranchController extends Controller
                 /* user activity */
                 $fields = [
                     'name'                  => strip_tags($postData['name']),
+                    'prefix'                => strip_tags($postData['prefix']),
                     'email'                 => strip_tags($postData['email']),
                     'phone_code'            => strip_tags($postData['phone_code']),
                     'phone'                 => strip_tags($postData['phone']),
@@ -88,6 +91,7 @@ class BranchController extends Controller
         $title                          = $this->data['title'].' Add';
         $page_name                      = 'branch.add-edit';
         $data['row']                    = [];
+        $data['country']                = Country::where('status', '=', 1)->get();
         $data                           = $this->siteAuthService ->admin_after_login_layout($title,$page_name,$data);
         return view('maincontents.' . $page_name, $data);
     }
@@ -100,11 +104,12 @@ class BranchController extends Controller
         $title                          = $this->data['title'].' Update';
         $page_name                      = 'branch.add-edit';
         $data['row']                    = Branch::where($this->data['primary_key'], '=', $id)->first();
-
+        $data['country']                = Country::where('status', '=', 1)->get();
         if($request->isMethod('post')){
             $postData = $request->all();
             $rules = [
                 'name'                  => 'required',
+                'prefix'                => 'required|min:3|max:5',
                 'email'                 => 'required|regex:/^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/',
                 'phone_code'            => 'required',
                 'phone'                 => 'required|digits:10',
@@ -114,6 +119,7 @@ class BranchController extends Controller
             if($this->validate($request, $rules)){
                 $fields = [
                     'name'                  => strip_tags($postData['name']),
+                    'prefix'                => strip_tags($postData['prefix']),
                     'email'                 => strip_tags($postData['email']),
                     'phone_code'            => strip_tags($postData['phone_code']),
                     'phone'                 => strip_tags($postData['phone']),
