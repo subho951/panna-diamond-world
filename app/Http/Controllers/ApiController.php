@@ -1431,11 +1431,12 @@ class ApiController extends Controller
                             $moods          = [];
 
                             // call status
-                            $getChildStats = LeadStatus::select('id', 'name', 'background_color', 'font_color')->where('status', '=', 1)->where('parent_id', '>', 0)->orderBy('rank', 'ASC')->get();
+                            $getChildStats = LeadStatus::select('id', 'name', 'background_color', 'font_color', 'parent_id')->where('status', '=', 1)->where('parent_id', '>', 0)->orderBy('rank', 'ASC')->get();
                             if($getChildStats){
                                 foreach($getChildStats as $getChildStat){
                                     $call_status[]            = [
                                         'id'                  => $getChildStat->id,
+                                        'parent_id'           => $getChildStat->parent_id,
                                         'name'                => $getChildStat->name,
                                         'background_color'    => $getChildStat->background_color,
                                         'font_color'          => $getChildStat->font_color,
