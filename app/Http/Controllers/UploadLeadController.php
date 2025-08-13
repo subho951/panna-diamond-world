@@ -589,7 +589,7 @@ class UploadLeadController extends Controller
                             $csvCell = [];
                             $csvCell = [
                                 "header_id" => $header_id,
-                                "header_value" => !empty($value[$i]) ? strip_tags($value[$i]) : NULL,
+                                "header_value" => isset($value[$i]) && trim($value[$i]) !== '' ? strip_tags(trim($value[$i])) : NULL,
                                 "upload_id"  => $lastInsertId,
                                 "sl_no" => $sl_no,
                                 "lead_no" => $lead_no,
