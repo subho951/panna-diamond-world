@@ -72,7 +72,7 @@ $controllerRoute = $module['controller_route'];
                             <label for="rank" class="form-label">Order <small class="text-danger">*</small></label>
                             <select class="select2 form-select" type="text" id="rank" name="rank" required>
                                 <option value="" selected>Select Order</option>
-                                <?php for($y=1; $y<=20; $y++){?>
+                                <?php for($y=1; $y<=40; $y++){?>
                                     <option value="<?=$y?>" <?=(($y == $rank)?'selected':'')?>><?=$y?></option>
                                 <?php }?>
                             </select>

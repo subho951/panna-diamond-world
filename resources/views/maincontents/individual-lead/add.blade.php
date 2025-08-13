@@ -80,8 +80,11 @@ $controllerRoute = $module['controller_route'];
                                         <h5 class="card-title mb-3">Lead Details</h5>
 
                                         {{-- @dd($isRequiredArr); --}}
+                                        {{-- @dd($lead_headers); --}}
                                         
                                             @foreach($lead_headers as $leadHeaderRow)
+
+                                                {{-- @dd($leadHeaderRow); --}}
 
                                                 @if($leadHeaderRow->input_type == 'TEXTBOX')  
                                                     @if($leadHeaderRow->slug == 'phone')                                                   
@@ -109,6 +112,36 @@ $controllerRoute = $module['controller_route'];
                                                             oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10);" 
                                                             onblur="if(this.value!=='' && this.value.length!==10){ 
                                                                 alert('Please enter a valid whatsapp number !'); 
+                                                                this.value=''; 
+                                                                this.focus(); 
+                                                            }" 
+                                                            class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif placeholder="Enter {{$leadHeaderRow->name}}">
+                                                        </div> 
+                                                    @elseif($leadHeaderRow->slug == 'ref-customer-1-number')                                                   
+                                                        <div class="col-md-6 mb-3">
+                                                            <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
+                                                            <input 
+                                                            type="tel" 
+                                                            minlength="10" 
+                                                            maxlength="10" 
+                                                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10);" 
+                                                            onblur="if(this.value!=='' && this.value.length!==10){ 
+                                                                alert('Please enter a valid number !'); 
+                                                                this.value=''; 
+                                                                this.focus(); 
+                                                            }" 
+                                                            class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif placeholder="Enter {{$leadHeaderRow->name}}">
+                                                        </div> 
+                                                    @elseif($leadHeaderRow->slug == 'ref-customer-2-number')                                                   
+                                                        <div class="col-md-6 mb-3">
+                                                            <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
+                                                            <input 
+                                                            type="tel" 
+                                                            minlength="10" 
+                                                            maxlength="10" 
+                                                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10);" 
+                                                            onblur="if(this.value!=='' && this.value.length!==10){ 
+                                                                alert('Please enter a valid number !'); 
                                                                 this.value=''; 
                                                                 this.focus(); 
                                                             }" 
@@ -194,6 +227,30 @@ $controllerRoute = $module['controller_route'];
                                                                 @foreach($source as $sourceRow)
                                                                     <option value="{{$sourceRow->name}}">{{$sourceRow->name}}</option>
                                                                 @endforeach
+                                                            </select>
+                                                        </div>
+                                                    @endif
+
+                                                    @if($leadHeaderRow->slug == 'vip')
+                                                        <div class="col-md-6 mb-3">
+                                                            <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
+                                                            <input type="hidden" name="{{$leadHeaderRow->slug}}" value="">
+                                                            <select class="select2 form-select" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif>
+                                                                <option value="" selected disabled>Select {{$leadHeaderRow->name}}</option>
+                                                                <option value="1">YES</option>
+                                                                <option value="0">NO</option>
+                                                            </select>
+                                                        </div>
+                                                    @endif
+
+                                                    @if($leadHeaderRow->slug == 'purchased')
+                                                        <div class="col-md-6 mb-3">
+                                                            <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
+                                                            <input type="hidden" name="{{$leadHeaderRow->slug}}" value="">
+                                                            <select class="select2 form-select" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif>
+                                                                <option value="" selected disabled>Select {{$leadHeaderRow->name}}</option>
+                                                                <option value="1">YES</option>
+                                                                <option value="0">NO</option>
                                                             </select>
                                                         </div>
                                                     @endif

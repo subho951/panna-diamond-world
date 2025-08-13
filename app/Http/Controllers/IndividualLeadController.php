@@ -80,6 +80,16 @@ class IndividualLeadController extends Controller
                     $rules[$key] = 'nullable|digits:10';
                 }
 
+                if ($key == "ref-customer-1-number") 
+                {
+                    $rules[$key] = 'nullable|digits:10';
+                }
+
+                if ($key == "ref-customer-2-number") 
+                {
+                    $rules[$key] = 'nullable|digits:10';
+                }
+
                 if ($key == "whatsapp-number") 
                 {
                     $rules[$key] = 'nullable|digits:10';
@@ -99,6 +109,14 @@ class IndividualLeadController extends Controller
                             $rules[$key] = 'required|digits:10';
                         }
                         elseif ($key == "whatsapp-number") 
+                        {
+                            $rules[$key] = 'required|digits:10';
+                        }
+                        elseif ($key == "ref-customer-1-number") 
+                        {
+                            $rules[$key] = 'required|digits:10';
+                        }
+                        elseif ($key == "ref-customer-2-number") 
                         {
                             $rules[$key] = 'required|digits:10';
                         }
@@ -147,7 +165,7 @@ class IndividualLeadController extends Controller
                         $leadCell = [];
                         $leadCell = [
                             "header_id" => $header_id,
-                            "header_value" => !empty($value) ? strip_tags($value) : NULL,
+                            "header_value" => isset($value) && trim($value) !== '' ? strip_tags(trim($value)) : NULL,
                             "upload_id"  => 0,
                             "sl_no" => $sl_no,
                             "lead_no" => $lead_no,
