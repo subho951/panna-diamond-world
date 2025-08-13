@@ -155,13 +155,13 @@ $role_id      = (($user)?$user->role_id:0);
           </li>
         <?php }?>
 
-        {{-- <?php if(in_array(19, $moduleIds)){?>
+        <?php if(in_array(19, $moduleIds)){?>
           <li class="menu-item <?=(($pageSegment == 'lead-header')?'active':'')?>">
             <a href="<?=url('/lead-header/list')?>" class="menu-link">
               <div data-i18n="Lead Headers"><i class="fa-solid fa-arrow-right"></i> Lead Headers</div>
             </a>
           </li>
-        <?php }?> --}}
+        <?php }?>
 
         <?php if(in_array(20, $moduleIds)){?>
           <li class="menu-item <?=(($pageSegment == 'lead-status')?'active':'')?>">
