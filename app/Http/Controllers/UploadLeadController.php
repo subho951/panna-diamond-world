@@ -569,9 +569,6 @@ class UploadLeadController extends Controller
                 $insertedRows = 0;
                 $totalLeadAssignedToTelecaller = 0;
 
-                Helper::pr($csvArray);
-                
-
                 for ($i = 0; $i < $maxLength; $i++) 
                 {
                     $sl_no = MasterLead::orderBy('id', 'desc')->value('sl_no') ?? 0;
@@ -670,8 +667,6 @@ class UploadLeadController extends Controller
                                     $csvCell["header_value"] = $whatsappValue; //extra cleaning for whatsapp number
                                 }
                             }
-
-
                             $csvRow[] = $csvCell;
                         }
                         else {
@@ -682,6 +677,8 @@ class UploadLeadController extends Controller
                             return redirect()->back()->with('error_message', 'Please Maintain Proper CSV Format !!!');
                         }
                     }
+
+                    Helper::pr($csvRow);
 
                     if (!empty($csvRow)) 
                     {
