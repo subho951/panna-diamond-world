@@ -569,6 +569,8 @@ class UploadLeadController extends Controller
                 $insertedRows = 0;
                 $totalLeadAssignedToTelecaller = 0;
 
+                Helper::pr($csvArray);
+
                 for ($i = 0; $i < $maxLength; $i++) 
                 {
                     $sl_no = MasterLead::orderBy('id', 'desc')->value('sl_no') ?? 0;
@@ -612,7 +614,6 @@ class UploadLeadController extends Controller
                                     }
                                 }
                             }
-
 
                             if ($slug == 'phone')   //validating with respect to phone
                             {
@@ -686,30 +687,30 @@ class UploadLeadController extends Controller
                         $cellsPerRow = 0;
                         foreach ($csvRow as $cell)   //uploading 1 lead i.e., 1 csv row
                         {
-                            $masterLead = new MasterLead();
+                            $masterLead                     = new MasterLead();
 
-                            $masterLead->header_id        = $cell["header_id"];
-                            $masterLead->header_value     = $cell["header_value"];
-                            $masterLead->upload_id        = $cell["upload_id"];
-                            $masterLead->sl_no            = $cell["sl_no"];
-                            $masterLead->lead_no          = $cell["lead_no"];
-                            $masterLead->created_by = session('user_data')['user_id'];
-                            $masterLead->updated_by = session('user_data')['user_id'];
+                            $masterLead->header_id          = $cell["header_id"];
+                            $masterLead->header_value       = $cell["header_value"];
+                            $masterLead->upload_id          = $cell["upload_id"];
+                            $masterLead->sl_no              = $cell["sl_no"];
+                            $masterLead->lead_no            = $cell["lead_no"];
+                            $masterLead->created_by         = session('user_data')['user_id'];
+                            $masterLead->updated_by         = session('user_data')['user_id'];
 
                             $masterLead->save();
 
                             if ($cellsPerRow == 0) {
-                                $branchLead =  new BranchLead();
+                                $branchLead                             =  new BranchLead();
 
-                                $branchLead->upload_id = $masterLead->upload_id;
-                                $branchLead->master_lead_id = $masterLead->id;
-                                $branchLead->lead_sl_no = $masterLead->sl_no;
-                                $branchLead->branch_id = $uploadLead->branch_id;
-                                $branchLead->campaign_type_id = $uploadLead->campaign_type_id;
-                                $branchLead->campaign_id = $uploadLead->campaign_id;
-                                $branchLead->assigned_telecaller_id = 0;
-                                $branchLead->created_by = session('user_data')['user_id'];
-                                $branchLead->updated_by = session('user_data')['user_id'];
+                                $branchLead->upload_id                  = $masterLead->upload_id;
+                                $branchLead->master_lead_id             = $masterLead->id;
+                                $branchLead->lead_sl_no                 = $masterLead->sl_no;
+                                $branchLead->branch_id                  = $uploadLead->branch_id;
+                                $branchLead->campaign_type_id           = $uploadLead->campaign_type_id;
+                                $branchLead->campaign_id                = $uploadLead->campaign_id;
+                                $branchLead->assigned_telecaller_id     = 0;
+                                $branchLead->created_by                 = session('user_data')['user_id'];
+                                $branchLead->updated_by                 = session('user_data')['user_id'];
 
                                 $branchLead->save();
                                 $totalLeadAssignedToTelecaller++;
