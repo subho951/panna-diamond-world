@@ -633,12 +633,46 @@ class LeadListController extends Controller
     }
 
     /* ajax request */
-    public function fetchLeadStatus(Request $request)
+    public function getLeadCallData(Request $request)
     {
-        if ($request->isMethod('get'))
+        if ($request->isMethod('post'))
         {
-            $parentStatusArr = LeadStatus::where('parent_id', '=', 0)->where('status', '!=', 3)->get();
+            $id = Helper::decoded($request->branchLead_id); //BranchLead ID
+            $branchLeadArr = BranchLead::find($id);
 
+            // lead added updated
+            $addedUpdated = [];
+            $addedUpdated['added_by_name'] = ( User::where('id', '=', $branchLeadArr->created_by)->where('status', '!=', 3)->value('first_name') . ' '. User::where('id', '=', $branchLeadArr->created_by)->where('status', '!=', 3)->value('last_name') ) ?? '';
+            $addedUpdated['updated_by_name'] = ( User::where('id', '=', $branchLeadArr->updated_by)->where('status', '!=', 3)->value('first_name') . ' '. User::where('id', '=', $branchLeadArr->updated_by)->where('status', '!=', 3)->value('last_name') ) ?? '';
+            $addedUpdated['created_at'] = $branchLeadArr->created_at?->format('M d, Y h:i A') ?? '';
+            $addedUpdated['updated_at'] = $branchLeadArr->updated_at?->format('M d, Y h:i A') ?? '';
+
+            // activity count and sl no.
+            $leadActivityCount = [];
+            $leadActivityCount['lead_activity_count'] = LeadActivity::where('lead_sl_no', '=', $branchLeadArr->lead_sl_no)->where('status', '!=', 3)->count();
+            $leadActivityCount['lead_no'] = MasterLead::where('sl_no', '=', $branchLeadArr->lead_sl_no)->where('status', '!=', 3)->first()->lead_no ?? '';
+
+            // lead details
+            $masterleadArr = MasterLead::where('sl_no', '=', $branchLeadArr->lead_sl_no)->where('status', '!=', 3)->get() ?? [];
+            $eachLeadArr = [];
+            foreach($masterleadArr as $masterlead)
+            {
+                // dd($masterlead);
+                $eachLeadCellArr = [];
+                $eachLeadHead = LeadHeader::where('id', '=', $masterlead->header_id)->where('status', '!=', 3)->first() ?? [];
+                // dd($eachLeadHead);
+                $eachLeadCellArr[$eachLeadHead->slug] = $masterlead->header_value ?? '';
+                $eachLeadCellArr['is_visible_in_lead_list'] = $eachLeadHead->is_visible_in_lead_list ?? '';
+                $eachLeadArr[] = $eachLeadCellArr ;
+            }
+
+            //fetch current campaign
+            // $campaignArr = [];
+            // $leadHistory['campaign_type_name'] = CampaignType::where('id', '=', $leadActivity->campaign_type_id)->where('status', '!=', 3)->value('name') ?? '';
+            //     $leadHistory['campaign_name'] = Campaign::where('id', '=', $leadActivity->campaign_id)->where('status', '!=', 3)->value('name') ?? '';
+
+            // fetch lead status
+            $parentStatusArr = LeadStatus::where('parent_id', '=', 0)->where('status', '!=', 3)->get();
             $ChildParentStatusArr = [];
             foreach($parentStatusArr as $parentStatus)
             {
@@ -652,36 +686,96 @@ class LeadListController extends Controller
                     $ChildParentStatusArr[] = $statusArr;
                 }
             }
-            return response()->json($ChildParentStatusArr);
-        }
-    }
 
-    public function fetchCallPurpose(Request $request)
-    {
-        if ($request->isMethod('get'))
-        {
+            // fetch call purpose
             $purposeArr =  Purpose::where('status', '!=', 3)->get();
-            return response()->json($purposeArr);
-        }
-    }
 
-    public function fetchMood(Request $request)
-    {
-        if ($request->isMethod('get'))
-        {
-           $moodArr = Mood::where('status', '!=', 3)->get();
-           return response()->json($moodArr);
-        }
-    }
+            // fetch mood
+            $moodArr = Mood::where('status', '!=', 3)->get();
 
-    public function fetchFeedbackTag(Request $request)
-    {
-        if ($request->isMethod('get'))
-        {
+            //fetch feedback tags
             $feedbackTagArr = FeedbackTag::where('status', '!=', 3)->get();
-            return response()->json($feedbackTagArr);
+
+            // fetch lead history
+            $leadActivityArr = LeadActivity::where('lead_sl_no', '=', $branchLeadArr->lead_sl_no)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+
+            $leadHistoryArr = [];
+            foreach($leadActivityArr as $leadActivity)
+            {
+                $leadHistory = [];
+                $leadHistory['branch_name'] = Branch::where('id', '=', $leadActivity->branch_id)->where('status', '!=', 3)->value('name') ?? '';
+                $leadHistory['campaign_type_name'] = CampaignType::where('id', '=', $leadActivity->campaign_type_id)->where('status', '!=', 3)->value('name') ?? '';
+                $leadHistory['campaign_name'] = Campaign::where('id', '=', $leadActivity->campaign_id)->where('status', '!=', 3)->value('name') ?? '';
+                
+                //fetching parent status
+                $parentStatus = [];
+                $parentStatus['name'] = LeadStatus::where('id', '=', $leadActivity->parent_status_id)->where('parent_id', '=', 0)->where('status', '!=', 3)->value('name') ?? '';
+                $parentStatus['background_color'] = LeadStatus::where('id', '=', $leadActivity->parent_status_id)->where('parent_id', '=', 0)->where('status', '!=', 3)->value('background_color') ?? '';
+                $parentStatus['font_color'] = LeadStatus::where('id', '=', $leadActivity->parent_status_id)->where('parent_id', '=', 0)->where('status', '!=', 3)->value('font_color') ?? '';
+                $leadHistory['parentStatus'] = $parentStatus;
+                
+                //fetching child status
+                $childStatus = [];
+                $childStatus['name'] = LeadStatus::where('id', '=', $leadActivity->child_status_id)->where('parent_id', '=', $leadActivity->parent_status_id)->where('status', '!=', 3)->value('name') ?? '';
+                $childStatus['background_color'] = LeadStatus::where('id', '=', $leadActivity->child_status_id)->where('parent_id', '=', $leadActivity->parent_status_id)->where('status', '!=', 3)->value('background_color') ?? '';
+                $childStatus['font_color'] = LeadStatus::where('id', '=', $leadActivity->child_status_id)->where('parent_id', '=', $leadActivity->parent_status_id)->where('status', '!=', 3)->value('font_color') ?? '';
+                $leadHistory['childStatus'] = $childStatus;
+
+                $leadHistory['comment'] = $leadActivity->comment ?? '';
+
+                //fetching mood
+                $mood = [];
+                $mood['name'] = Mood::where('id', '=', $leadActivity->mood)->where('status', '!=', 3)->value('name') ?? '';
+                $mood['emoji'] = Mood::where('id', '=', $leadActivity->mood)->where('status', '!=', 3)->value('emoji') ?? '';
+                $mood['color'] = Mood::where('id', '=', $leadActivity->mood)->where('status', '!=', 3)->value('color') ?? '';
+                $leadHistory['mood'] = $mood;
+
+                $leadHistory['purpose_name'] = Purpose::where('id', '=', $leadActivity->purpose_id)->where('status', '!=', 3)->value('name') ?? '';
+                
+                //fetch feedback tags
+                if(!empty($leadActivity->feedback_tag_ids))
+                {
+                    $feedbackTagNameArr = [] ;
+                    foreach(json_decode($leadActivity->feedback_tag_ids) as $feedbackTagId)
+                    {
+                        $feedbackTagNameArr[] = FeedbackTag::where('id', '=', $feedbackTagId)->where('status', '!=', 3)->value('name') ?? '';
+                    }
+                    $leadHistory['feedbackTagNameArr'] = $feedbackTagNameArr;
+                }
+                else
+                {
+                    $leadHistory['feedbackTagNameArr'] = [] ;
+                }
+
+                $leadHistory['note'] = $leadActivity->note ?? '';
+
+                $leadHistory['next_followup_date'] = $leadActivity->next_followup_date ? Carbon::parse($leadActivity->next_followup_date)->format('M d, Y') : '';
+                $leadHistory['next_followup_time'] = $leadActivity->next_followup_time ? Carbon::createFromFormat('H:i', $leadActivity->next_followup_time)->format('h:i A') : '';
+                $leadHistory['last_call'] = $leadActivity->created_at ? $leadActivity->created_at->format('M d, Y h:i A') : '';
+
+                $leadHistory['assigned_telecaller_name'] = ( User::where('id', '=', $leadActivity->assigned_telecaller_id)->where('status', '!=', 3)->value('first_name') . ' '. User::where('id', '=', $leadActivity->assigned_telecaller_id)->where('status', '!=', 3)->value('last_name') ) ?? '';
+
+
+                $leadHistoryArr[] = $leadHistory;
+            }
+
+
+            
+
+
+            $page_name  = 'lead.modal';
+            $html = view('maincontents.' . $page_name)->with(["addedUpdated" => $addedUpdated , "leadActivityCount" => $leadActivityCount , "eachLeadArr" => $eachLeadArr , "ChildParentStatusArr" => $ChildParentStatusArr , "purposeArr" => $purposeArr , "moodArr" => $moodArr , "feedbackTagArr" => $feedbackTagArr , "leadHistoryArr" => $leadHistoryArr ,])->render(); // modal.blade.php
+
+            return response()->json([
+                'html' => $html
+            ]);
+
+            // return response()->json($leadHistoryArr);
         }
     }
+    
+
+   
 
     public function updateLeadStatus(Request $request)
     {
@@ -831,49 +925,7 @@ class LeadListController extends Controller
             return response()->json($leadHistoryArr);
         }
     }
-
-    public function fetchLeadDetail(Request $request)
-    {
-        if ($request->isMethod('post'))
-        {
-            $id = Helper::decoded($request->branchLead_id); //BranchLead ID
-            $branchLeadArr = BranchLead::find($id);
-
-            $masterleadArr = MasterLead::where('sl_no', '=', $branchLeadArr->lead_sl_no)->where('status', '!=', 3)->get() ?? [];
-            $eachLeadArr = [];
-            foreach($masterleadArr as $masterlead)
-            {
-                // dd($masterlead);
-                $eachLeadCellArr = [];
-                $eachLeadHead = LeadHeader::where('id', '=', $masterlead->header_id)->where('status', '!=', 3)->first() ?? [];
-                // dd($eachLeadHead);
-                $eachLeadCellArr[$eachLeadHead->slug] = $masterlead->header_value ?? '';
-                $eachLeadCellArr['is_visible_in_lead_list'] = $eachLeadHead->is_visible_in_lead_list ?? '';
-                $eachLeadArr[] = $eachLeadCellArr ;
-            }
-            // dd($eachLeadArr);
-            
-            return response()->json($eachLeadArr);
-        }
-    }
-
-    public function fetchLeadAddedUpdated(Request $request)
-    {
-        if ($request->isMethod('post'))
-        {
-            $id = Helper::decoded($request->branchLead_id); //BranchLead ID
-            $branchLeadArr = BranchLead::find($id);
-            
-            $arr = [];
-            $arr['added_by_name'] = ( User::where('id', '=', $branchLeadArr->created_by)->where('status', '!=', 3)->value('first_name') . ' '. User::where('id', '=', $branchLeadArr->created_by)->where('status', '!=', 3)->value('last_name') ) ?? '';
-            $arr['updated_by_name'] = ( User::where('id', '=', $branchLeadArr->updated_by)->where('status', '!=', 3)->value('first_name') . ' '. User::where('id', '=', $branchLeadArr->updated_by)->where('status', '!=', 3)->value('last_name') ) ?? '';
-            $arr['created_at'] = $branchLeadArr->created_at?->format('M d, Y h:i A') ?? '';
-            $arr['updated_at'] = $branchLeadArr->updated_at?->format('M d, Y h:i A') ?? '';
-            
-            return response()->json($arr);
-        }
-    }
-
+     
     public function fetchLeadActivityCount(Request $request)
     {
         if ($request->isMethod('post'))
@@ -887,5 +939,6 @@ class LeadListController extends Controller
             return response()->json($arr);
         }
     }
+   
     /* ajax request */
 }
