@@ -667,9 +667,9 @@ class LeadListController extends Controller
             }
 
             //fetch current campaign
-            // $campaignArr = [];
-            // $leadHistory['campaign_type_name'] = CampaignType::where('id', '=', $leadActivity->campaign_type_id)->where('status', '!=', 3)->value('name') ?? '';
-            //     $leadHistory['campaign_name'] = Campaign::where('id', '=', $leadActivity->campaign_id)->where('status', '!=', 3)->value('name') ?? '';
+            $campaignArr = [];
+            $campaignArr['campaign_type_name'] = CampaignType::where('id', '=', $branchLeadArr->campaign_type_id)->where('status', '!=', 3)->value('name') ?? '';
+            $campaignArr['campaign_name'] = Campaign::where('id', '=', $branchLeadArr->campaign_id)->where('status', '!=', 3)->value('name') ?? '';
 
             // fetch lead status
             $parentStatusArr = LeadStatus::where('parent_id', '=', 0)->where('status', '!=', 3)->get();
@@ -764,7 +764,7 @@ class LeadListController extends Controller
 
 
             $page_name  = 'lead.modal';
-            $html = view('maincontents.' . $page_name)->with(["addedUpdated" => $addedUpdated , "leadActivityCount" => $leadActivityCount , "eachLeadArr" => $eachLeadArr , "ChildParentStatusArr" => $ChildParentStatusArr , "purposeArr" => $purposeArr , "moodArr" => $moodArr , "feedbackTagArr" => $feedbackTagArr , "leadHistoryArr" => $leadHistoryArr ,])->render(); // modal.blade.php
+            $html = view('maincontents.' . $page_name)->with(["addedUpdated" => $addedUpdated , "leadActivityCount" => $leadActivityCount , "eachLeadArr" => $eachLeadArr , "ChildParentStatusArr" => $ChildParentStatusArr , "purposeArr" => $purposeArr , "moodArr" => $moodArr , "feedbackTagArr" => $feedbackTagArr , "leadHistoryArr" => $leadHistoryArr , "campaignArr" => $campaignArr ,])->render(); // modal.blade.php
 
             return response()->json([
                 'html' => $html
