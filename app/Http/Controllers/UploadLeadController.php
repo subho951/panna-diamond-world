@@ -570,6 +570,7 @@ class UploadLeadController extends Controller
                 $totalLeadAssignedToTelecaller = 0;
 
                 Helper::pr($csvArray);
+                
 
                 for ($i = 0; $i < $maxLength; $i++) 
                 {
