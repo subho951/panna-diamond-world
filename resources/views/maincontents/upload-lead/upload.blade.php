@@ -118,45 +118,42 @@ $controllerRoute = $module['controller_route'];
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {{-- @dd($leadListArr); --}}
-                                    
-                                    @foreach($leadListArr as $leadRow)
-                                    <tr>
-
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $leadRow->branch_name }}</td>
-
-                                        <td>
-                                            @foreach($leadRow->telecaller_name_arr as $telecaller_name)
-                                            {{ $telecaller_name }}<br>
-                                            @endforeach
-                                        </td>
-
-                                        <td>{{ $leadRow->title }}</td>
-                                        <td>{{ $leadRow->campaign_type_name }}</td>
-                                        <td>{{ $leadRow->campaign_name }}</td>
-
-                                        <td>
-                                            <a href="<?= url($controllerRoute . '/csv-download/' . $leadRow->encodedId) ?>" class="btn btn-sm btn-primary mb-1" title="Download CSV">
-                                                <i class="fa-solid fa-file-csv"></i> 
-                                            </a>
-                                        </td>
-
-                                        <td>{{ $leadRow->total_upload }}</td>
-                                        <td>{{ $leadRow->success_upload }}</td>
-                                        <td>{{ $leadRow->failed_upload }}</td>
-                                        <td>{{ $leadRow->total_assigned }}</td>
-                                        <td>{{ $leadRow->lead_date }}</td>
-                                        
-                                        <td>
-                                            <a href="<?= url($controllerRoute . '/delete/' . $leadRow->encodedId) ?>" class="btn btn-sm btn-danger mb-1" onclick="return confirm('You Won\'t Be Able To Revert This Action. Are you sure?')"
-                                                title="Delete">
-                                             <i class="fa-solid fa-trash"></i>
-                                            </a>
-                                       </td>
-
-                                    </tr>
-                                    @endforeach
+                                    <?php if(count($leadListArr) > 0){?>
+                                        @foreach($leadListArr as $leadRow)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $leadRow->branch_name }}</td>
+                                                <td>
+                                                    @foreach($leadRow->telecaller_name_arr as $telecaller_name)
+                                                    {{ $telecaller_name }}<br>
+                                                    @endforeach
+                                                </td>
+                                                <td>{{ $leadRow->title }}</td>
+                                                <td>{{ $leadRow->campaign_type_name }}</td>
+                                                <td>{{ $leadRow->campaign_name }}</td>
+                                                <td>
+                                                    <a href="<?= url($controllerRoute . '/csv-download/' . $leadRow->encodedId) ?>" class="btn btn-sm btn-primary mb-1" title="Download CSV">
+                                                        <i class="fa-solid fa-file-csv"></i> 
+                                                    </a>
+                                                </td>
+                                                <td>{{ $leadRow->total_upload }}</td>
+                                                <td>{{ $leadRow->success_upload }}</td>
+                                                <td>{{ $leadRow->failed_upload }}</td>
+                                                <td>{{ $leadRow->total_assigned }}</td>
+                                                <td>{{ $leadRow->lead_date }}</td>
+                                                <td>
+                                                    <a href="<?= url($controllerRoute . '/delete/' . $leadRow->encodedId) ?>" class="btn btn-sm btn-danger mb-1" onclick="return confirm('You Won\'t Be Able To Revert This Action. Are you sure?')"
+                                                        title="Delete">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    <?php } else {?>
+                                        <tr>
+                                            <td colspan="13" style="color:red; text-align:center;">No records found</td>
+                                        </tr>
+                                    <?php } ?>
                                 </tbody>
                             </table>
                         </div>
