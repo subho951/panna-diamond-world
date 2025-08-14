@@ -49,6 +49,8 @@ class CampaignController extends Controller
                     'campaign_type_id'          => 'required',
                     'name'                      => 'required',
                     'year'                      => 'required',
+                    'start_date'                => 'required',
+                    'end_date'                  => 'required',
                 ];
                 if($this->validate($request, $rules)){
                     /* user activity */
@@ -68,6 +70,8 @@ class CampaignController extends Controller
                         'name'                          => strtoupper(strip_tags($postData['name'])),
                         'year'                          => strip_tags($postData['year']),
                         'slug'                          => strtolower(Helper::clean(strip_tags($postData['name']))),
+                        'start_date'                    => strip_tags($postData['start_date']),
+                        'end_date'                      => strip_tags($postData['end_date']),
                         'status'                        => ((array_key_exists("status",$postData))?1:0),
                     ];
                     Campaign::insert($fields);
@@ -99,6 +103,8 @@ class CampaignController extends Controller
                     'campaign_type_id'          => 'required',
                     'name'                      => 'required',
                     'year'                      => 'required',
+                    'start_date'                => 'required',
+                    'end_date'                  => 'required',
                 ];
                 if($this->validate($request, $rules)){
                     $fields = [
@@ -106,6 +112,8 @@ class CampaignController extends Controller
                         'name'                          => strtoupper(strip_tags($postData['name'])),
                         'year'                          => strip_tags($postData['year']),
                         'slug'                          => strtolower(Helper::clean(strip_tags($postData['name']))),
+                        'start_date'                    => strip_tags($postData['start_date']),
+                        'end_date'                      => strip_tags($postData['end_date']),
                         'status'                        => ((array_key_exists("status",$postData))?1:0),
                     ];
                     Campaign::where($this->data['primary_key'], '=', $id)->update($fields);

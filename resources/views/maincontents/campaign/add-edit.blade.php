@@ -36,12 +36,16 @@ $controllerRoute = $module['controller_route'];
                 $campaign_type_id   = $row->campaign_type_id;
                 $name               = $row->name;
                 $year               = $row->year;
+                $start_date         = $row->start_date;
+                $end_date           = $row->end_date;
                 $status             = $row->status;
             } else {
                 $id                 = '';
                 $campaign_type_id   = '';
                 $name               = '';
                 $year               = '';
+                $start_date         = '';
+                $end_date           = '';
                 $status             = '';
             }
             ?>
@@ -61,6 +65,15 @@ $controllerRoute = $module['controller_route'];
                         <div class="col-md-6 mb-3">
                             <label for="name" class="form-label">Name <small class="text-danger">*</small></label>
                             <input class="form-control" type="text" id="name" name="name" value="<?=$name?>" required placeholder="Name" autofocus />
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="start_date" class="form-label">Start Date <small class="text-danger">*</small></label>
+                            <input class="form-control" type="date" id="start_date" name="start_date" value="<?=$start_date?>" required placeholder="Start Date" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="end_date" class="form-label">End Date <small class="text-danger">*</small></label>
+                            <input class="form-control" type="date" id="end_date" name="end_date" value="<?=$end_date?>" required placeholder="End Date" />
                         </div>
 
                         <div class="col-md-6 mt-3">
