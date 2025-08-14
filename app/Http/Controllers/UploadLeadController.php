@@ -798,7 +798,7 @@ class UploadLeadController extends Controller
 
                             $cellsPerRow++;
                         }
-                        die;
+                        
                     }
 
                     if($isDuplicatePhone || $isDuplicateWhatsapp)
@@ -965,7 +965,7 @@ class UploadLeadController extends Controller
                 $uploadLead->failed_upload = $skippedRows;
                 $uploadLead->total_assigned = $totalLeadAssignedToTelecaller;
                 $uploadLead->update();
-
+                die;
 
                 return redirect($this->data['controller_route'])->with('success_message',  $insertedRows . ' Lead(s) Uploaded Successfully !!!' . ($skippedRows > 0 ? ' And ' . $skippedRows . ' Lead(s) Skipped !!!' : '') . ' And ' . $totalLeadAssignedToTelecaller . ' Lead(s) Assigned To Telecaller(s) !!!');
             } else {
