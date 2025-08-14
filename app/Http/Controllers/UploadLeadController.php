@@ -704,6 +704,7 @@ class UploadLeadController extends Controller
                                 // die;
                                 if($uploadLead->campaign_type_id == 0 && $uploadLead->campaign_id == 0){
                                     // if campaign type & campaign not selected in upload form
+                                    echo $cell["header_id"];
                                     if($cell["header_id"] == 15){
                                         if($cell["header_value"] == ''){
                                             $branchLead->campaign_type_id           = $uploadLead->campaign_type_id;
@@ -774,7 +775,7 @@ class UploadLeadController extends Controller
                                         $branchLead->assigned_telecaller_id     = 0;
                                         $branchLead->created_by                 = session('user_data')['user_id'];
                                         $branchLead->updated_by                 = session('user_data')['user_id'];
-
+                                        Helper::pr($branchLead);
                                         $branchLead->save();
                                         $totalLeadAssignedToTelecaller++;
                                     }
