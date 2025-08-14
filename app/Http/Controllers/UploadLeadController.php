@@ -706,8 +706,8 @@ class UploadLeadController extends Controller
                             if($uploadLead->campaign_type_id == 0 && $uploadLead->campaign_id == 0){
                                 if($cell["header_id"] == 15){
                                     if($cell["header_value"] == ''){
-                                        $campaignTypeId[]               = $uploadLead->campaign_type_id;
-                                        $campaignId[]                   = $uploadLead->campaign_id;
+                                        // $campaignTypeId[]               = $uploadLead->campaign_type_id;
+                                        // $campaignId[]                   = $uploadLead->campaign_id;
                                     } else {
                                         $campaign_type_id   = 5;
                                         $campaign_value     = $cell["header_value"];
@@ -732,8 +732,8 @@ class UploadLeadController extends Controller
                                 }
                                 if($cell["header_id"] == 16){
                                     if($cell["header_value"] == ''){
-                                        $campaignTypeId[]               = $uploadLead->campaign_type_id;
-                                        $campaignId[]                   = $uploadLead->campaign_id;
+                                        // $campaignTypeId[]               = $uploadLead->campaign_type_id;
+                                        // $campaignId[]                   = $uploadLead->campaign_id;
                                     } else {
                                         $campaign_type_id   = 6;
                                         $campaign_value     = $cell["header_value"];
@@ -760,9 +760,7 @@ class UploadLeadController extends Controller
 
                             $cellsPerRow++;
                         }
-                        Helper::pr($campaignTypeId,0);
-                        Helper::pr($campaignId,0);
-                        die;
+                        
                         // branch lead table insertion
                         if(empty($campaignTypeId) && empty($campaignId)){
                             $branchLead                             = new BranchLead();
@@ -858,8 +856,8 @@ class UploadLeadController extends Controller
                                             if($uploadLead->campaign_type_id == 0 && $uploadLead->campaign_id == 0){
                                                 if($getMasterLeadData->header_id == 15){
                                                     if($getMasterLeadData->header_value == ''){
-                                                        $campaignTypeId[]               = $uploadLead->campaign_type_id;
-                                                        $campaignId[]                   = $uploadLead->campaign_id;
+                                                        // $campaignTypeId[]               = $uploadLead->campaign_type_id;
+                                                        // $campaignId[]                   = $uploadLead->campaign_id;
                                                     } else {
                                                         $campaign_type_id   = 5;
                                                         $campaign_value     = $getMasterLeadData->header_value;
@@ -884,8 +882,8 @@ class UploadLeadController extends Controller
                                                 }
                                                 if($getMasterLeadData->header_id == 16){
                                                     if($getMasterLeadData->header_value == ''){
-                                                        $campaignTypeId[]               = $uploadLead->campaign_type_id;
-                                                        $campaignId[]                   = $uploadLead->campaign_id;
+                                                        // $campaignTypeId[]               = $uploadLead->campaign_type_id;
+                                                        // $campaignId[]                   = $uploadLead->campaign_id;
                                                     } else {
                                                         $campaign_type_id   = 6;
                                                         $campaign_value     = $getMasterLeadData->header_value;
