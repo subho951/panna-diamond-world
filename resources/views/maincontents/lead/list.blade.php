@@ -239,8 +239,11 @@ $controllerRoute = $module['controller_route'];
                                             
                                             {{-- Actions:   w.r.t. BranchLead ID --}}
                                             <td style="text-align: center">
-                                                <button class="callButton btn btn-sm btn-outline-dark mb-1" data-bs-toggle="modal"
-                                                    data-bs-target="#callModal" title="Call" data-id="{{Helper::encoded($eachLeadArr->id)}}">
+                                               <button class="callButton btn btn-sm btn-outline-dark mb-1"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#callModal"
+                                                        title="Call"
+                                                        data-id="{{ Helper::encoded($eachLeadArr->id) }}">
                                                     <i class="fa-solid fa-headset"></i>&nbsp;<span>Call</span>
                                                 </button>
                                                 
@@ -328,138 +331,8 @@ $controllerRoute = $module['controller_route'];
                             <div class="modal-dialog modal-xl modal-simple modal-edit-user">
                                 <div class="modal-content">
                                     <div class="modal-body p-0">
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
                                         <!-- modal body -->
-                                        <h5 class="text-primary mb-4 leadActivity">
-                                            
-                                        </h5>
-
-                                        {{-- <div class="session-message-container"></div> --}}
-
-                                        <div class="row">
-                                            <!-- Left info side -->
-                                            <div class="col-md-6">
-                                              <!-- Lead Info and Edit -->
-                                              <div class="row mb-2 creaded_updated">
-                                                {{-- <div class="col-md-6">
-                                                  <p class="mb-1 small">Added By: <strong>Panna Admin</strong></p>
-                                                  <p class="mb-1 small">Added On: <strong>Mar 03, 2025 03:23 PM</strong></p>
-                                                </div>
-                                                <div class="col-md-6">
-                                                  <p class="mb-1 small">Updated By: <strong>Panna Admin</strong></p>
-                                                  <p class="mb-1 small">Updated On: <strong>Mar 03, 2025 03:23 PM</strong></p>
-                                                </div> --}}
-                                              </div>
-                                          
-                                              <!-- Lead Card -->
-                                              <div id="leadDisplay" class="border border-primary rounded p-3 bg-label-light text-primary mb-4">
-                                                
-                                              </div>
-                                          
-                                              <!-- Edit Form -->
-                                              <div id="leadEdit" class="border-primary rounded p-3 bg-label-dark text-white mb-4 d-none">
-                                                <form>
-                                                  <div class="input-group mb-2">
-                                                    <span class="input-group-text border-primary"><i class="fa-solid fa-user"></i></span>
-                                                    <input type="text" class="form-control border-dark text-primary" value="Paras">
-                                                  </div>
-                                                  <div class="input-group mb-2">
-                                                    <span class="input-group-text border-dark"><i class="fa-solid fa-phone"></i></span>
-                                                    <input type="text" class="form-control border-dark text-primary" value="9831887018">
-                                                  </div>
-                                                  <div class="input-group mb-2">
-                                                    <span class="input-group-text border-dark"><i class="fa-solid fa-building"></i></span>
-                                                    <input type="text" class="form-control border-dark text-primary" value="PRASEEDA EXIM LLP">
-                                                  </div>
-                                                  <div class="input-group mb-2">
-                                                    <span class="input-group-text border-dark"><i class="fa-solid fa-envelope"></i></span>
-                                                    <input type="email" class="form-control border-dark text-primary" value="praseedae6@gmail.com">
-                                                  </div>
-                                          
-                                                  <div class="d-flex justify-content-end gap-2 mt-4">
-                                                    <button class="btn btn-outline-dark btn-sm" type="submit">Save</button>
-                                                    <button class="btn btn-outline-danger btn-sm" type="button" onclick="toggleEdit(false)">Cancel</button>
-                                                  </div>
-                                                </form>
-                                              </div>
-                                          
-                                              <!-- Update Status Form -->
-                                              <div class="border border-dark rounded p-3 bg-label-white text-primary">
-                                                <form id="updateLeadStatusForm" method="post">
-                                                    @csrf
-                                                  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-                                                    <small class="text-danger fst-italic">* (Star) Marks Fields Are Mandatory</small>
-                                                  </div>
-                                          
-                                                  <div class="mb-5">
-                                                    <label for="leadStatus" class="form-label fw-bold">Update Lead Status <span class="text-danger">*</span></label>
-                                                    <select id="leadStatus" name="leadStatus" class="select2 form-select border-primary text-primary" required>
-                                                      
-                                                      
-                                                    </select>
-                                                  </div>
-                                          
-                                                  <div class="row g-3 mb-2">
-                                                    <div class="col-md-6 mb-3">
-                                                      <label for="nextFollowUpDate" class="form-label">Next Follow Up Date <span class="text-danger">*</span></label>
-                                                      <input type="date" id="nextFollowUpDate" name="nextFollowUpDate" class="form-control border-primary text-primary" required/>
-                                                    </div>
-                                                    <div class="col-md-6 mb-3">
-                                                      <label for="nextFollowUpTime" class="form-label">Next Follow Up Time <span class="text-danger">*</span></label>
-                                                      <input type="time" id="nextFollowUpTime" name="nextFollowUpTime" class="form-control border-primary text-primary" required/>
-                                                    </div>
-                                                  </div>
-
-                                                  <div class="row g-3 mb-1">
-                                                    <div class="col-md-6 mb-3">
-                                                        <label for="callPurpose" class="form-label fw-bold">Call Purpose <span class="text-danger">*</span></label>
-                                                        <select id="callPurpose" name="callPurpose" class="select2 form-select border-primary text-primary" required>
-                                                          
-                                                          
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-md-6 mb-3">
-                                                        <label for="mood" class="form-label fw-bold">Mood <span class="text-danger">*</span></label>
-                                                        <select id="mood" name="mood" class="select2 form-select border-primary text-primary" required>
-                                                          
-                                                          
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-12">
-                                                        <label for="feedbackTag" class="form-label fw-bold">Feedback Tags </label>
-                                                        <select id="feedbackTag" name="feedbackTag[]" class="select2 form-select border-primary text-primary" multiple>
-                                                          
-                                                         
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                          
-                                                <div class="mb-3">
-                                                <label for="specialComment" class="form-label">Special Comment</label>
-                                                <textarea id="specialComment" name="specialComment" class="form-control border-primary text-primary" rows="3" placeholder="Special Comment"></textarea>
-                                                </div>
-                                          
-                                                  <button type="submit" class="btn btn-outline-dark btn-sm">Save Changes</button>
-                                                </form>
-                                              </div>
-
-                                            </div>
-                                          
-                                            <!-- Right info side -->
-                                            <div class="col-md-6">
-                                              <div class="card" style="height: 716px; overflow-y: auto;">
-                                                <div class="leadHistoryContainer card-body p-1">
-
-                                                    <!-- Lead History Box Coming From jQuery-->
-                                                    
-                                                </div>
-                                              </div>
-                                            </div>
-                                            
-                                        </div>
+                                        
                                           
                                     </div>
                                 </div>
@@ -500,258 +373,74 @@ $controllerRoute = $module['controller_route'];
         let baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
         const base_url = document.querySelector('meta[name="baseurl"]').getAttribute('content');
 
-        //handling call modal
-        let id = ""; //BranchLead ID, global scope
-        $(document).on('click', '.callButton', function()
-        {
-            // console.log('call modal launched');
 
-            id = $(this).data('id'); //BranchLead ID
-            fetchLeadHistory(id); //BranchLead ID
-            fetchLeadActivityCount(id); //BranchLead ID
-            
-            //fetch lead details
+        let id = ""; // BranchLead ID, global scope
+
+        $(document).on('click', '.callButton', function() {
+            id = $(this).data('id'); // BranchLead ID
+
             $.ajax({
-            url: base_url + '/lead-list/fetch-lead-detail',
-            type: 'POST',
-            data: {branchLead_id : id},
-            success: function(eachLeadArr) 
-            {
-                // console.log(eachLeadArr);
+                url: base_url + '/lead-list/get-lead-call-data',
+                type: 'POST',
+                data: {
+                    branchLead_id: id
+                },
+                success: function(response) {
+                    $('#callModal .modal-body').html(response.html);
+                    $('#callModal').modal('show'); // force show
 
-                // Convert array into an easy lookup object: { fieldName: { value, visible } }
-                let leadData = {};
-                eachLeadArr.forEach(item => {
-                    let key = Object.keys(item).find(k => k !== 'is_visible_in_lead_list'); // get the actual field key
-                    leadData[key] = {
-                        value: item[key],
-                        visible: item.is_visible_in_lead_list === 'YES'
-                    };
-                });
+                    // console.log(response);
+                },
+                error: function(xhr) {
+                    alert('Error loading lead data.');
+                }
+            });
+        });
 
-                // Build the HTML only for fields that are non-empty and visible
-                let html = `
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div>
-                            ${leadData['contact-person-name']?.value && leadData['contact-person-name']?.visible ? `
-                                <p class="mb-1 fw-bold">
-                                    <span class="badge badge-center rounded-pill bg-label-secondary text-dark">
-                                        <i class="fa-solid fa-user"></i>
-                                    </span> ${leadData['contact-person-name'].value}
-                                </p>` : ''}
+        //disable next follow up date and time if lead status is dump
+        $(document).on("change", "#leadStatus", function () 
+        {
+            let selectedStatus = $("#leadStatus option:selected");
+            let statusVal = selectedStatus.val() ?? "";
 
-                            ${leadData['phone']?.value && leadData['phone']?.visible ? `
-                                <p class="mb-1">
-                                    <span class="badge badge-center rounded-pill bg-label-secondary text-dark">
-                                        <i class="fa-solid fa-phone"></i>
-                                    </span> ${leadData['phone'].value}
-                                </p>` : ''}
+            // Select related fields and labels
+            let $followUpDate = $("#nextFollowUpDate");
+            let $followUpTime = $("#nextFollowUpTime");
 
-                            ${leadData['email']?.value && leadData['email']?.visible ? `
-                                <p class="mb-1">
-                                    <a href="mailto:${leadData['email'].value}" class="text-decoration-none text-primary">
-                                        <span class="badge badge-center rounded-pill bg-label-secondary text-dark">
-                                            <i class="fa-solid fa-envelope"></i>
-                                        </span>
-                                        ${leadData['email'].value}
-                                    </a>
-                                </p>` : ''}
+            let $dateLabel = $("label[for='nextFollowUpDate']");
+            let $timeLabel = $("label[for='nextFollowUpTime']");
 
-                            ${leadData['whatsapp-number']?.value && leadData['whatsapp-number']?.visible ? `
-                                <p class="mb-1">
-                                    <span class="badge badge-center rounded-pill bg-label-secondary text-dark">
-                                        <i class="fa-brands fa-whatsapp"></i>
-                                    </span> ${leadData['whatsapp-number'].value}
-                                </p>` : ''}
-                        </div>
-                    </div>
-                `;
+            // Define the red star span selector
+            let redStar = "<span class=\"text-danger\">*</span>";
 
-                $('#leadDisplay').empty().append(html);
-            },
-            error: function(err) {
-                console.error('Fetch failed:', err);
+            if (statusVal.toLowerCase().includes("[dump]")) {
+                // Disable inputs
+                $followUpDate.prop("disabled", true).removeAttr("required").val("");
+                $followUpTime.prop("disabled", true).removeAttr("required").val("");
+
+                // Remove star spans from labels
+                $dateLabel.find("span.text-danger").remove();
+                $timeLabel.find("span.text-danger").remove();
+
+            } else {
+                // Re-enable inputs
+                $followUpDate.prop("disabled", false).attr("required", true);
+                $followUpTime.prop("disabled", false).attr("required", true);
+
+                // Re-add star spans if not present
+                if ($dateLabel.find("span.text-danger").length === 0) {
+                    $dateLabel.append(redStar);
+                }
+                if ($timeLabel.find("span.text-danger").length === 0) {
+                    $timeLabel.append(redStar);
+                }
             }
+
         });
 
-            //fetch lead added updated
-            $.ajax({
-                url: base_url + '/lead-list/fetch-lead-added-updated',
-                type: 'POST',
-                data: {branchLead_id : id},
-                success: function(res) 
-                {
-                    // console.log(res);
-
-                    $('.creaded_updated').empty();
-
-                    let html = `<div class="col-md-6">`;
-
-                    if (res.added_by_name && res.added_by_name.trim() !== '') {
-                        html += `<p class="mb-1 small">Added By: <strong>${res.added_by_name}</strong></p>`;
-                    }
-
-                    if (res.created_at && res.created_at.trim() !== '') {
-                        html += `<p class="mb-1 small">Added On: <strong>${res.created_at}</strong></p>`;
-                    }
-
-                    html += `</div>`;
-
-                    $('.creaded_updated').append(html);
-                },
-                error: function(err) {
-                    console.error('Fetch failed:', err);
-                }
-            });
 
 
-            // fetch lead status
-            $.ajax({
-                url: base_url + '/lead-list/fetch-lead-status',
-                type: 'GET',
-                success: function(res)
-                {
-                    // console.log(res);
-                    $("#leadStatus").empty();
-                    $("#leadStatus").append(`<option value="" selected disabled>Select Status</option>`);
-                    res.forEach(leadstatus => {
-                        $("#leadStatus").append(`
-                        <option value="${leadstatus.name}" data-parent_status_id="${leadstatus.parent_status_id}" data-child_status_id="${leadstatus.child_status_id}">${leadstatus.name}</option>
-                        `);
-                    });
-
-                },
-                error: function (err) {
-                    console.error('Fetch failed:', err);
-                },              
-            });
-            
-            // fetch call Purpose
-            $.ajax({
-                url: base_url + '/lead-list/fetch-call-purpose',
-                type: 'GET',
-                success: function(res)
-                {
-                    // console.log(res);
-                    $("#callPurpose").empty();
-                    $("#callPurpose").append(`<option value="" selected disabled>Select Call Purpose</option>`);
-                    res.forEach(callpurpose => {
-                        $("#callPurpose").append(`<option value="${callpurpose.id}">${callpurpose.name}</option>`);
-                    });
-                },
-                error: function (err) {
-                    console.error('Fetch failed:', err);
-                },
-            });
-
-            // fetch mood
-            $.ajax({
-                url: base_url + '/lead-list/fetch-mood',
-                type: 'GET',
-                success: function(res)
-                {
-                    // console.log(res);
-                    $("#mood").empty();
-                    $("#mood").append(`<option value="" selected disabled>Select Mood</option>`);
-                    res.forEach(mood => {
-                        $("#mood").append(`<option value="${mood.id}"  ${mood.name === 'Neutral' ? 'selected' : ''} >${mood.emoji} ${mood.name}</option>`);
-                    });
-                },
-                error: function (err) {
-                    console.error('Fetch failed:', err);
-                },
-            });
-
-            // fetch feedbackTag
-            $.ajax({
-                url: base_url + '/lead-list/fetch-feedback-tag',
-                type: 'GET',
-                success: function(res)
-                {
-                    // console.log(res);
-                    $("#feedbackTag").empty();
-                    res.forEach(feedbacktag => {
-                        $("#feedbackTag").append(`
-                            <option value="${feedbacktag.id}">${feedbacktag.name}</option>
-                        `);
-                    });
-                },
-                error: function (err) {
-                    console.error('Fetch failed:', err);
-                },
-            });
-
-            //disable next follow up date and time if lead status is dump
-            $(document).on("change", "#leadStatus", function () 
-            {
-                let selectedStatus = $("#leadStatus option:selected");
-                let statusVal = selectedStatus.val() ?? "";
-
-                // Select related fields and labels
-                let $followUpDate = $("#nextFollowUpDate");
-                let $followUpTime = $("#nextFollowUpTime");
-
-                let $dateLabel = $("label[for='nextFollowUpDate']");
-                let $timeLabel = $("label[for='nextFollowUpTime']");
-
-                // Define the red star span selector
-                let redStar = "<span class=\"text-danger\">*</span>";
-
-                if (statusVal.toLowerCase().includes("[dump]")) {
-                    // Disable inputs
-                    $followUpDate.prop("disabled", true).removeAttr("required").val("");
-                    $followUpTime.prop("disabled", true).removeAttr("required").val("");
-
-                    // Remove star spans from labels
-                    $dateLabel.find("span.text-danger").remove();
-                    $timeLabel.find("span.text-danger").remove();
-
-                } else {
-                    // Re-enable inputs
-                    $followUpDate.prop("disabled", false).attr("required", true);
-                    $followUpTime.prop("disabled", false).attr("required", true);
-
-                    // Re-add star spans if not present
-                    if ($dateLabel.find("span.text-danger").length === 0) {
-                        $dateLabel.append(redStar);
-                    }
-                    if ($timeLabel.find("span.text-danger").length === 0) {
-                        $timeLabel.append(redStar);
-                    }
-                }
-
-            });
-
-        
-       
-        });
-
-        //fetch lead activity count and sl no.
-        function fetchLeadActivityCount(id)
-        {
-            $.ajax({
-                url: base_url + '/lead-list/fetch-lead-activity-count',
-                type: 'POST',
-                data: {branchLead_id : id},
-                success: function(res)
-                {
-                    // console.log(res);
-                    $('.leadActivity').empty();
-                    $('.leadActivity').append(`
-                        Lead Activity(${res.lead_activity_count}) : <span class="badge bg-label-primary">${res.lead_no}</span>
-                    `);
-                }
-                ,
-                error: function(err)
-                {
-                    console.log(err);
-                }
-            });
-        }
-        
-        
         // fetch lead history from lead activity
-        $('.leadHistoryContainer').empty();
         function fetchLeadHistory(id) //BranchLead ID
         {
             $.ajax({
@@ -911,6 +600,28 @@ $controllerRoute = $module['controller_route'];
             });
         }
     
+        // fetch lead activity count and sl no.
+        function fetchLeadActivityCount(id) //BranchLead ID
+        {
+            $.ajax({
+                url: base_url + '/lead-list/fetch-lead-activity-count',
+                type: 'POST',
+                data: {branchLead_id : id},
+                success: function(res)
+                {
+                    // console.log(res);
+                    $('.leadActivity').empty();
+                    $('.leadActivity').append(`
+                        Lead Activity(${res.lead_activity_count}) : <span class="badge bg-label-primary">${res.lead_no}</span>
+                    `);
+                }
+                ,
+                error: function(err)
+                {
+                    console.log(err);
+                }
+            });
+        }
         
         // update lead status
         $(document).on('submit', '#updateLeadStatusForm', function(e)
@@ -937,43 +648,19 @@ $controllerRoute = $module['controller_route'];
                 contentType: false, // prevent jQuery from overriding the Content-Type header
                 success: function(res)
                 {
-                    // let alertHTML = '';
+                    if (res.success_message) 
+                    {
+                        fetchLeadHistory(id); //BranchLead ID
+                        fetchLeadActivityCount(id); //BranchLead ID
 
-                    if (res.success_message) {
-                        // alertHTML = `
-                        // <div class="alert alert-success alert-dismissible autohide" role="alert">
-                        //     <h6 class="alert-heading mb-1">
-                        //         <i class="bx bx-xs bx-desktop align-top me-2"></i>Success!
-                        //     </h6>
-                        //     <span>${res.success_message}</span>
-                        //     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        // </div>`;
                         toastAlert('success', res.success_message);
                     }
 
-                    if (res.error_message) {
-                        // alertHTML = `
-                        // <div class="alert alert-danger alert-dismissible autohide" role="alert">
-                        //     <h6 class="alert-heading mb-1">
-                        //         <i class="bx bx-xs bx-store align-top me-2"></i>Error!
-                        //     </h6>
-                        //     <span>${res.error_message}</span>
-                        //     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        // </div>`;
+                    if (res.error_message) 
+                    {
                         toastAlert('error', res.error_message);
                     }
 
-                    fetchLeadHistory(id); //BranchLead ID
-                    fetchLeadActivityCount(id); //BranchLead ID
-
-                    // $('.session-message-container').html(alertHTML);
-
-                    // Auto hide after 5s
-                    setTimeout(() => {
-                        $('.autohide').fadeOut('slow', function () {
-                            $(this).remove();
-                        });
-                    }, 6000);
 
                     $('#updateLeadStatusForm')[0].reset(); // resets basic form inputs
 
