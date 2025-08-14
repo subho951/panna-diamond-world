@@ -760,7 +760,9 @@ class UploadLeadController extends Controller
 
                             $cellsPerRow++;
                         }
-
+                        Helper::pr($campaignTypeId,0);
+                        Helper::pr($campaignId,0);
+                        die;
                         // branch lead table insertion
                         if(empty($campaignTypeId) && empty($campaignId)){
                             $branchLead                             = new BranchLead();
