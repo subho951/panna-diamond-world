@@ -678,15 +678,16 @@ class UploadLeadController extends Controller
                         }
                     }
 
-                    Helper::pr($csvRow);
+                    // Helper::pr($csvRow);
 
                     if (!empty($csvRow)) 
                     {
                         $cellsPerRow = 0;
+                        $campaignTypeId = [];
+                        $campaignId = [];
                         foreach ($csvRow as $cell)   //uploading 1 lead i.e., 1 csv row
                         {
                             $masterLead                     = new MasterLead();
-
                             $masterLead->header_id          = $cell["header_id"];
                             $masterLead->header_value       = $cell["header_value"];
                             $masterLead->upload_id          = $cell["upload_id"];
@@ -694,109 +695,106 @@ class UploadLeadController extends Controller
                             $masterLead->lead_no            = $cell["lead_no"];
                             $masterLead->created_by         = session('user_data')['user_id'];
                             $masterLead->updated_by         = session('user_data')['user_id'];
-
-                            $masterLead->save();
+                            $masterLead->save();                            
 
                             if ($cellsPerRow == 0) {
-                                $branchLead                             =  new BranchLead();
-                                
-                                if($uploadLead->campaign_type_id == 0 && $uploadLead->campaign_id == 0){
-                                    // if campaign type & campaign not selected in upload form
-                                    echo $cell["header_id"];
-                                    if($cell["header_id"] == 15){
-                                        if($cell["header_value"] == ''){
-                                            $branchLead->campaign_type_id           = $uploadLead->campaign_type_id;
-                                            $branchLead->campaign_id                = $uploadLead->campaign_id;
+                                $master_lead_id = $masterLead->id;
+                                $master_lead_sl_no = $cell["sl_no"];
+                                $master_lead_upload_id = $cell["upload_id"];
+                            }
+
+                            if($uploadLead->campaign_type_id == 0 && $uploadLead->campaign_id == 0){
+                                if($cell["header_id"] == 15){
+                                    if($cell["header_value"] == ''){
+                                        $campaignTypeId[]               = $uploadLead->campaign_type_id;
+                                        $campaignId[]                   = $uploadLead->campaign_id;
+                                    } else {
+                                        $campaign_type_id   = 5;
+                                        $campaign_value     = $cell["header_value"];
+                                        $checkCampaign      = Campaign::select('id')->where('campaign_type_id', '=', $campaign_type_id)->where('name', '=', strtoupper($campaign_value))->first();
+                                        if($checkCampaign){
+                                            $campaign_id = $checkCampaign->id;
                                         } else {
-                                            $campaign_type_id   = 5;
-                                            $campaign_value     = $cell["header_value"];
-                                            $checkCampaign      = Campaign::select('id')->where('campaign_type_id', '=', $campaign_type_id)->where('name', '=', strtoupper($campaign_value))->first();
-                                            if($checkCampaign){
-                                                $campaign_id = $checkCampaign->id;
-                                            } else {
-                                                $fieldsCampaign = [
-                                                    'campaign_type_id'              => $campaign_type_id,
-                                                    'name'                          => strtoupper($campaign_value),
-                                                    'year'                          => date('Y'),
-                                                    'slug'                          => strtolower(Helper::clean($campaign_value)),
-                                                    'start_date'                    => date('Y-m-d'),
-                                                    'end_date'                      => date('Y-m-d', strtotime('+1 year')),
-                                                    'status'                        => 1
-                                                ];
-                                                $campaign_id = Campaign::insertGetId($fieldsCampaign);
-                                            }
-                                            $branchLead->campaign_type_id           = $campaign_type_id;
-                                            $branchLead->campaign_id                = $campaign_id;
+                                            $fieldsCampaign = [
+                                                'campaign_type_id'              => $campaign_type_id,
+                                                'name'                          => strtoupper($campaign_value),
+                                                'year'                          => date('Y'),
+                                                'slug'                          => strtolower(Helper::clean($campaign_value)),
+                                                'start_date'                    => date('Y-m-d'),
+                                                'end_date'                      => date('Y-m-d', strtotime('+1 year')),
+                                                'status'                        => 1
+                                            ];
+                                            $campaign_id = Campaign::insertGetId($fieldsCampaign);
                                         }
-
-                                        $branchLead->upload_id                  = $masterLead->upload_id;
-                                        $branchLead->master_lead_id             = $masterLead->id;
-                                        $branchLead->lead_sl_no                 = $masterLead->sl_no;
-                                        $branchLead->branch_id                  = $uploadLead->branch_id;
-                                        $branchLead->assigned_telecaller_id     = 0;
-                                        $branchLead->created_by                 = session('user_data')['user_id'];
-                                        $branchLead->updated_by                 = session('user_data')['user_id'];
-
-                                        $branchLead->save();
-                                        $totalLeadAssignedToTelecaller++;
+                                        $campaignTypeId[]               = $campaign_type_id;
+                                        $campaignId[]                   = $campaign_id;
                                     }
-                                    if($cell["header_id"] == 16){
-                                        if($cell["header_value"] == ''){
-                                            $branchLead->campaign_type_id           = $uploadLead->campaign_type_id;
-                                            $branchLead->campaign_id                = $uploadLead->campaign_id;
+                                }
+                                if($cell["header_id"] == 16){
+                                    if($cell["header_value"] == ''){
+                                        $campaignTypeId[]               = $uploadLead->campaign_type_id;
+                                        $campaignId[]                   = $uploadLead->campaign_id;
+                                    } else {
+                                        $campaign_type_id   = 6;
+                                        $campaign_value     = $cell["header_value"];
+                                        $checkCampaign      = Campaign::select('id')->where('campaign_type_id', '=', $campaign_type_id)->where('name', '=', strtoupper($campaign_value))->first();
+                                        if($checkCampaign){
+                                            $campaign_id = $checkCampaign->id;
                                         } else {
-                                            $campaign_type_id   = 6;
-                                            $campaign_value     = $cell["header_value"];
-                                            $checkCampaign      = Campaign::select('id')->where('campaign_type_id', '=', $campaign_type_id)->where('name', '=', strtoupper($campaign_value))->first();
-                                            if($checkCampaign){
-                                                $campaign_id = $checkCampaign->id;
-                                            } else {
-                                                $fieldsCampaign = [
-                                                    'campaign_type_id'              => $campaign_type_id,
-                                                    'name'                          => strtoupper($campaign_value),
-                                                    'year'                          => date('Y'),
-                                                    'slug'                          => strtolower(Helper::clean($campaign_value)),
-                                                    'start_date'                    => date('Y-m-d'),
-                                                    'end_date'                      => date('Y-m-d', strtotime('+1 year')),
-                                                    'status'                        => 1
-                                                ];
-                                                $campaign_id = Campaign::insertGetId($fieldsCampaign);
-                                            }
-                                            $branchLead->campaign_type_id           = $campaign_type_id;
-                                            $branchLead->campaign_id                = $campaign_id;
+                                            $fieldsCampaign = [
+                                                'campaign_type_id'              => $campaign_type_id,
+                                                'name'                          => strtoupper($campaign_value),
+                                                'year'                          => date('Y'),
+                                                'slug'                          => strtolower(Helper::clean($campaign_value)),
+                                                'start_date'                    => date('Y-m-d'),
+                                                'end_date'                      => date('Y-m-d', strtotime('+1 year')),
+                                                'status'                        => 1
+                                            ];
+                                            $campaign_id = Campaign::insertGetId($fieldsCampaign);
                                         }
-
-                                        $branchLead->upload_id                  = $masterLead->upload_id;
-                                        $branchLead->master_lead_id             = $masterLead->id;
-                                        $branchLead->lead_sl_no                 = $masterLead->sl_no;
-                                        $branchLead->branch_id                  = $uploadLead->branch_id;
-                                        $branchLead->assigned_telecaller_id     = 0;
-                                        $branchLead->created_by                 = session('user_data')['user_id'];
-                                        $branchLead->updated_by                 = session('user_data')['user_id'];
-                                        Helper::pr($branchLead);
-                                        $branchLead->save();
-                                        $totalLeadAssignedToTelecaller++;
+                                        $campaignTypeId[]               = $campaign_type_id;
+                                        $campaignId[]                   = $campaign_id;
                                     }
-                                } else {
-                                    // if campaign type & campaign selected in upload form
-                                    $branchLead->campaign_type_id           = $uploadLead->campaign_type_id;
-                                    $branchLead->campaign_id                = $uploadLead->campaign_id;
-                                    $branchLead->upload_id                  = $masterLead->upload_id;
-                                    $branchLead->master_lead_id             = $masterLead->id;
-                                    $branchLead->lead_sl_no                 = $masterLead->sl_no;
-                                    $branchLead->branch_id                  = $uploadLead->branch_id;
-                                    $branchLead->assigned_telecaller_id     = 0;
-                                    $branchLead->created_by                 = session('user_data')['user_id'];
-                                    $branchLead->updated_by                 = session('user_data')['user_id'];
-
-                                    $branchLead->save();
-                                    $totalLeadAssignedToTelecaller++;
                                 }
                             }
 
                             $cellsPerRow++;
                         }
-                        
+
+                        // branch lead table insertion
+                        if(empty($campaignTypeId) && empty($campaignId)){
+                            $branchLead                             = new BranchLead();
+                            $branchLead->upload_id                  = $master_lead_upload_id;
+                            $branchLead->master_lead_id             = $master_lead_id;
+                            $branchLead->lead_sl_no                 = $master_lead_sl_no;
+                            $branchLead->branch_id                  = $uploadLead->branch_id;
+                            $branchLead->campaign_type_id           = $uploadLead->campaign_type_id;
+                            $branchLead->campaign_id                = $uploadLead->campaign_id;
+                            $branchLead->assigned_telecaller_id     = 0;
+                            $branchLead->created_by                 = session('user_data')['user_id'];
+                            $branchLead->updated_by                 = session('user_data')['user_id'];
+                            
+                            $branchLead->save();
+                            $totalLeadAssignedToTelecaller++;
+                        } else {
+                            if(!empty($campaignTypeId)){
+                                for($c=0;$c<count($campaignTypeId);$c++){
+                                    $branchLead                             = new BranchLead();
+                                    $branchLead->upload_id                  = $master_lead_upload_id;
+                                    $branchLead->master_lead_id             = $master_lead_id;
+                                    $branchLead->lead_sl_no                 = $master_lead_sl_no;
+                                    $branchLead->branch_id                  = $uploadLead->branch_id;
+                                    $branchLead->campaign_type_id           = $campaignTypeId[$c];
+                                    $branchLead->campaign_id                = $campaignId[$c];
+                                    $branchLead->assigned_telecaller_id     = 0;
+                                    $branchLead->created_by                 = session('user_data')['user_id'];
+                                    $branchLead->updated_by                 = session('user_data')['user_id'];
+                                    
+                                    $branchLead->save();
+                                    $totalLeadAssignedToTelecaller++;
+                                }
+                            }
+                        }                        
                     }
 
                     if($isDuplicatePhone || $isDuplicateWhatsapp)
@@ -842,100 +840,112 @@ class UploadLeadController extends Controller
                                 $upload_id_check = BranchLead::where('master_lead_id', '=', $duplicateData->id)->where('upload_id', '=' , $lastInsertId)->where('status', '!=', 3)->exists();
                                 
                                 if(!$upload_id_check) // !false
-                                {                                 
-                                    $branchLead =  new BranchLead();
-    
-                                    // if($uploadLead->campaign_type_id <= 0 && $uploadLead->campaign_id <= 0){
-                                    //     // if campaign type & campaign not selected in upload form
-                                    //     if($cell["header_id"] == 15){
-                                    //         if($cell["header_value"] == ''){
-                                    //             $branchLead->campaign_type_id           = $uploadLead->campaign_type_id;
-                                    //             $branchLead->campaign_id                = $uploadLead->campaign_id;
-                                    //         } else {
-                                    //             $campaign_type_id   = 5;
-                                    //             $campaign_value     = $cell["header_value"];
-                                    //             $checkCampaign      = Campaign::select('id')->where('campaign_type_id', '=', $campaign_type_id)->where('name', '=', strtoupper($campaign_value))->first();
-                                    //             if($checkCampaign){
-                                    //                 $campaign_id = $checkCampaign->id;
-                                    //             } else {
-                                    //                 $fieldsCampaign = [
-                                    //                     'campaign_type_id'              => $campaign_type_id,
-                                    //                     'name'                          => strtoupper($campaign_value),
-                                    //                     'year'                          => date('Y'),
-                                    //                     'slug'                          => strtolower(Helper::clean($campaign_value)),
-                                    //                     'start_date'                    => date('Y-m-d'),
-                                    //                     'end_date'                      => date('Y-m-d', strtotime('+1 year')),
-                                    //                     'status'                        => 1
-                                    //                 ];
-                                    //                 $campaign_id = Campaign::insertGetId($fieldsCampaign);
-                                    //             }
-                                    //             $branchLead->campaign_type_id           = $campaign_type_id;
-                                    //             $branchLead->campaign_id                = $campaign_id;
-                                    //         }
+                                {
+                                    $cellsPerRow = 0;
+                                    $campaignTypeId = [];
+                                    $campaignId = [];
+                                    
+                                    $getMasterLeadDatas = MasterLead::select('id', 'header_id', 'header_value', 'sl_no')->where('sl_no', '=', $sl_no_Duplicate)->get();
+                                    if($getMasterLeadDatas){
+                                        foreach($getMasterLeadDatas as $getMasterLeadData){
+                                            if ($cellsPerRow == 0) {
+                                                $master_lead_id = $getMasterLeadData->id;
+                                                $master_lead_sl_no = $getMasterLeadData->sl_no;
+                                            }
 
-                                    //         $branchLead->upload_id                  = $masterLead->upload_id;
-                                    //         $branchLead->master_lead_id             = $masterLead->id;
-                                    //         $branchLead->lead_sl_no                 = $masterLead->sl_no;
-                                    //         $branchLead->branch_id                  = $uploadLead->branch_id;
-                                    //         $branchLead->assigned_telecaller_id     = 0;
-                                    //         $branchLead->created_by                 = session('user_data')['user_id'];
-                                    //         $branchLead->updated_by                 = session('user_data')['user_id'];
+                                            if($uploadLead->campaign_type_id == 0 && $uploadLead->campaign_id == 0){
+                                                if($getMasterLeadData->header_id == 15){
+                                                    if($getMasterLeadData->header_value == ''){
+                                                        $campaignTypeId[]               = $uploadLead->campaign_type_id;
+                                                        $campaignId[]                   = $uploadLead->campaign_id;
+                                                    } else {
+                                                        $campaign_type_id   = 5;
+                                                        $campaign_value     = $getMasterLeadData->header_value;
+                                                        $checkCampaign      = Campaign::select('id')->where('campaign_type_id', '=', $campaign_type_id)->where('name', '=', strtoupper($campaign_value))->first();
+                                                        if($checkCampaign){
+                                                            $campaign_id = $checkCampaign->id;
+                                                        } else {
+                                                            $fieldsCampaign = [
+                                                                'campaign_type_id'              => $campaign_type_id,
+                                                                'name'                          => strtoupper($campaign_value),
+                                                                'year'                          => date('Y'),
+                                                                'slug'                          => strtolower(Helper::clean($campaign_value)),
+                                                                'start_date'                    => date('Y-m-d'),
+                                                                'end_date'                      => date('Y-m-d', strtotime('+1 year')),
+                                                                'status'                        => 1
+                                                            ];
+                                                            $campaign_id = Campaign::insertGetId($fieldsCampaign);
+                                                        }
+                                                        $campaignTypeId[]               = $campaign_type_id;
+                                                        $campaignId[]                   = $campaign_id;
+                                                    }
+                                                }
+                                                if($getMasterLeadData->header_id == 16){
+                                                    if($getMasterLeadData->header_value == ''){
+                                                        $campaignTypeId[]               = $uploadLead->campaign_type_id;
+                                                        $campaignId[]                   = $uploadLead->campaign_id;
+                                                    } else {
+                                                        $campaign_type_id   = 6;
+                                                        $campaign_value     = $getMasterLeadData->header_value;
+                                                        $checkCampaign      = Campaign::select('id')->where('campaign_type_id', '=', $campaign_type_id)->where('name', '=', strtoupper($campaign_value))->first();
+                                                        if($checkCampaign){
+                                                            $campaign_id = $checkCampaign->id;
+                                                        } else {
+                                                            $fieldsCampaign = [
+                                                                'campaign_type_id'              => $campaign_type_id,
+                                                                'name'                          => strtoupper($campaign_value),
+                                                                'year'                          => date('Y'),
+                                                                'slug'                          => strtolower(Helper::clean($campaign_value)),
+                                                                'start_date'                    => date('Y-m-d'),
+                                                                'end_date'                      => date('Y-m-d', strtotime('+1 year')),
+                                                                'status'                        => 1
+                                                            ];
+                                                            $campaign_id = Campaign::insertGetId($fieldsCampaign);
+                                                        }
+                                                        $campaignTypeId[]               = $campaign_type_id;
+                                                        $campaignId[]                   = $campaign_id;
+                                                    }
+                                                }
+                                            }
 
-                                    //         $branchLead->save();
-                                    //         $totalLeadAssignedToTelecaller++;
-                                    //     }
-                                    //     if($cell["header_id"] == 16){
-                                    //         if($cell["header_value"] == ''){
-                                    //             $branchLead->campaign_type_id           = $uploadLead->campaign_type_id;
-                                    //             $branchLead->campaign_id                = $uploadLead->campaign_id;
-                                    //         } else {
-                                    //             $campaign_type_id   = 6;
-                                    //             $campaign_value     = $cell["header_value"];
-                                    //             $checkCampaign      = Campaign::select('id')->where('campaign_type_id', '=', $campaign_type_id)->where('name', '=', strtoupper($campaign_value))->first();
-                                    //             if($checkCampaign){
-                                    //                 $campaign_id = $checkCampaign->id;
-                                    //             } else {
-                                    //                 $fieldsCampaign = [
-                                    //                     'campaign_type_id'              => $campaign_type_id,
-                                    //                     'name'                          => strtoupper($campaign_value),
-                                    //                     'year'                          => date('Y'),
-                                    //                     'slug'                          => strtolower(Helper::clean($campaign_value)),
-                                    //                     'start_date'                    => date('Y-m-d'),
-                                    //                     'end_date'                      => date('Y-m-d', strtotime('+1 year')),
-                                    //                     'status'                        => 1
-                                    //                 ];
-                                    //                 $campaign_id = Campaign::insertGetId($fieldsCampaign);
-                                    //             }
-                                    //             $branchLead->campaign_type_id           = $campaign_type_id;
-                                    //             $branchLead->campaign_id                = $campaign_id;
-                                    //         }
+                                            $cellsPerRow++;
+                                        }
+                                    }
 
-                                    //         $branchLead->upload_id                  = $masterLead->upload_id;
-                                    //         $branchLead->master_lead_id             = $masterLead->id;
-                                    //         $branchLead->lead_sl_no                 = $masterLead->sl_no;
-                                    //         $branchLead->branch_id                  = $uploadLead->branch_id;
-                                    //         $branchLead->assigned_telecaller_id     = 0;
-                                    //         $branchLead->created_by                 = session('user_data')['user_id'];
-                                    //         $branchLead->updated_by                 = session('user_data')['user_id'];
-
-                                    //         $branchLead->save();
-                                    //         $totalLeadAssignedToTelecaller++;
-                                    //     }
-                                    // } else {
-                                    //     // if campaign type & campaign selected in upload form
-                                    //     $branchLead->campaign_type_id           = $uploadLead->campaign_type_id;
-                                    //     $branchLead->campaign_id                = $uploadLead->campaign_id;
-                                    //     $branchLead->upload_id                  = $masterLead->upload_id;
-                                    //     $branchLead->master_lead_id             = $masterLead->id;
-                                    //     $branchLead->lead_sl_no                 = $masterLead->sl_no;
-                                    //     $branchLead->branch_id                  = $uploadLead->branch_id;
-                                    //     $branchLead->assigned_telecaller_id     = 0;
-                                    //     $branchLead->created_by                 = session('user_data')['user_id'];
-                                    //     $branchLead->updated_by                 = session('user_data')['user_id'];
-
-                                    //     $branchLead->save();
-                                    //     $totalLeadAssignedToTelecaller++;
-                                    // }
+                                    // branch lead table insertion
+                                    if(empty($campaignTypeId) && empty($campaignId)){
+                                        $branchLead                             = new BranchLead();
+                                        $branchLead->upload_id                  = $uploadLead->id;
+                                        $branchLead->master_lead_id             = $master_lead_id;
+                                        $branchLead->lead_sl_no                 = $master_lead_sl_no;
+                                        $branchLead->branch_id                  = $uploadLead->branch_id;
+                                        $branchLead->campaign_type_id           = $uploadLead->campaign_type_id;
+                                        $branchLead->campaign_id                = $uploadLead->campaign_id;
+                                        $branchLead->assigned_telecaller_id     = 0;
+                                        $branchLead->created_by                 = session('user_data')['user_id'];
+                                        $branchLead->updated_by                 = session('user_data')['user_id'];
+                                        
+                                        $branchLead->save();
+                                        $totalLeadAssignedToTelecaller++;
+                                    } else {
+                                        if(!empty($campaignTypeId)){
+                                            for($c=0;$c<count($campaignTypeId);$c++){
+                                                $branchLead                             = new BranchLead();
+                                                $branchLead->upload_id                  = $uploadLead->id;
+                                                $branchLead->master_lead_id             = $master_lead_id;
+                                                $branchLead->lead_sl_no                 = $master_lead_sl_no;
+                                                $branchLead->branch_id                  = $uploadLead->branch_id;
+                                                $branchLead->campaign_type_id           = $campaignTypeId[$c];
+                                                $branchLead->campaign_id                = $campaignId[$c];
+                                                $branchLead->assigned_telecaller_id     = 0;
+                                                $branchLead->created_by                 = session('user_data')['user_id'];
+                                                $branchLead->updated_by                 = session('user_data')['user_id'];
+                                                
+                                                $branchLead->save();
+                                                $totalLeadAssignedToTelecaller++;
+                                            }
+                                        }
+                                    }
                                 }
                             }
 
@@ -963,8 +973,7 @@ class UploadLeadController extends Controller
                 $uploadLead->failed_upload = $skippedRows;
                 $uploadLead->total_assigned = $totalLeadAssignedToTelecaller;
                 $uploadLead->update();
-                die;
-
+                
                 return redirect($this->data['controller_route'])->with('success_message',  $insertedRows . ' Lead(s) Uploaded Successfully !!!' . ($skippedRows > 0 ? ' And ' . $skippedRows . ' Lead(s) Skipped !!!' : '') . ' And ' . $totalLeadAssignedToTelecaller . ' Lead(s) Assigned To Telecaller(s) !!!');
             } else {
                 return redirect()->back()->with('error_message', 'All Fields Required !!!');
