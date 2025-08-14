@@ -678,7 +678,7 @@ class UploadLeadController extends Controller
                         }
                     }
 
-                    // Helper::pr($csvRow);
+                    Helper::pr($csvRow);
 
                     if (!empty($csvRow)) 
                     {
@@ -699,9 +699,7 @@ class UploadLeadController extends Controller
 
                             if ($cellsPerRow == 0) {
                                 $branchLead                             =  new BranchLead();
-                                // echo $uploadLead->campaign_type_id . '//'.$uploadLead->campaign_id;
-                                // echo '<br><br>';
-                                // die;
+                                
                                 if($uploadLead->campaign_type_id == 0 && $uploadLead->campaign_id == 0){
                                     // if campaign type & campaign not selected in upload form
                                     echo $cell["header_id"];
