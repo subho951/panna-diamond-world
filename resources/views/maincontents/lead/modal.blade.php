@@ -6,20 +6,23 @@
     <div class="col-md-6">
         <!-- Lead Info and Edit -->
         <div class="row mb-2 creaded_updated">
-            {{-- <div class="col-md-6">
-                <p class="mb-1 small">Added By: <strong>Panna Admin</strong></p>
-                <p class="mb-1 small">Added On: <strong>Mar 03, 2025 03:23 PM</strong></p>
+            <div class="col-md-6">
+                @if(!empty($addedUpdated["added_by_name"]))
+                    <p class="mb-1 small">Added By: <strong>{{ $addedUpdated["added_by_name"] }}</strong></p>
+                @endif
+                @if(!empty($campaignArr['campaign_type_name']))
+                    <p class="mb-1 small">Campaign Type: <span class="badge bg-label-primary">{{ $campaignArr['campaign_type_name'] }}</span></p>
+                @endif
             </div>
             <div class="col-md-6">
-                <p class="mb-1 small">Updated By: <strong>Panna Admin</strong></p>
-                <p class="mb-1 small">Updated On: <strong>Mar 03, 2025 03:23 PM</strong></p>
-            </div> --}}
-            @if(!empty($addedUpdated["added_by_name"]))
-                <p class="mb-1 small">Added By: <strong>{{ $addedUpdated["added_by_name"] }}</strong></p>
-            @endif
-            @if(!empty($addedUpdated["created_at"]))
-                <p class="mb-1 small">Added On: <strong>{{ $addedUpdated["created_at"] }}</strong></p>
-            @endif
+                @if(!empty($addedUpdated["created_at"]))
+                    <p class="mb-1 small">Added On: <strong>{{ $addedUpdated["created_at"] }}</strong></p>
+                @endif
+                @if(!empty($campaignArr['campaign_name']))
+                    <p class="mb-1 small">Campaign: <span class="badge bg-label-primary">{{ $campaignArr['campaign_name'] }}</span></p>
+                @endif
+            </div>
+            
         </div>
     
         <!-- Lead Card -->
@@ -145,7 +148,9 @@
         <div class="row mb-3">
             <div class="col-md-12">
                 <label for="feedbackTag" class="form-label fw-bold">Feedback Tags </label>
-                <select id="feedbackTag" name="feedbackTag[]" class="select2 form-select border-primary text-primary" multiple>
+                {{-- <select id="feedbackTag" name="feedbackTag[]" class="select2 form-select border-primary text-primary" multiple> --}}
+                <select id="feedbackTag" name="feedbackTag[]" class="select2 form-select border-primary text-primary">
+                    <option value="" selected disabled>Select Feedback Tags</option> {{-- remove it if multiple --}}
                     @foreach($feedbackTagArr as $feedbacktag)
                         <option value="{{$feedbacktag['id']}}">{{$feedbacktag['name']}}</option>
                     @endforeach
