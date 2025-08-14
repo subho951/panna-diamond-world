@@ -699,10 +699,10 @@ class UploadLeadController extends Controller
 
                             if ($cellsPerRow == 0) {
                                 $branchLead                             =  new BranchLead();
-                                echo $uploadLead->campaign_type_id . '//'.$uploadLead->campaign_id;
-                                echo '<br><br>';
-                                die;
-                                if($uploadLead->campaign_type_id <= 0 && $uploadLead->campaign_id <= 0){
+                                // echo $uploadLead->campaign_type_id . '//'.$uploadLead->campaign_id;
+                                // echo '<br><br>';
+                                // die;
+                                if($uploadLead->campaign_type_id == 0 && $uploadLead->campaign_id == 0){
                                     // if campaign type & campaign not selected in upload form
                                     if($cell["header_id"] == 15){
                                         if($cell["header_value"] == ''){
