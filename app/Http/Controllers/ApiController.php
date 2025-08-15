@@ -1263,6 +1263,9 @@ class ApiController extends Controller
                                             }
                                         }
 
+                                        $getCampaignType    = CampaignType::select('name')->where('id', '=', $getActivity->campaign_type_id)->first();
+                                        $getCampaign        = CampaignType::select('name')->where('id', '=', $getActivity->campaign_id)->first();
+
                                         $last_activities[]         = [
                                             'sl_no'                 => $getActivity->lead_sl_no,
                                             'lead_no'               => (($getMasterLead)?$getMasterLead->lead_no:''),
@@ -1285,6 +1288,8 @@ class ApiController extends Controller
                                             'mood_name'             => (($getMood)?$getMood->name:''),
                                             'mood_emoji'            => (($getMood)?$getMood->emoji:''),
                                             'mood_color'            => (($getMood)?$getMood->color:''),
+                                            'campaign_type_name'    => (($getCampaignType)?$getCampaignType->name:''),
+                                            'campaign_name'         => (($getCampaign)?$getCampaign->name:''),
                                         ];
                                     }
                                 }
