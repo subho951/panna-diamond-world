@@ -1625,8 +1625,8 @@ class ApiController extends Controller
                                         'email'                 => $this->getHeaderValueByID($leadNo->lead_sl_no, 5),
                                         'phone_no'              => $this->getHeaderValueByID($leadNo->lead_sl_no, 4),
                                         'whatsapp_no'           => $this->getHeaderValueByID($leadNo->lead_sl_no, 14),
-                                        'is_vip'                => $this->getHeaderValueByID($leadNo->lead_sl_no, 17),
-                                        'is_purchased'          => $this->getHeaderValueByID($leadNo->lead_sl_no, 18),
+                                        'is_vip'                => (int) $this->getHeaderValueByID($leadNo->lead_sl_no, 17),
+                                        'is_purchased'          => (int) $this->getHeaderValueByID($leadNo->lead_sl_no, 18),
                                         'parent_status_id'      => (($leadNo->parent_status_id > 0)?$leadNo->parent_status_id:12),
                                         'parent_status_name'    => (($getParentStatus)?$getParentStatus->name:'New'),
                                         'child_status_id'       => (($leadNo->child_status_id > 0)?$leadNo->child_status_id:13),
@@ -1640,7 +1640,7 @@ class ApiController extends Controller
                                     ];
                                 }
                             }
-                            
+
                             $apiStatus          = TRUE;
                             http_response_code(200);
                             $apiMessage         = 'Data Available !!!';
