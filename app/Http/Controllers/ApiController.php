@@ -1625,6 +1625,8 @@ class ApiController extends Controller
                                         'email'                 => $this->getHeaderValueByID($leadNo->lead_sl_no, 5),
                                         'phone_no'              => $this->getHeaderValueByID($leadNo->lead_sl_no, 4),
                                         'whatsapp_no'           => $this->getHeaderValueByID($leadNo->lead_sl_no, 14),
+                                        'is_vip'                => $this->getHeaderValueByID($leadNo->lead_sl_no, 17),
+                                        'is_purchased'          => $this->getHeaderValueByID($leadNo->lead_sl_no, 18),
                                         'parent_status_id'      => (($leadNo->parent_status_id > 0)?$leadNo->parent_status_id:12),
                                         'parent_status_name'    => (($getParentStatus)?$getParentStatus->name:'New'),
                                         'child_status_id'       => (($leadNo->child_status_id > 0)?$leadNo->child_status_id:13),
@@ -1639,8 +1641,6 @@ class ApiController extends Controller
                                 }
                             }
                             
-                            // Helper::pr($apiResponse);
-
                             $apiStatus          = TRUE;
                             http_response_code(200);
                             $apiMessage         = 'Data Available !!!';
@@ -1695,7 +1695,7 @@ class ApiController extends Controller
 
                         $sl_no                  = $requestData['sl_no'];
                         if($getUser){
-                            $leadNo                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
+                            $leadNo                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id')
                                                         ->where('status', '=', 1)
                                                         ->where('lead_sl_no', '=', $sl_no)
                                                         ->first();
@@ -1711,9 +1711,9 @@ class ApiController extends Controller
                                 }
                                 $getParentStatusMain    = LeadStatus::select('name')->where('id', '=', $leadNo->parent_status_id)->first();
                                 $getChildStatusMain     = LeadStatus::select('name')->where('id', '=', $leadNo->child_status_id)->first();
-                                $getMasterLead      = MasterLead::select('lead_no')->where('sl_no', '=', $sl_no)->first();
-                                $getCampaignType    = CampaignType::select('name')->where('id', '=', $leadNo->campaign_type_id)->first();
-                                $getCampaign        = Campaign::select('name')->where('id', '=', $leadNo->campaign_id)->first();
+                                $getMasterLead          = MasterLead::select('lead_no')->where('sl_no', '=', $sl_no)->first();
+                                $getCampaignType        = CampaignType::select('name')->where('id', '=', $leadNo->campaign_type_id)->first();
+                                $getCampaign            = Campaign::select('name')->where('id', '=', $leadNo->campaign_id)->first();                                
 
                                 $activities         = [];
                                 $getActivities      = LeadActivity::where('lead_sl_no', '=', $sl_no)->orderBy('id', 'DESC')->get();
@@ -1741,6 +1741,9 @@ class ApiController extends Controller
                                             }
                                         }
 
+                                        $getCampaignTypeActivity    = CampaignType::select('name')->where('id', '=', $getActivity->campaign_type_id)->first();
+                                        $getCampaignActivity        = CampaignType::select('name')->where('id', '=', $getActivity->campaign_id)->first();
+
                                         $activities[]         = [
                                             'purpose_name'          => (($getPurpose)?$getPurpose->name:''),
                                             'comment'               => $getActivity->comment,
@@ -1757,6 +1760,8 @@ class ApiController extends Controller
                                             'mood_name'             => (($getMood)?$getMood->name:''),
                                             'mood_emoji'            => (($getMood)?$getMood->emoji:''),
                                             'mood_color'            => (($getMood)?$getMood->color:''),
+                                            'campaign_type_name'    => (($getCampaignTypeActivity)?$getCampaignTypeActivity->name:''),
+                                            'campaign_name'         => (($getCampaignActivity)?$getCampaignActivity->name:''),
                                         ];
                                     }
                                 }
@@ -1931,6 +1936,9 @@ class ApiController extends Controller
                                                     }
                                                 }
 
+                                                $getCampaignTypeActivity    = CampaignType::select('name')->where('id', '=', $getActivity->campaign_type_id)->first();
+                                                $getCampaignActivity        = CampaignType::select('name')->where('id', '=', $getActivity->campaign_id)->first();
+
                                                 $activities[]         = [
                                                     'purpose_name'          => (($getPurpose)?$getPurpose->name:''),
                                                     'comment'               => $getActivity->comment,
@@ -1947,6 +1955,8 @@ class ApiController extends Controller
                                                     'mood_name'             => (($getMood)?$getMood->name:''),
                                                     'mood_emoji'            => (($getMood)?$getMood->emoji:''),
                                                     'mood_color'            => (($getMood)?$getMood->color:''),
+                                                    'campaign_type_name'    => (($getCampaignTypeActivity)?$getCampaignTypeActivity->name:''),
+                                                    'campaign_name'         => (($getCampaignActivity)?$getCampaignActivity->name:''),
                                                 ];
                                             }
                                         }
