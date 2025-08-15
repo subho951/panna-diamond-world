@@ -30,6 +30,7 @@ use App\Http\Controllers\ApiController;
     Route::match(['get'], '/get-lead-status-list', [ApiController::class, 'getLeadStatusList']);
     Route::match(['get'], '/get-followup-option', [ApiController::class, 'getFollowupOption']);
     Route::match(['post'], '/lead-list', [ApiController::class, 'leadList']);
+    Route::match(['post'], '/lead-list-by-dob-anni', [ApiController::class, 'leadListByDobAnni']);
     Route::match(['post'], '/lead-details', [ApiController::class, 'leadDetail']);
     Route::match(['post'], '/update-lead-status', [ApiController::class, 'updateLeadStatus']);
     Route::match(['post'], '/update-lead-info', [ApiController::class, 'updateLeadInfo']);
