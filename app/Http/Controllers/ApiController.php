@@ -17,6 +17,7 @@ use App\Models\GeneralSetting;
 use App\Models\LeadStatus;
 use App\Models\LeadActivity;
 use App\Models\MasterLead;
+use App\Models\MasterLeadUpdateRequest;
 use App\Models\Mood;
 use App\Models\Page;
 use App\Models\Purpose;
@@ -2132,6 +2133,82 @@ class ApiController extends Controller
                 $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
             }
         /* update lead info */
+        /* update lead info request */
+            public function leadUpdateRequest(Request $request)
+            {
+                $apiStatus          = TRUE;
+                $apiMessage         = '';
+                $apiResponse        = [];
+                $apiExtraField      = '';
+                $apiExtraData       = '';
+                $requestData        = $request->all();
+                $requiredFields     = ['key', 'source', 'sl_no', 'request_comment'];
+                $headerData         = $request->header();
+                if (!$this->validateArray($requiredFields, $requestData)){
+                    $apiStatus          = FALSE;
+                    $apiMessage         = 'All Data Are Not Present !!!';
+                }
+                if($headerData['key'][0] == env('PROJECT_KEY')){
+                    $app_access_token           = $headerData['authorization'][0];
+                    $getTokenValue              = $this->tokenAuth($app_access_token);
+                    if($getTokenValue['status']){
+                        $uId                    = $getTokenValue['data'][1];
+                        $expiry                 = date('d/m/Y H:i:s', $getTokenValue['data'][4]);
+                        $getUser                = User::where('id', '=', $uId)->first();
+
+                        $sl_no                              = $requestData['sl_no'];
+                        $request_comment                    = $requestData['request_comment'];
+                        
+                        if($getUser){
+                            $leadNo                     = MasterLead::select('id', 'sl_no')->where('sl_no', '=', $sl_no)->first();
+                            if($leadNo){
+                                $fields = [
+                                    'sl_no'                         => $sl_no,
+                                    'assigned_telecaller_id'        => $uId,
+                                    'request_comment'               => $request_comment,
+                                ];
+                                MasterLeadUpdateRequest::insert($fields);
+
+                                /* mail will sent to admin */
+
+                                /* mail will sent to admin */
+
+                                $apiStatus          = TRUE;
+                                http_response_code(200);
+                                $apiMessage         = 'Lead Update Request Submitted To Admin Successfully !!!';
+                                $apiExtraField      = 'response_code';
+                                $apiExtraData       = http_response_code();
+                            } else {
+                                $apiStatus          = FALSE;
+                                http_response_code(200);
+                                $apiMessage         = 'Lead Not Found !!!';
+                                $apiExtraField      = 'response_code';
+                                $apiExtraData       = http_response_code();
+                            }
+                        } else {
+                            $apiStatus          = FALSE;
+                            http_response_code(200);
+                            $apiMessage         = 'User Not Found !!!';
+                            $apiExtraField      = 'response_code';
+                            $apiExtraData       = http_response_code();
+                        }
+                    } else {
+                        http_response_code(200);
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
+                        $apiStatus          = FALSE;
+                        $apiMessage         = 'Something Went Wrong !!!';
+                    }                                               
+                } else {
+                    http_response_code(200);
+                    $apiStatus          = FALSE;
+                    $apiMessage         = $this->getResponseCode(http_response_code());
+                    $apiExtraField      = 'response_code';
+                    $apiExtraData       = http_response_code();
+                }
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
+            }
+        /* update lead info request */
     /* after login lead */
     public function getHeaderValueByID($sl_no, $header_id){
         $header_value = '';

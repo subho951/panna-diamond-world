@@ -33,4 +33,5 @@ use App\Http\Controllers\ApiController;
     Route::match(['post'], '/lead-details', [ApiController::class, 'leadDetail']);
     Route::match(['post'], '/update-lead-status', [ApiController::class, 'updateLeadStatus']);
     Route::match(['post'], '/update-lead-info', [ApiController::class, 'updateLeadInfo']);
+    Route::match(['post'], '/lead-update-request', [ApiController::class, 'leadUpdateRequest']);
 /* after login */
