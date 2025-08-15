@@ -1199,6 +1199,7 @@ class ApiController extends Controller
                         if($getUser){
                             $assigned_telecaller_id = $uId;
                             $lead_count             = [];
+                            $other_count            = [];
                             $last_activities        = [];
                             $getParentStats         = LeadStatus::select('id', 'name', 'background_color', 'font_color')->where('status', '=', 1)->where('parent_id', '=', 0)->orderBy('rank', 'ASC')->get();
                             if($getParentStats){
@@ -1297,9 +1298,33 @@ class ApiController extends Controller
                                     }
                                 }
                             /* last 10 activities */
+                            
+                            $birthday_count     = 0;
+                            $anniversary_count  = 0;
+                            $current_date       = date('d-m');
+                            $birthday_count = DB::table('branch_leads')
+                                                                        ->join('master_leads', 'branch_leads.lead_sl_no', '=', 'master_leads.sl_no')
+                                                                        ->select('branch_leads.lead_sl_no')
+                                                                        ->where('master_leads.header_id', '=', 12)
+                                                                        ->where('master_leads.header_value', 'LIKE', '%' . $current_date . '%')
+                                                                        ->groupBy('master_leads.sl_no')
+                                                                        ->count();
+                            $anniversary_count = DB::table('branch_leads')
+                                                                        ->join('master_leads', 'branch_leads.lead_sl_no', '=', 'master_leads.sl_no')
+                                                                        ->select('branch_leads.lead_sl_no')
+                                                                        ->where('master_leads.header_id', '=', 13)
+                                                                        ->where('master_leads.header_value', 'LIKE', '%' . $current_date . '%')
+                                                                        ->groupBy('master_leads.sl_no')
+                                                                        ->count();
+
+                            $other_count            = [
+                                'birthday_count'        => $birthday_count,
+                                'anniversary_count'     => $anniversary_count,
+                            ];
 
                             $apiResponse = [
                                 'lead_count'        => $lead_count,
+                                'other_count'       => $other_count,
                                 'last_activities'   => $last_activities,
                             ];
 
