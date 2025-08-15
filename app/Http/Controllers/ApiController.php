@@ -1307,14 +1307,16 @@ class ApiController extends Controller
                                                                         ->select('branch_leads.lead_sl_no')
                                                                         ->where('master_leads.header_id', '=', 12)
                                                                         ->where('master_leads.header_value', 'LIKE', '%' . $current_date . '%')
-                                                                        ->groupBy('master_leads.sl_no')
+                                                                        ->where('branch_leads.assigned_telecaller_id', '=', $uId)
+                                                                        // ->groupBy('master_leads.sl_no')
                                                                         ->count();
                             $anniversary_count = DB::table('branch_leads')
                                                                         ->join('master_leads', 'branch_leads.lead_sl_no', '=', 'master_leads.sl_no')
                                                                         ->select('branch_leads.lead_sl_no')
                                                                         ->where('master_leads.header_id', '=', 13)
                                                                         ->where('master_leads.header_value', 'LIKE', '%' . $current_date . '%')
-                                                                        ->groupBy('master_leads.sl_no')
+                                                                        ->where('branch_leads.assigned_telecaller_id', '=', $uId)
+                                                                        // ->groupBy('master_leads.sl_no')
                                                                         ->count();
 
                             $other_count            = [
