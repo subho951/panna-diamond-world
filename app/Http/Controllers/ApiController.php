@@ -1688,13 +1688,23 @@ class ApiController extends Controller
                                     $getCampaignType    = CampaignType::select('name')->where('id', '=', $leadNo->campaign_type_id)->first();
                                     $getCampaign        = Campaign::select('name')->where('id', '=', $leadNo->campaign_id)->first();
 
+                                    $dob_anni_curr_date = date('d-m');
                                     /* birthday check */
                                         $getBirthday = $this->getHeaderValueByID($leadNo->lead_sl_no, 12); // 15-08-2000
                                         // Create DateTime object (specify format of input)
                                         $dob = DateTime::createFromFormat("d-m-Y", $getBirthday);
                                         // Format only day and month
-                                        echo $dob->format("d-m");die;  // Output: 15-08
+                                        $formattedDOB = $dob->format("d-m");  // Output: 15-08
+                                        $is_birthday = ($formattedDOB == $dob_anni_curr_date) ? 1 : 0;
                                     /* birthday check */
+                                    /* anniversary check */
+                                        $getAnniversary = $this->getHeaderValueByID($leadNo->lead_sl_no, 13); // 15-08-2000
+                                        // Create DateTime object (specify format of input)
+                                        $anni = DateTime::createFromFormat("d-m-Y", $getAnniversary);
+                                        // Format only day and month
+                                        $formattedANNI = $anni->format("d-m");  // Output: 15-08
+                                        $is_anniversary = ($formattedANNI == $dob_anni_curr_date) ? 1 : 0;
+                                    /* anniversary check */
 
                                     $apiResponse[]      = [
                                         'sl_no'                 => $leadNo->lead_sl_no,
@@ -1706,6 +1716,8 @@ class ApiController extends Controller
                                         'whatsapp_no'           => $this->getHeaderValueByID($leadNo->lead_sl_no, 14),
                                         'is_vip'                => (int) $this->getHeaderValueByID($leadNo->lead_sl_no, 17),
                                         'is_purchased'          => (int) $this->getHeaderValueByID($leadNo->lead_sl_no, 18),
+                                        'is_birthday'           => (int) $is_birthday,
+                                        'is_anniversary'        => (int) $is_anniversary,
                                         'parent_status_id'      => (($leadNo->parent_status_id > 0)?$leadNo->parent_status_id:12),
                                         'parent_status_name'    => (($getParentStatus)?$getParentStatus->name:'New'),
                                         'child_status_id'       => (($leadNo->child_status_id > 0)?$leadNo->child_status_id:13),
