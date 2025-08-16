@@ -33,6 +33,7 @@ use Auth;
 use Session;
 use Hash;
 use DB;
+use DateTime;
 use App\Libraries\CreatorJwt;
 use App\Libraries\JWT;
 
@@ -1686,6 +1687,14 @@ class ApiController extends Controller
                                     $getMasterLead      = MasterLead::select('lead_no')->where('sl_no', '=', $leadNo->lead_sl_no)->first();
                                     $getCampaignType    = CampaignType::select('name')->where('id', '=', $leadNo->campaign_type_id)->first();
                                     $getCampaign        = Campaign::select('name')->where('id', '=', $leadNo->campaign_id)->first();
+
+                                    /* birthday check */
+                                        $getBirthday = $this->getHeaderValueByID($leadNo->lead_sl_no, 12); // 15-08-2000
+                                        // Create DateTime object (specify format of input)
+                                        $dob = DateTime::createFromFormat("d-m-Y", $getBirthday);
+                                        // Format only day and month
+                                        echo $dob->format("d-m");die;  // Output: 15-08
+                                    /* birthday check */
 
                                     $apiResponse[]      = [
                                         'sl_no'                 => $leadNo->lead_sl_no,
