@@ -1347,7 +1347,7 @@ class ApiController extends Controller
 
                                     $today = date('Y-m-d');
                                     $campaign = [];
-                                    $campaign_rows = Campaign::select('id', 'name')->where('status', '=', 1)->where('campaign_type_id', '=', $campaignType->id)->where('start_date', '>=', $today)->where('end_date', '<=', $today)->get();
+                                    $campaign_rows = Campaign::select('id', 'name')->where('status', '=', 1)->where('campaign_type_id', '=', $campaignType->id)->where('start_date', '<=', $today)->where('end_date', '>=', $today)->get();
                                     if($campaign_rows){
                                         foreach($campaign_rows as $campaign_row){
                                             $campaign_count = BranchLead::
