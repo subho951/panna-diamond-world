@@ -271,10 +271,10 @@ $controllerRoute = $module['controller_route'];
                                                     onclick="return confirm('Are you sure ?')" title="Delete">
                                                     <i class="fa-solid fa-trash"></i>
                                                 </a>
-                                                <a href="" class="btn btn-sm btn-outline-dark mb-1"
+                                                {{-- <a href="" class="btn btn-sm btn-outline-dark mb-1"
                                                     title="Transfer Lead To Another User">
                                                     <i class="fas fa-exchange-alt"></i>
-                                                </a>
+                                                </a> --}}
                                                 @endif
                                             </td>
                                         </tr>

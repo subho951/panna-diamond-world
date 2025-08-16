@@ -449,7 +449,7 @@ $controllerRoute = $module['controller_route'];
                                         </div>
                                         @endif --}}
                                         
-                                        @if($leadHeaderRow->input_type == 'DATE')
+                                        {{-- @if($leadHeaderRow->input_type == 'DATE')
                                         <div class="col-md-6 mb-3">
                                             <label for="{{$leadHeaderRow->slug}}" class="form-label">{{$leadHeaderRow->name}} @if(in_array($leadHeaderRow->slug, $isRequiredArr))<small class="text-danger">*</small> @endif</label>
                                             @foreach($row as $key => $value)
@@ -482,7 +482,65 @@ $controllerRoute = $module['controller_route'];
                                             @endforeach
                                             <input value="{{$dateValue}}" type="date" class="form-control" id="{{$leadHeaderRow->slug}}" name="{{$leadHeaderRow->slug}}" @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif>
                                         </div>
+                                        @endif --}}
+
+                                        @if($leadHeaderRow->input_type == 'DATE')
+                                            <div class="col-md-6 mb-3">
+                                                <label for="{{$leadHeaderRow->slug}}" class="form-label">
+                                                    {{$leadHeaderRow->name}}
+                                                    @if(in_array($leadHeaderRow->slug, $isRequiredArr))
+                                                        <small class="text-danger">*</small>
+                                                    @endif
+                                                </label>
+
+                                                @php
+                                                    $header_value = '';
+                                                    foreach ($row as $value) {
+                                                        if (array_key_exists($leadHeaderRow->slug, $value)) {
+                                                            $header_value = $value[$leadHeaderRow->slug];
+                                                            break;
+                                                        }
+                                                    }
+
+                                                    $dateValue = '';
+                                                    if (!empty($header_value)) {
+                                                        $formats = ['Y-m-d', 'd-m-Y', 'Y/m/d', 'd/m/Y'];
+                                                        $parsed = null;
+
+                                                        foreach ($formats as $format) {
+                                                            try {
+                                                                $parsed = Carbon::createFromFormat($format, $header_value);
+                                                                break; // stop at first valid format
+                                                            } catch (\Exception $e) {
+                                                                continue;
+                                                            }
+                                                        }
+
+                                                        if (!$parsed) {
+                                                            try {
+                                                                $parsed = Carbon::parse($header_value);
+                                                            } catch (\Exception $e) {
+                                                                $parsed = null;
+                                                            }
+                                                        }
+
+                                                        if ($parsed) {
+                                                            $dateValue = $parsed->format('Y-m-d'); // standard HTML5 date input format
+                                                        }
+                                                    }
+                                                @endphp
+
+                                                <input 
+                                                    value="{{ $dateValue }}" 
+                                                    type="date" 
+                                                    class="form-control" 
+                                                    id="{{$leadHeaderRow->slug}}" 
+                                                    name="{{$leadHeaderRow->slug}}" 
+                                                    @if(in_array($leadHeaderRow->slug, $isRequiredArr)) required @endif
+                                                >
+                                            </div>
                                         @endif
+
                                         
                                         @if($leadHeaderRow->input_type == 'TIME')
                                         <div class="col-md-6 mb-3">

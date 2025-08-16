@@ -149,7 +149,7 @@ class IndividualLeadController extends Controller
                 /* user activity */
 
                 //inserting in master_leads and branch_leads
-                $sl_no = MasterLead::orderBy('id', 'desc')->value('sl_no') ?? 0;
+                $sl_no =  MasterLead::max('sl_no') ?? 0;
                 $sl_no++;
                 $lead_no = str_pad($sl_no, 8, '0', STR_PAD_LEFT);
 
