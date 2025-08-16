@@ -1691,18 +1691,12 @@ class ApiController extends Controller
                                     $dob_anni_curr_date = date('d-m');
                                     /* birthday check */
                                         $getBirthday = $this->getHeaderValueByID($leadNo->lead_sl_no, 12); // 15-08-2000
-                                        // Create DateTime object (specify format of input)
-                                        $dob = DateTime::createFromFormat("d-m-Y", $getBirthday);
-                                        // Format only day and month
-                                        $formattedDOB = $dob->format("d-m");  // Output: 15-08
+                                        $formattedDOB = substr($getBirthday, 0, 5);  // Output: 15-08
                                         $is_birthday = ($formattedDOB == $dob_anni_curr_date) ? 1 : 0;
                                     /* birthday check */
                                     /* anniversary check */
                                         $getAnniversary = $this->getHeaderValueByID($leadNo->lead_sl_no, 13); // 15-08-2000
-                                        // Create DateTime object (specify format of input)
-                                        $anni = DateTime::createFromFormat("d-m-Y", $getAnniversary);
-                                        // Format only day and month
-                                        $formattedANNI = $anni->format("d-m");  // Output: 15-08
+                                        $formattedANNI = substr($getAnniversary, 0, 5);  // Output: 15-08
                                         $is_anniversary = ($formattedANNI == $dob_anni_curr_date) ? 1 : 0;
                                     /* anniversary check */
 
