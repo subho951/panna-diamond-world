@@ -4,6 +4,7 @@ $controllerRoute = $module['controller_route'];
 ?>
 @extends('layouts.main')
 @section('content')
+
     <div class="container-fluid flex-grow-1 container-p-y">
         <div class="row g-6">
             <h4><?= $page_header ?></h4>
@@ -292,38 +293,70 @@ $controllerRoute = $module['controller_route'];
                                 
                             </div>
 
+
                             {{-- Pagination --}}
                             @if(!empty($totalLeadArr))
-                            @php
-                                $currentPage = $branchleadPaginated->currentPage();
-                                $lastPage = $branchleadPaginated->lastPage();
-                            @endphp
-                            <nav class="mt-2">
-                                <ul class="pagination pagination-sm justify-content-start">
-                                    {{-- Previous Button --}}
-                                    <li class="page-item {{ $currentPage == 1 ? 'disabled' : '' }}">
-                                        <a class="page-link" href="{{ $currentPage == 1 ? 'javascript:void(0);' : $branchleadPaginated->url($currentPage - 1) }}">
-                                            <i class="fa fa-angle-double-left fa-xs"></i>
-                                        </a>
-                                    </li>
-
-                                    {{-- Page Links --}}
-                                    @for ($i = 1; $i <= $lastPage; $i++)
-                                        <li class="page-item {{ $i == $currentPage ? 'active' : '' }}">
-                                            <a class="page-link" href="{{ $branchleadPaginated->url($i) }}">{{ $i }}</a>
+                                @php
+                                    $currentPage = $branchleadPaginated->currentPage();
+                                    $lastPage = $branchleadPaginated->lastPage();
+                                
+                                    // show 3 pages around current
+                                    $start = max(1, $currentPage - 1);
+                                    $end = min($lastPage, $start + 2);
+                                
+                                    // adjust if we’re at the last pages
+                                    if (($end - $start) < 2) {
+                                        $start = max(1, $end - 2);
+                                    }
+                                @endphp
+                        
+                                <nav class="mt-2">
+                                    <ul class="pagination pagination-sm">
+                                        
+                                        {{-- First --}}
+                                        <li class="page-item first {{ $currentPage == 1 ? 'disabled' : '' }}" 
+                                            title="First" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary">
+                                            <a class="page-link" href="{{ $currentPage == 1 ? 'javascript:void(0);' : $branchleadPaginated->url(1) }}">
+                                                <i class="fa fa-angle-double-left fa-xs"></i>
+                                            </a>
                                         </li>
-                                    @endfor
-
-                                    {{-- Next Button --}}
-                                    <li class="page-item {{ $currentPage == $lastPage ? 'disabled' : '' }}">
-                                        <a class="page-link" href="{{ $currentPage == $lastPage ? 'javascript:void(0);' : $branchleadPaginated->url($currentPage + 1) }}">
-                                            <i class="fa fa-angle-double-right fa-xs"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </nav>
+                                
+                                        {{-- Prev --}}
+                                        <li class="page-item prev {{ $currentPage == 1 ? 'disabled' : '' }}" 
+                                            title="Prev" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary">
+                                            <a class="page-link" href="{{ $currentPage == 1 ? 'javascript:void(0);' : $branchleadPaginated->previousPageUrl() }}">
+                                                <i class="fa-solid fa-chevron-left fa-xs"></i>
+                                            </a>
+                                        </li>
+                                
+                                        {{-- Page Numbers (max 3) --}}
+                                        @for ($i = $start; $i <= $end; $i++)
+                                            <li class="page-item {{ $i == $currentPage ? 'active' : '' }}">
+                                                <a class="page-link" href="{{ $branchleadPaginated->url($i) }}">{{ $i }}</a>
+                                            </li>
+                                        @endfor
+                                
+                                        {{-- Next --}}
+                                        <li class="page-item next {{ $currentPage == $lastPage ? 'disabled' : '' }}" 
+                                            title="Next" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary">
+                                            <a class="page-link" href="{{ $currentPage == $lastPage ? 'javascript:void(0);' : $branchleadPaginated->nextPageUrl() }}">
+                                                <i class="fa-solid fa-chevron-right fa-xs"></i>
+                                            </a>
+                                        </li>
+                                
+                                        {{-- Last --}}
+                                        <li class="page-item last {{ $currentPage == $lastPage ? 'disabled' : '' }}" 
+                                            title="Last" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary">
+                                            <a class="page-link" href="{{ $currentPage == $lastPage ? 'javascript:void(0);' : $branchleadPaginated->url($lastPage) }}">
+                                                <i class="fa fa-angle-double-right fa-xs"></i>
+                                            </a>
+                                        </li>
+                                
+                                    </ul>
+                                </nav>                        
                             @endif
 
+                                                      
                         </div>
 
                         <!-- call modal -->
