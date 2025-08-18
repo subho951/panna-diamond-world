@@ -373,6 +373,8 @@ $controllerRoute = $module['controller_route'];
         let baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
         const base_url = document.querySelector('meta[name="baseurl"]').getAttribute('content');
 
+        let modalClosed = false;
+        let leadStatusUpdated = false;
 
         let id = ""; // BranchLead ID, global scope
 
@@ -654,6 +656,8 @@ $controllerRoute = $module['controller_route'];
                         fetchLeadActivityCount(id); //BranchLead ID
 
                         toastAlert('success', res.success_message);
+
+                        leadStatusUpdated = true;
                     }
 
                     if (res.error_message) 
@@ -680,6 +684,26 @@ $controllerRoute = $module['controller_route'];
             });
             
         });
+
+
+        // if modal is closed and status has been successfully updated then refresh the page
+        let modalEl = document.getElementById("callModal");
+        // When modal is fully hidden
+        modalEl.addEventListener("hidden.bs.modal", function () {
+            
+            modalClosed = true;
+
+            if(modalClosed && leadStatusUpdated)
+            {
+                // console.log("Modal closed and lead status updated -> Page refreshed");
+                location.reload();
+            }
+
+            modalClosed = false;
+            leadStatusUpdated = false;
+            
+        });
+
 
     });
     </script>
