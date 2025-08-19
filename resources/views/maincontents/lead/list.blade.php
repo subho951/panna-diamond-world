@@ -249,33 +249,33 @@ $controllerRoute = $module['controller_route'];
                                                 </button>
                                                 
                                                 @if(session('user_data')['role_id'] != 3)
-                                                <br>
-                                                <a href="{{url($controllerRoute.'/edit/'. Helper::encoded($eachLeadArr->id))}}" class="btn btn-sm btn-primary mb-1" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                {{-- <a href="" class="btn btn-sm btn-info mb-1" title="View">
-                                                    <i class="fas fa-info-circle"></i>
-                                                </a> --}}
-                                                <br>
-
-                                                @if ($eachLeadArr->status == 1)
-                                                    <a href="{{url($controllerRoute.'/change-status/'. Helper::encoded($eachLeadArr->id))}}" class="btn btn-sm btn-success me-1 mb-1" onclick="return confirm('Do you want to deactivate this lead ?')" title="Deactivate">
-                                                        <i class="fa-solid fa-check"></i>
+                                                    <br>
+                                                    <a href="{{url($controllerRoute.'/edit/'. Helper::encoded($eachLeadArr->id))}}" class="btn btn-sm btn-primary mb-1" title="Edit">
+                                                        <i class="fas fa-edit"></i>
                                                     </a>
-                                                @else 
-                                                    <a href="{{url($controllerRoute.'/change-status/'. Helper::encoded($eachLeadArr->id))}}" class="btn btn-sm btn-warning me-1 mb-1" onclick="return confirm('Do you want to activate this lead ?')" title="Activate">
-                                                        <i class="fas fa-times"></i>
+                                                    <a href="{{url($controllerRoute.'/view-lead/'. Helper::encoded($eachLeadArr->id))}}" class="btn btn-sm btn-info mb-1" title="View">
+                                                        <i class="fas fa-info-circle"></i>
                                                     </a>
-                                                @endif
+                                                    <br>
 
-                                                <a href="{{url($controllerRoute.'/delete/'. Helper::encoded($eachLeadArr->id))}}" class="btn btn-sm btn-danger mb-1"
-                                                    onclick="return confirm('Are you sure ?')" title="Delete">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </a>
-                                                {{-- <a href="" class="btn btn-sm btn-outline-dark mb-1"
-                                                    title="Transfer Lead To Another User">
-                                                    <i class="fas fa-exchange-alt"></i>
-                                                </a> --}}
+                                                    @if ($eachLeadArr->status == 1)
+                                                        <a href="{{url($controllerRoute.'/change-status/'. Helper::encoded($eachLeadArr->id))}}" class="btn btn-sm btn-success me-1 mb-1" onclick="return confirm('Do you want to deactivate this lead ?')" title="Deactivate">
+                                                            <i class="fa-solid fa-check"></i>
+                                                        </a>
+                                                    @else 
+                                                        <a href="{{url($controllerRoute.'/change-status/'. Helper::encoded($eachLeadArr->id))}}" class="btn btn-sm btn-warning me-1 mb-1" onclick="return confirm('Do you want to activate this lead ?')" title="Activate">
+                                                            <i class="fas fa-times"></i>
+                                                        </a>
+                                                    @endif
+
+                                                    <a href="{{url($controllerRoute.'/delete/'. Helper::encoded($eachLeadArr->id))}}" class="btn btn-sm btn-danger mb-1"
+                                                        onclick="return confirm('Are you sure ?')" title="Delete">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </a>
+                                                    {{-- <a href="" class="btn btn-sm btn-outline-dark mb-1"
+                                                        title="Transfer Lead To Another User">
+                                                        <i class="fas fa-exchange-alt"></i>
+                                                    </a> --}}
                                                 @endif
                                             </td>
                                         </tr>
