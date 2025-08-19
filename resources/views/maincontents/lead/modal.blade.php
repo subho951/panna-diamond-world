@@ -3,7 +3,7 @@
 
 <div class="row">
     <!-- Left info side -->
-    <div class="col-md-6">
+    <div class="col-md-6 mb-3">
         <!-- Lead Info and Edit -->
         <div class="row mb-2 creaded_updated">
             <div class="col-md-6">
