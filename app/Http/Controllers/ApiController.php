@@ -1214,19 +1214,36 @@ class ApiController extends Controller
                                                                 ->where('parent_status_id', '=', $parent_id)
                                                                 ->count();
                                     $today          = date('Y-m-d');
-                                    $parent_label_1_count = BranchLead::
-                                                                where('status', '=', 1)
-                                                                ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
-                                                                ->where('parent_status_id', '=', $parent_id)
-                                                                ->where('next_followup_date', 'LIKE', '%' . $today . '%')
-                                                                ->count();
+                                    if($getParentStat->id != 12){
+                                        $parent_label_1_count = BranchLead::
+                                                                    where('status', '=', 1)
+                                                                    ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                                    ->where('parent_status_id', '=', $parent_id)
+                                                                    ->where('next_followup_date', 'LIKE', '%' . $today . '%')
+                                                                    ->count();
 
-                                    $parent_label_2_count = BranchLead::
-                                                                where('status', '=', 1)
-                                                                ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
-                                                                ->where('parent_status_id', '=', $parent_id)
-                                                                ->where('next_followup_date', '<', $today)
-                                                                ->count();
+                                        $parent_label_2_count = BranchLead::
+                                                                    where('status', '=', 1)
+                                                                    ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                                    ->where('parent_status_id', '=', $parent_id)
+                                                                    ->where('next_followup_date', '<', $today)
+                                                                    ->count();
+                                    } else {
+                                        $parent_label_1_count = BranchLead::
+                                                                    where('status', '=', 1)
+                                                                    ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                                    ->where('parent_status_id', '=', $parent_id)
+                                                                    ->where('created_at', 'LIKE', '%' . $today . '%')
+                                                                    ->count();
+
+                                        $parent_label_2_count = BranchLead::
+                                                                    where('status', '=', 1)
+                                                                    ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                                    ->where('parent_status_id', '=', $parent_id)
+                                                                    ->where('created_at', '<', $today)
+                                                                    ->count();
+                                    }
+                                    
 
                                     // $child_status = [];
                                     // $getChildStats = LeadStatus::select('id', 'name', 'background_color', 'font_color')->where('status', '=', 1)->where('parent_id', '=', $getParentStat->id)->orderBy('rank', 'ASC')->get();
