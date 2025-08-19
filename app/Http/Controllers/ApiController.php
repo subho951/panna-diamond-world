@@ -1236,6 +1236,10 @@ class ApiController extends Controller
                                         'parent_status_id'                  => $getParentStat->id,
                                         'parent_status_name'                => $getParentStat->name,
                                         'parent_lead_count'                 => $parentLeadCount,
+                                        'parent_label_1_name'               => 'Today',
+                                        'parent_label_1_count'              => $parentLeadCount,
+                                        'parent_label_2_name'               => 'Pending',
+                                        'parent_label_2_count'              => $parentLeadCount,
                                         // 'child_status'                      => $child_status,
                                     ];
                                 }
