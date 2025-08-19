@@ -1204,7 +1204,7 @@ class ApiController extends Controller
                             $last_activities        = [];
                             $campaigns              = [];
 
-                            $getParentStats         = LeadStatus::select('id', 'name', 'background_color', 'font_color')->where('status', '=', 1)->where('parent_id', '=', 0)->orderBy('rank', 'ASC')->get();
+                            $getParentStats         = LeadStatus::select('id', 'name', 'background_color', 'font_color')->where('status', '=', 1)->where('parent_id', '=', 0)->whereIn('id', [5, 12])->orderBy('rank', 'ASC')->get();
                             if($getParentStats){
                                 foreach($getParentStats as $getParentStat){
                                     $parent_id = (($getParentStat->id != 12)?$getParentStat->id:0);
