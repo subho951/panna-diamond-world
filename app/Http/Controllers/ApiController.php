@@ -1336,47 +1336,47 @@ class ApiController extends Controller
                                                                         // ->groupBy('master_leads.sl_no')
                                                                         ->count();
                             
-                            $campaignTypes = CampaignType::select('id', 'name')->where('status', '=', 1)->get();
-                            if($campaignTypes){
-                                foreach($campaignTypes as $campaignType){
-                                    $campaign_type_count = BranchLead::
-                                                                where('status', '=', 1)
-                                                                ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
-                                                                ->where('campaign_type_id', '=', $campaignType->id)
-                                                                ->count();
+                            // $campaignTypes = CampaignType::select('id', 'name')->where('status', '=', 1)->get();
+                            // if($campaignTypes){
+                            //     foreach($campaignTypes as $campaignType){
+                            //         $campaign_type_count = BranchLead::
+                            //                                     where('status', '=', 1)
+                            //                                     ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                            //                                     ->where('campaign_type_id', '=', $campaignType->id)
+                            //                                     ->count();
 
-                                    $today = date('Y-m-d');
-                                    $campaign = [];
-                                    $campaign_rows = Campaign::select('id', 'name')->where('status', '=', 1)->where('campaign_type_id', '=', $campaignType->id)->where('start_date', '<=', $today)->where('end_date', '>=', $today)->get();
-                                    if($campaign_rows){
-                                        foreach($campaign_rows as $campaign_row){
-                                            $campaign_count = BranchLead::
-                                                                where('status', '=', 1)
-                                                                ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
-                                                                ->where('campaign_type_id', '=', $campaignType->id)
-                                                                ->where('campaign_id', '=', $campaign_row->id)
-                                                                ->count();
-                                            $campaign[] = [
-                                                'campaign_id'          => $campaign_row->id,
-                                                'campaign_name'        => $campaign_row->name,
-                                                'campaign_count'       => $campaign_count,
-                                            ];
-                                        }
-                                    }
+                            //         $today = date('Y-m-d');
+                            //         $campaign = [];
+                            //         $campaign_rows = Campaign::select('id', 'name')->where('status', '=', 1)->where('campaign_type_id', '=', $campaignType->id)->where('start_date', '<=', $today)->where('end_date', '>=', $today)->get();
+                            //         if($campaign_rows){
+                            //             foreach($campaign_rows as $campaign_row){
+                            //                 $campaign_count = BranchLead::
+                            //                                     where('status', '=', 1)
+                            //                                     ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                            //                                     ->where('campaign_type_id', '=', $campaignType->id)
+                            //                                     ->where('campaign_id', '=', $campaign_row->id)
+                            //                                     ->count();
+                            //                 $campaign[] = [
+                            //                     'campaign_id'          => $campaign_row->id,
+                            //                     'campaign_name'        => $campaign_row->name,
+                            //                     'campaign_count'       => $campaign_count,
+                            //                 ];
+                            //             }
+                            //         }
 
-                                    $campaigns[]               = [
-                                        'campaign_type_id'          => $campaignType->id,
-                                        'campaign_type_name'        => $campaignType->name,
-                                        'campaign_type_count'       => $campaign_type_count,
-                                        'campaign'                  => $campaign,
-                                    ];
-                                }
-                            }
+                            //         $campaigns[]               = [
+                            //             'campaign_type_id'          => $campaignType->id,
+                            //             'campaign_type_name'        => $campaignType->name,
+                            //             'campaign_type_count'       => $campaign_type_count,
+                            //             'campaign'                  => $campaign,
+                            //         ];
+                            //     }
+                            // }
 
                             $other_count            = [
                                 'birthday_count'        => $birthday_count,
                                 'anniversary_count'     => $anniversary_count,
-                                'campaigns'             => $campaigns,
+                                // 'campaigns'             => $campaigns,
                             ];
 
                             $apiResponse = [
