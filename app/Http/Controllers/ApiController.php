@@ -1213,6 +1213,21 @@ class ApiController extends Controller
                                                                 ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
                                                                 ->where('parent_status_id', '=', $parent_id)
                                                                 ->count();
+                                    $today          = date('Y-m-d');
+                                    $parent_label_1_count = BranchLead::
+                                                                where('status', '=', 1)
+                                                                ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                                ->where('parent_status_id', '=', $parent_id)
+                                                                ->where('next_followup_date', 'LIKE', '%' . $today . '%')
+                                                                ->count();
+
+                                    $parent_label_2_count = BranchLead::
+                                                                where('status', '=', 1)
+                                                                ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                                ->where('parent_status_id', '=', $parent_id)
+                                                                ->where('next_followup_date', '<', $today)
+                                                                ->count();
+
                                     // $child_status = [];
                                     // $getChildStats = LeadStatus::select('id', 'name', 'background_color', 'font_color')->where('status', '=', 1)->where('parent_id', '=', $getParentStat->id)->orderBy('rank', 'ASC')->get();
                                     // if($getChildStats){
@@ -1237,9 +1252,9 @@ class ApiController extends Controller
                                         'parent_status_name'                => $getParentStat->name,
                                         'parent_lead_count'                 => $parentLeadCount,
                                         'parent_label_1_name'               => 'Today',
-                                        'parent_label_1_count'              => $parentLeadCount,
+                                        'parent_label_1_count'              => $parent_label_1_count,
                                         'parent_label_2_name'               => 'Pending',
-                                        'parent_label_2_count'              => $parentLeadCount,
+                                        'parent_label_2_count'              => $parent_label_2_count,
                                         // 'child_status'                      => $child_status,
                                     ];
                                 }
