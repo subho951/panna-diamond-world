@@ -1213,30 +1213,30 @@ class ApiController extends Controller
                                                                 ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
                                                                 ->where('parent_status_id', '=', $parent_id)
                                                                 ->count();
-                                    $child_status = [];
-                                    $getChildStats = LeadStatus::select('id', 'name', 'background_color', 'font_color')->where('status', '=', 1)->where('parent_id', '=', $getParentStat->id)->orderBy('rank', 'ASC')->get();
-                                    if($getChildStats){
-                                        foreach($getChildStats as $getChildStat){
-                                            $child_id = (($getChildStat->id != 13)?$getChildStat->id:0);
-                                            $childLeadCount = BranchLead::
-                                                                where('status', '=', 1)
-                                                                ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
-                                                                ->where('parent_status_id', '=', $parent_id)
-                                                                ->where('child_status_id', '=', $child_id)
-                                                                ->count();
-                                            $child_status[]            = [
-                                                'child_status_id'                  => $getChildStat->id,
-                                                'child_status_name'                => $getChildStat->name,
-                                                'child_lead_count'                 => $childLeadCount,
-                                            ];
-                                        }
-                                    }
+                                    // $child_status = [];
+                                    // $getChildStats = LeadStatus::select('id', 'name', 'background_color', 'font_color')->where('status', '=', 1)->where('parent_id', '=', $getParentStat->id)->orderBy('rank', 'ASC')->get();
+                                    // if($getChildStats){
+                                    //     foreach($getChildStats as $getChildStat){
+                                    //         $child_id = (($getChildStat->id != 13)?$getChildStat->id:0);
+                                    //         $childLeadCount = BranchLead::
+                                    //                             where('status', '=', 1)
+                                    //                             ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                    //                             ->where('parent_status_id', '=', $parent_id)
+                                    //                             ->where('child_status_id', '=', $child_id)
+                                    //                             ->count();
+                                    //         $child_status[]            = [
+                                    //             'child_status_id'                  => $getChildStat->id,
+                                    //             'child_status_name'                => $getChildStat->name,
+                                    //             'child_lead_count'                 => $childLeadCount,
+                                    //         ];
+                                    //     }
+                                    // }
 
                                     $lead_count[]            = [
                                         'parent_status_id'                  => $getParentStat->id,
                                         'parent_status_name'                => $getParentStat->name,
                                         'parent_lead_count'                 => $parentLeadCount,
-                                        'child_status'                      => $child_status,
+                                        // 'child_status'                      => $child_status,
                                     ];
                                 }
                             }
