@@ -1750,7 +1750,36 @@ class ApiController extends Controller
                                         $is_anniversary = ($formattedANNI == $dob_anni_curr_date) ? 1 : 0;
                                     /* anniversary check */
 
-                                    $lead_type = 0;
+                                    $lead_type      = 0;
+                                    $today          = date('Y-m-d');
+                                    $parent_id      = $leadNo->parent_status_id;
+                                    if($parent_id > 0){
+                                        if($leadNo->next_followup_date == $today){
+                                            $lead_type      = 0;
+                                        } else {
+                                            $lead_type      = 1;
+                                        }
+                                    } else {
+                                        $parent_label_1_count = BranchLead::
+                                                                    where('status', '=', 1)
+                                                                    ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                                    ->where('lead_sl_no', '=', $leadNo->lead_sl_no)
+                                                                    ->where('created_at', 'LIKE', '%' . $today . '%')
+                                                                    ->count();
+                                        if($parent_label_1_count > 0){
+                                            $lead_type      = 0;
+                                        }
+
+                                        $parent_label_2_count = BranchLead::
+                                                                    where('status', '=', 1)
+                                                                    ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                                    ->where('lead_sl_no', '=', $leadNo->lead_sl_no)
+                                                                    ->where('created_at', '<', $today)
+                                                                    ->count();
+                                        if($parent_label_2_count > 0){
+                                            $lead_type      = 1;
+                                        }
+                                    }
 
                                     $apiResponse[]      = [
                                         'sl_no'                 => $leadNo->lead_sl_no,
