@@ -1750,6 +1750,8 @@ class ApiController extends Controller
                                         $is_anniversary = ($formattedANNI == $dob_anni_curr_date) ? 1 : 0;
                                     /* anniversary check */
 
+                                    $lead_type = 0;
+
                                     $apiResponse[]      = [
                                         'sl_no'                 => $leadNo->lead_sl_no,
                                         'lead_no'               => (($getMasterLead)?$getMasterLead->lead_no:''),
@@ -1772,6 +1774,7 @@ class ApiController extends Controller
                                         'next_schedule'         => $next_schedule,
                                         'activity_count'        => $activity_count,
                                         'telecaller_name'       => $getUser->first_name . ' ' . $getUser->last_name,
+                                        'lead_type'             => $lead_type,
                                     ];
                                 }
                             }
