@@ -90,7 +90,7 @@ $controllerRoute = $module['controller_route'];
                             {{-- <h5 class="card-header fw-bold text-success p-2">Lead List</h5> --}}
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div>
-                                    <span class="card-header fw-bold text-success h5 ps-0">Lead List</span> 
+                                    {{-- <span class="card-header fw-bold text-success h5 ps-0">Lead List</span>  --}}
                                     @if(!empty($totalLeadArr))
                                         <label for="perPageSelect" class="form-label me-2" style="font-size: 12px;">Show</label>
                                         <select id="perPageSelect" class="form-select d-inline-block" style="width: 70px !important;padding: 2px !important;font-size: 12px;">
@@ -253,7 +253,7 @@ $controllerRoute = $module['controller_route'];
                                                     <a href="{{url($controllerRoute.'/edit/'. Helper::encoded($eachLeadArr->id))}}" class="btn btn-sm btn-primary mb-1" title="Edit">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    <a href="{{url($controllerRoute.'/view-lead/'. Helper::encoded($eachLeadArr->id))}}" class="btn btn-sm btn-info mb-1" title="View">
+                                                    <a target="_blank" href="{{url($controllerRoute.'/view-lead/'. Helper::encoded($eachLeadArr->id))}}" class="btn btn-sm btn-info mb-1" title="View">
                                                         <i class="fas fa-info-circle"></i>
                                                     </a>
                                                     <br>
@@ -427,7 +427,10 @@ $controllerRoute = $module['controller_route'];
                     // console.log(response);
                 },
                 error: function(xhr) {
+                    $('#callModal .modal-body').html('');
+                    $('#callModal').modal('hide'); // force hide
                     alert('Error loading lead data.');
+                    console.log(xhr);
                 }
             });
         });
