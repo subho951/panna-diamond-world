@@ -117,7 +117,7 @@ class LeadListController extends Controller
                 // validate format using regex: 24-hr format like "18:14"
                 if (preg_match('/^(2[0-3]|[01]?[0-9]):[0-5][0-9]$/', $time)) {
                     try {
-                        $next_followup_time = Carbon::createFromFormat('H:i', $time)->format('h:i A');
+                        $next_followup_time = Carbon::createFromFormat('H:i:s', $time)->format('h:i A');
                     } catch (\Exception $e) {
                         $next_followup_time = '';
                     }
@@ -720,7 +720,7 @@ class LeadListController extends Controller
             $leadHistory['note'] = $leadActivity->note ?? '';
 
             $leadHistory['next_followup_date'] = $leadActivity->next_followup_date ? Carbon::parse($leadActivity->next_followup_date)->format('M d, Y') : '';
-            $leadHistory['next_followup_time'] = $leadActivity->next_followup_time ? Carbon::createFromFormat('H:i', $leadActivity->next_followup_time)->format('h:i A') : '';
+            $leadHistory['next_followup_time'] = $leadActivity->next_followup_time ? Carbon::createFromFormat('H:i:s', $leadActivity->next_followup_time)->format('h:i A') : '';
             $leadHistory['last_call'] = $leadActivity->created_at ? $leadActivity->created_at->format('M d, Y h:i A') : '';
 
             $leadHistory['assigned_telecaller_name'] = ( User::where('id', '=', $leadActivity->assigned_telecaller_id)->where('status', '!=', 3)->value('first_name') . ' '. User::where('id', '=', $leadActivity->assigned_telecaller_id)->where('status', '!=', 3)->value('last_name') ) ?? '';
@@ -784,7 +784,7 @@ class LeadListController extends Controller
                 }
                 elseif($eachLeadHead->input_type == 'TIME')
                 {
-                    $eachLeadCellArr[$eachLeadHead->name] = $masterlead->header_value ? Carbon::createFromFormat('H:i', $masterlead->header_value)->format('h:i A') : '';
+                    $eachLeadCellArr[$eachLeadHead->name] = $masterlead->header_value ? Carbon::createFromFormat('H:i:s', $masterlead->header_value)->format('h:i A') : '';
                 }
                 else
                 {
@@ -942,7 +942,7 @@ class LeadListController extends Controller
                 $leadHistory['note'] = $leadActivity->note ?? '';
 
                 $leadHistory['next_followup_date'] = $leadActivity->next_followup_date ? Carbon::parse($leadActivity->next_followup_date)->format('M d, Y') : '';
-                $leadHistory['next_followup_time'] = $leadActivity->next_followup_time ? Carbon::createFromFormat('H:i', $leadActivity->next_followup_time)->format('h:i A') : '';
+                $leadHistory['next_followup_time'] = $leadActivity->next_followup_time ? Carbon::createFromFormat('H:i:s', $leadActivity->next_followup_time)->format('h:i A') : '';
                 $leadHistory['last_call'] = $leadActivity->created_at ? $leadActivity->created_at->format('M d, Y h:i A') : '';
 
                 $leadHistory['assigned_telecaller_name'] = ( User::where('id', '=', $leadActivity->assigned_telecaller_id)->where('status', '!=', 3)->value('first_name') . ' '. User::where('id', '=', $leadActivity->assigned_telecaller_id)->where('status', '!=', 3)->value('last_name') ) ?? '';
@@ -1025,7 +1025,7 @@ class LeadListController extends Controller
                     'feedback_tag_ids' => isset($request->feedbackTag) ? strip_tags(json_encode($request->feedbackTag)) : NULL,
                     'note' => isset($request->note) ? strip_tags($request->note) : NULL,
                     'next_followup_date' => isset($request->nextFollowUpDate) ? strip_tags($request->nextFollowUpDate) : NULL,
-                    'next_followup_time' => isset($request->nextFollowUpTime) ? strip_tags($request->nextFollowUpTime) : NULL,
+                    'next_followup_time' => isset($request->nextFollowUpTime) && !empty($request->nextFollowUpTime) ? Carbon::parse($request->nextFollowUpTime)->format('H:i:s') : NULL,
                     'created_by' => session('user_data')['user_id'],
                     'updated_by' => session('user_data')['user_id'],
                 ];
@@ -1104,7 +1104,7 @@ class LeadListController extends Controller
                 $leadHistory['note'] = $leadActivity->note ?? '';
 
                 $leadHistory['next_followup_date'] = $leadActivity->next_followup_date ? Carbon::parse($leadActivity->next_followup_date)->format('M d, Y') : '';
-                $leadHistory['next_followup_time'] = $leadActivity->next_followup_time ? Carbon::createFromFormat('H:i', $leadActivity->next_followup_time)->format('h:i A') : '';
+                $leadHistory['next_followup_time'] = $leadActivity->next_followup_time ? Carbon::createFromFormat('H:i:s', $leadActivity->next_followup_time)->format('h:i A') : '';
                 $leadHistory['last_call'] = $leadActivity->created_at ? $leadActivity->created_at->format('M d, Y h:i A') : '';
 
                 $leadHistory['assigned_telecaller_name'] = ( User::where('id', '=', $leadActivity->assigned_telecaller_id)->where('status', '!=', 3)->value('first_name') . ' '. User::where('id', '=', $leadActivity->assigned_telecaller_id)->where('status', '!=', 3)->value('last_name') ) ?? '';
