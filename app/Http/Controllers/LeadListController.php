@@ -23,6 +23,7 @@ use App\Models\State;
 use App\Models\Source;
 use App\Models\Purpose;
 use App\Models\Mood;
+use App\Models\LeadTransfer;
 use App\Models\FeedbackTag;
 use App\Services\SiteAuthService;
 use App\Helpers\Helper;
@@ -70,8 +71,8 @@ class LeadListController extends Controller
         {
             // $branchlead['lead_title'] = UploadLead::where('id', '=', $branchlead->upload_id)->where('status', '!=', 3)->value('title') ?? '';
             // $branchlead['filename'] = UploadLead::where('id', '=', $branchlead->upload_id)->where('status', '!=', 3)->value('filename') ?? '';
-            // $branchlead['campaign_type_name'] = CampaignType::where('id', '=', $branchlead->campaign_type_id)->where('status', '!=', 3)->value('name') ?? '';
-            // $branchlead['campaign_name'] = Campaign::where('id', '=', $branchlead->campaign_id)->where('status', '!=', 3)->value('name') ?? '';
+            $branchlead['campaign_type_name'] = CampaignType::where('id', '=', $branchlead->campaign_type_id)->where('status', '!=', 3)->value('name') ?? '';
+            $branchlead['campaign_name'] = Campaign::where('id', '=', $branchlead->campaign_id)->where('status', '!=', 3)->value('name') ?? '';
             $branchlead['branch_name'] = Branch::where('id', '=', $branchlead->branch_id)->where('status', '!=', 3)->value('name') ?? '';
             $branchlead['assigned_telecaller_name'] = ( User::where('id', '=', $branchlead->assigned_telecaller_id)->where('status', '!=', 3)->value('first_name') . ' '. User::where('id', '=', $branchlead->assigned_telecaller_id)->where('status', '!=', 3)->value('last_name') ) ?? '';
             $branchlead['added_by_name'] = ( User::where('id', '=', $branchlead->created_by)->where('status', '!=', 3)->value('first_name') . ' '. User::where('id', '=', $branchlead->created_by)->where('status', '!=', 3)->value('last_name') ) ?? '';
@@ -967,8 +968,6 @@ class LeadListController extends Controller
     }
     
 
-   
-
     public function updateLeadStatus(Request $request)
     {
         if ($request->isMethod('post'))
@@ -1132,5 +1131,121 @@ class LeadListController extends Controller
         }
     }
    
+
+    public function individualLeadTransferModalData(Request $request)
+    {
+        if ($request->isMethod('post'))
+        {
+            $id = Helper::decoded($request->branchLead_id); //BranchLead ID
+            $branchLeadArr = BranchLead::find($id);
+
+            // fetching telecallers on that branch except that telecaller
+            $telecallerData = [];
+            $telecallersOnThatBranch = User::where('id', '!=', $branchLeadArr->assigned_telecaller_id)->where('branch_id', '=', $branchLeadArr->branch_id)->where('status', '!=', 3)->get() ?? [];
+            foreach($telecallersOnThatBranch as $telecaller)
+            {
+                $telecallerData[] = [
+                    'telecaller_id' => $telecaller->id,
+                    'telecaller_name' => $telecaller->first_name . ' ' . $telecaller->last_name
+                ];
+            }
+
+
+            //total campaigns for the lead
+            $totalAssignedInBranchLead = BranchLead::where('lead_sl_no', '=', $branchLeadArr->lead_sl_no)->where('status', '!=', 3)->orderBy('id', 'desc')->get() ?? [];
+            $totalCampaigns = [];
+            foreach($totalAssignedInBranchLead as $assignedInBranchLead)
+            {
+                $totalCampaigns[] = [
+                    'campaign_type_name' => CampaignType::where('id', '=', $assignedInBranchLead->campaign_type_id)->where('status', '!=', 3)->value('name') ?? '',
+
+                    'campaign_name' => Campaign::where('id', '=', $assignedInBranchLead->campaign_id)->where('status', '!=', 3)->value('name') ?? '',
+
+                    'campaign_type_id' => $assignedInBranchLead->campaign_type_id,
+
+                    'campaign_id' => $assignedInBranchLead->campaign_id,
+
+                    // 'branchLead_id' => $assignedInBranchLead->id,
+
+                    'branchLead_id' => Helper::encoded($assignedInBranchLead->id),
+
+                    // 'added_by_name' => ( User::where('id', '=', $assignedInBranchLead->created_by)->where('status', '!=', 3)->value('first_name') . ' '. User::where('id', '=', $assignedInBranchLead->created_by)->where('status', '!=', 3)->value('last_name') ) ?? '',
+                    // 'updated_by_name' => ( User::where('id', '=', $assignedInBranchLead->updated_by)->where('status', '!=', 3)->value('first_name') . ' '. User::where('id', '=', $assignedInBranchLead->updated_by)->where('status', '!=', 3)->value('last_name') ) ?? '',
+                    // 'created_at' => $assignedInBranchLead->created_at?->format('M d, Y h:i A') ?? '',
+                    // 'updated_at' => $assignedInBranchLead->updated_at?->format('M d, Y h:i A') ?? '',
+                ];
+            }
+            
+            
+            $page_name  = 'lead.individual-lead-transfer-modal';
+            $html = view('maincontents.' . $page_name)->with(["telecallerData" => $telecallerData , "totalCampaigns" => $totalCampaigns , ])->render(); 
+
+            return response()->json([
+                'html' => $html
+            ]);
+
+            // return response()->json($totalCampaigns);
+        }
+    }
+
+    public function individualLeadTransfer(Request $request)
+    {
+        if ($request->isMethod('post'))
+        {
+            $validator = Validator::make($request->all(), [
+                'to_assigned_telecaller_id' => 'required',
+                'branchLead_id_Arr' => 'required|array|min:1',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Please Select The Field(s) !!!',
+                ]);
+            }
+            else
+            {
+                foreach($request->branchLead_id_Arr as $branchLead_id)
+                {
+                    $branchLeadArr = BranchLead::find(Helper::decoded($branchLead_id));
+
+                    $fields = [];
+                    $fields = [
+                        'upload_id' => $branchLeadArr->upload_id ,
+                        'master_lead_id' => $branchLeadArr->master_lead_id ,
+                        'lead_sl_no' => $branchLeadArr->lead_sl_no ,
+                        'branch_id' => $branchLeadArr->branch_id ,
+                        'campaign_type_id' => $branchLeadArr->campaign_type_id ,
+                        'campaign_id' => $branchLeadArr->campaign_id ,
+                        'from_assigned_telecaller_id' => $branchLeadArr->assigned_telecaller_id ,
+                        'to_assigned_telecaller_id' => $request->to_assigned_telecaller_id ,
+                        'created_by' => session('user_data')['user_id'],
+                        'updated_by' => session('user_data')['user_id'],
+                    ];
+
+                    // last parent_status_id and child_status_id from LeadActivity before transfer
+                    $lastLeadActivityRow = LeadActivity::where('lead_sl_no', '=', $branchLeadArr->lead_sl_no)->where('status', '!=', 3)->orderBy('id', 'desc')->first(); 
+                    $fields['parent_status_id'] = !empty($lastLeadActivityRow) ? $lastLeadActivityRow->parent_status_id : 0 ;
+                    $fields['child_status_id'] = !empty($lastLeadActivityRow) ? $lastLeadActivityRow->child_status_id : 0 ;
+                    
+                    LeadTransfer::insert($fields);
+
+                    BranchLead::where('id', '=', Helper::decoded($branchLead_id))->update([
+                        'assigned_telecaller_id' => $request->to_assigned_telecaller_id ,
+                        'updated_by' => session('user_data')['user_id'],
+                    ]);
+
+                }
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Lead Has Been Transferred Successfully !!!',
+                ]);
+
+            }
+
+            
+        }
+    }
     /* ajax request */
 }

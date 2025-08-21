@@ -40,7 +40,7 @@ $user_type = session('type');
            <li class="nav-item">
              <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-justified-email" aria-controls="navs-pills-justified-email" aria-selected="false"><i class="tf-icons bx bx-envelope me-1"></i> Email</button>
            </li>
-           <li class="nav-item">
+           {{-- <li class="nav-item">
              <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-justified-email-template" aria-controls="navs-pills-justified-email-template" aria-selected="false"><i class="tf-icons bx bx-message-square me-1"></i> Email Templates</button>
            </li>
            <!-- <li class="nav-item">
@@ -54,7 +54,7 @@ $user_type = session('type');
            </li>
            <li class="nav-item">
              <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-justified-seo" aria-controls="navs-pills-justified-seo" aria-selected="false"><i class="tf-icons bx bx-line-chart me-1"></i> SEO</button>
-           </li>
+           </li> --}}
          </ul>
          <div class="tab-content">
             <div class="tab-pane fade show active" id="navs-pills-justified-profile" role="tabpanel">

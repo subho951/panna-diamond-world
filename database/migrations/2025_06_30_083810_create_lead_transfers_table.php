@@ -20,7 +20,8 @@ return new class extends Migration
             $table->bigInteger('campaign_type_id');
             $table->bigInteger('campaign_id');
             $table->bigInteger('from_assigned_telecaller_id');
-            $table->bigInteger('parent_status_id');
+            $table->bigInteger('parent_status_id')->default(0);
+            $table->bigInteger('child_status_id')->default(0);
             $table->bigInteger('to_assigned_telecaller_id');
             $table->tinyInteger('status')->default(1);
             $table->integer('created_by')->default(1);
