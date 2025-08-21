@@ -1226,7 +1226,7 @@ class ApiController extends Controller
                                                                     where('status', '=', 1)
                                                                     ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
                                                                     ->where('parent_status_id', '=', $parent_id)
-                                                                    ->where('next_followup_date', '<', $today)
+                                                                    ->where('next_followup_date', '!=', $today)
                                                                     ->count();
                                     } else {
                                         $parent_label_1_count = BranchLead::
