@@ -37,7 +37,8 @@ $controllerRoute = $module['controller_route'];
                         {{-- <div id="table-overlay-loader" class="text-loader">
                   Fetching data. Please wait <span id="dot-animation">.</span>
                </div> --}}
-                        <h6 class="card-title">Filter</h6>
+
+                        {{-- <h6 class="card-title">Filter</h6>
                         <form class="mb-3">
                             <div class="row">
                                 <div class="col-md-4 mb-2">
@@ -67,24 +68,26 @@ $controllerRoute = $module['controller_route'];
                                     </button>
                                 </div>
                             </div>
-                        </form>
+                        </form> --}}
 
-                        <h6 class="card-title">Transfer Lead To</h6>
-                        <form class="mb-5">
-                            <div class="row">
-                                <div class="col-md-4 mb-2">
-                                    <select id="" class="select2 form-select" data-allow-clear="true" required>
-                                        <option value="" disable selected>Select User</option>
-
-                                    </select>
+                        <div class="card mb-3 p-3">
+                            <h6 class="card-title">Transfer Lead To</h6>
+                            <form class="">
+                                <div class="row">
+                                    <div class="col-md-4 mb-2">
+                                        <select id="" class="select2 form-select" data-allow-clear="true" required>
+                                            <option value="" disable selected>Select User</option>
+    
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <button type="button" class="btn btn-outline-dark rounded-pill">
+                                            <i class="fas fa-exchange-alt"></i>&nbsp;<span>Bulk Lead Transfer</span>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="col-md-4 mb-2">
-                                    <button type="button" class="btn btn-outline-dark rounded-pill">
-                                        <i class="fas fa-exchange-alt"></i>&nbsp;<span>Bulk Lead Transfer</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
 
                         <div class="card p-3">
                             {{-- <h5 class="card-header fw-bold text-success p-2">Lead List</h5> --}}
@@ -119,11 +122,12 @@ $controllerRoute = $module['controller_route'];
                                             <th>Details</th>
                                             <th>Last Activity</th>
                                             <th>Next Schedule</th>
-
-                                            @if(session('user_data')['role_id'] != 3)
-                                                <th>Assigned User | Branch</th>
-                                            @endif
-                                            
+                                            <th>
+                                                @if(session('user_data')['role_id'] != 3)
+                                                    Telecaller | Branch |
+                                                @endif
+                                                Campaign
+                                            </th>
                                             <th style="text-align: center">Actions</th>
                                         </tr>
                                     </thead>
@@ -221,22 +225,34 @@ $controllerRoute = $module['controller_route'];
                                                  </span>  <span>{{ $eachLeadArr->scheduled_date_time }}</span>{{--<span>Mar 03, 2025 03:23 PM</span> --}}
                                                  @endif
                                             </td>
-
-                                            @if(session('user_data')['role_id'] != 3)
                                             <td>
-                                                @if(!empty($eachLeadArr->assigned_telecaller_name))
-                                                    <span class="badge badge-center rounded-pill bg-label-danger mt-1">
-                                                        <i class="fa-solid fa-user-tie"></i>
-                                                    </span> <span>{{ $eachLeadArr->assigned_telecaller_name }}</span>
-                                                    <br>
+                                                @if(session('user_data')['role_id'] != 3)
+                                                
+                                                    @if(!empty($eachLeadArr->assigned_telecaller_name))
+                                                        <span class="badge badge-center rounded-pill bg-label-danger mt-1">
+                                                            <i class="fa-solid fa-user-tie"></i>
+                                                        </span> <span style="font-size: 11px;">{{ $eachLeadArr->assigned_telecaller_name }}</span>
+                                                        <br>
+                                                    @endif
+                                                    @if(!empty($eachLeadArr->branch_name))
+                                                        <span class="badge badge-center rounded-pill bg-label-secondary mt-1">
+                                                            <i class="fas fa-sitemap"></i>
+                                                        </span> <span style="font-size: 11px;">{{ $eachLeadArr->branch_name }}</span>
+                                                        <br>
+                                                    @endif
                                                 @endif
-                                                @if(!empty($eachLeadArr->branch_name))
-                                                    <span class="badge badge-center rounded-pill bg-label-secondary mt-1">
-                                                        <i class="fas fa-sitemap"></i>
-                                                    </span> <span>{{ $eachLeadArr->branch_name }}</span>
+
+                                                @if(!empty($eachLeadArr->campaign_type_name) && !empty($eachLeadArr->campaign_name))
+                                                   @if(!empty($eachLeadArr->campaign_type_name))
+                                                        <span class="badge bg-label-primary mt-1" style="font-size: 8px;">{{ $eachLeadArr->campaign_type_name }}</span>
+                                                        <br>
+                                                   @endif
+                                                   @if(!empty($eachLeadArr->campaign_name))
+                                                        <span class="badge bg-label-primary mt-1 mb-1" style="font-size: 8px;">{{ $eachLeadArr->campaign_name }}</span>
+                                                        
+                                                   @endif
                                                 @endif
                                             </td>
-                                            @endif
                                             
                                             {{-- Actions:   w.r.t. BranchLead ID --}}
                                             <td style="text-align: center">
@@ -272,10 +288,14 @@ $controllerRoute = $module['controller_route'];
                                                         onclick="return confirm('Are you sure ?')" title="Delete">
                                                         <i class="fa-solid fa-trash"></i>
                                                     </a>
-                                                    {{-- <a href="" class="btn btn-sm btn-outline-dark mb-1"
-                                                        title="Transfer Lead To Another User">
+                                                    <button
+                                                        class="individualLeadTransferButton btn btn-sm btn-outline-dark mb-1"
+                                                        title="Transfer Lead To Another Telecaller"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#individualLeadTransferModal"
+                                                        data-id="{{ Helper::encoded($eachLeadArr->id) }}">
                                                         <i class="fas fa-exchange-alt"></i>
-                                                    </a> --}}
+                                                    </button>
                                                 @endif
                                             </td>
                                         </tr>
@@ -372,7 +392,24 @@ $controllerRoute = $module['controller_route'];
                             </div>
                         </div>
                         <!-- call modal -->
-                        
+
+                        {{-- individual lead transfer modal --}}
+                        <div class="modal fade" id="individualLeadTransferModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Transfer Individual Lead</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+        
+                                    <div class="modal-body pb-0">
+                                        
+                                    </div>                             
+                                </div>
+                            </div>
+                        </div>
+                        {{-- individual lead transfer modal --}}
+
                     </div>
                 </div>
             </div>
@@ -741,8 +778,109 @@ $controllerRoute = $module['controller_route'];
         });
 
 
+        // individual lead transfer modal
+        $(document).on('click', '.individualLeadTransferButton', function() {
+            id = $(this).data('id'); // BranchLead ID
+
+            $.ajax({
+                url: base_url + '/lead-list/individual-lead-transfer-modal-data',
+                type: 'POST',
+                data: {
+                    branchLead_id: id
+                },
+                success: function(response) {
+                    $('#individualLeadTransferModal .modal-body').html(response.html);
+                    $('#individualLeadTransferModal').modal('show'); // force show
+
+                    // console.log(response);
+                },
+                error: function(xhr) {
+                    $('#individualLeadTransferModal .modal-body').html('');
+                    $('#individualLeadTransferModal').modal('hide'); // force hide
+                    alert('Error loading lead data.');
+                    console.log(xhr);
+                }
+            });
+        });
+
+        
+        // individual lead transfer
+        $(document).on('submit', '#individualLeadTransferForm', function (e) 
+        {
+            e.preventDefault();
+            const form = $(this);
+            const submitBtn = form.find('button[type="submit"]');
+            const telecallerSelect = form.find('select[name="to_assigned_telecaller_id"]');
+            const checkboxes = form.find('input[name="branchLead_id_Arr[]"][type="checkbox"]');
+
+            // campaignLength may be absent; fall back to checkbox count
+            const rawLen = form.find('input[name="campaignLength"]').val();
+            const campaignLength = Number.isFinite(parseInt(rawLen, 10))
+                ? parseInt(rawLen, 10)
+                : checkboxes.length;
+
+            // Validation logic
+            const telecallerVal = (telecallerSelect.val() || '').trim();
+            const checkedCount = checkboxes.filter(':checked').length;
+
+            if (!telecallerVal && campaignLength > 1 && checkedCount === 0) {
+                toastAlert('error', 'Please select a telecaller and at least one campaign !!!');
+                return;
+            }
+
+            if (!telecallerVal) {
+                toastAlert('error', 'Please select a telecaller !!!');
+                return;
+            }
+
+            if (campaignLength > 1 && checkedCount === 0) {
+                toastAlert('error', 'Please select at least one campaign !!!');
+                return;
+            }
+
+            
+            let leadTransferData = new FormData(this); 
+
+            $.ajax({
+                url: base_url + '/lead-list/individual-lead-transfer',
+                type: 'POST',
+                data: leadTransferData,
+                processData: false,
+                contentType: false, 
+                success: function (resp) 
+                {                 
+                    // console.log(resp);
+
+                    if(resp.status == 'success')
+                    {
+                        toastAlert('success', resp.message);
+                        $('#individualLeadTransferModal').modal('hide'); // force hide
+
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    }
+                    else if(resp.status == 'error')
+                    {
+                        toastAlert('error', resp.message);
+                    }
+                },
+                error: function (xhr) {
+                    // toastAlert('error', 'Failed to submit. Please try again.');
+                    console.log(xhr);
+                },
+
+            });
+        });
+
+        
     });
     </script>
+
+
+
+
+    
     <script>
         function toastAlert(type, message, redirectStatus = false, redirectUrl = ''){
           toastr.options = {
@@ -771,6 +909,8 @@ $controllerRoute = $module['controller_route'];
         // toastAlert('warning', 'warning message');
         // toastAlert('info', 'info message');
     </script>
+
+
 @endsection
 @section('scripts')
     <script src="<?= config('constants.admin_assets_url') ?>assets/js/lead-list.js"></script>

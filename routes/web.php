@@ -229,9 +229,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('lead-list/fetch-lead-added-updated', [LeadListController::class, 'fetchLeadAddedUpdated']);
         Route::post('lead-list/fetch-lead-activity-count', [LeadListController::class, 'fetchLeadActivityCount']);
         Route::get('lead-list/view-lead/{id}', [LeadListController::class, 'viewLead']);
-        // call modal
-        Route::post('lead-list/get-lead-call-data', [LeadListController::class, 'getLeadCallData']);
 
+        Route::post('lead-list/get-lead-call-data', [LeadListController::class, 'getLeadCallData']);
+        Route::post('lead-list/individual-lead-transfer-modal-data', [LeadListController::class, 'individualLeadTransferModalData']);
+        Route::post('lead-list/individual-lead-transfer', [LeadListController::class, 'individualLeadTransfer']);
     /* Lead List */
 
     /* Feedback Tags */
