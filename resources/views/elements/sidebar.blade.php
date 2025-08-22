@@ -8,8 +8,8 @@ $pageFunction = ((count($pageName)>1)?$pageName[1]:'');
 $user_id      = session('user_id');
 $role_id      = (($user)?$user->role_id:0);
 ?>
-<div class="app-brand demo">
-  <a href="<?=url('/dashboard')?>" class="app-brand-link">
+<div class="app-brand demo justify-content-between">
+  <a href="<?=url('/dashboard')?>" class="app-brand-link d-block d-xl-none">
     <!-- <span class="app-brand-logo demo">
       <svg width="32" height="22" viewBox="0 0 32 22" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
@@ -40,9 +40,9 @@ $role_id      = (($user)?$user->role_id:0);
     <!-- <span class="app-brand-text demo menu-text fw-bold"><?=Helper::getSettingValue('site_name')?></span> -->
   </a>
 
-  <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
-    <i class="fa fa-bars d-none d-xl-block"></i>
-    <i class="fa fa-times d-xl-none align-middle"></i>
+  <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large">
+    <i class="fa fa-bars d-none d-xl-block align-middle"></i>
+    <i class="fa fa-times d-block d-xl-none ti-md align-middle"></i>
   </a>
 </div>
 
