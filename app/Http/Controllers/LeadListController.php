@@ -823,7 +823,7 @@ class LeadListController extends Controller
                                                 ->orderBy('master_lead_update_requests.id', 'DESC')
                                                 ->get();
 
-        $data['transfers']          = LeadTransfer::where('lead_sl_nosl_no', '=', $branchLeadArr->lead_sl_no)->orderBy('id', 'DESC')->get();
+        $data['transfers']          = LeadTransfer::where('lead_sl_no', '=', $branchLeadArr->lead_sl_no)->orderBy('id', 'DESC')->get();
 
         $data['module'] = $this->data;
         $title                          = 'View ' . $this->data['title'];
