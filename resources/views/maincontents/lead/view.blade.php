@@ -1,6 +1,10 @@
 <?php
-
+use App\Models\LeadStatus;
+use App\Models\CampaignType;
+use App\Models\Campaign;
+use App\Models\User;
 use App\Helpers\Helper;
+use App\Models\LeadTransfer;
 
 $controllerRoute = $module['controller_route'];
 ?>
@@ -254,7 +258,46 @@ $controllerRoute = $module['controller_route'];
                         </div>
                         <div class="tab-pane fade" id="navs-pills-justified-password" role="tabpanel">
                             <h5>Transfer Details</h5>
-                            
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <td>#</td>
+                                        <td>Transfer From</td>
+                                        <td>Transfer To</td>
+                                        <td>Campaign Type</td>
+                                        <td>Campaign</td>
+                                        <td>Parent Status</td>
+                                        <td>Child Status</td>
+                                        <td>Transfer Timestamp</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php $sl_no=1 ; if($transfers){ foreach($transfers as $transfer){?>
+                                        <?php
+                                        $getTransferFrom = LeadTransfer::select('first_name', 'last_name')->where('id', '=', $transfer->from_assigned_telecaller_id)->first();
+                                        $getTransferTo = LeadTransfer::select('first_name', 'last_name')->where('id', '=', $transfer->to_assigned_telecaller_id)->first();
+                                        $getCampaignType = CampaignType::select('name')->where('id', '=', $transfer->campaign_type_id)->first();
+                                        $getCampaign = Campaign::select('name')->where('id', '=', $transfer->campaign_id)->first();
+                                        $getParentStatus = LeadStatus::select('name')->where('id', '=', $transfer->parent_status_id)->first();
+                                        $getChildStatus = LeadStatus::select('name')->where('id', '=', $transfer->child_status_id)->first();
+                                        ?>
+                                        <tr>
+                                            <td><?=$sl_no++?></td>
+                                            <td><?=(($getTransferFrom)?$getTransferFrom->first_name.' '.$getTransferFrom->last_name:'')?></td>
+                                            <td><?=(($getTransferTo)?$getTransferTo->first_name.' '.$getTransferTo->last_name:'')?></td>
+                                            <td><?=(($getCampaignType)?$getCampaignType->name:'')?></td>
+                                            <td><?=(($getCampaign)?$getCampaign->name:'')?></td>
+                                            <td><?=(($getParentStatus)?$getParentStatus->name:'')?></td>
+                                            <td><?=(($getChildStatus)?$getChildStatus->name:'')?></td>
+                                            <td><?=date_format(date_create($transfer->created_at), "d-m-Y h:i:s A")?></td>
+                                        </tr>
+                                    <?php } } else {?>
+                                        <tr>
+                                            <td colspan="8" style="color:red; text-align:center;">No records found</td>
+                                        </tr>
+                                    <?php }?>
+                                </tbody>
+                            </table>
                         </div>
                         <div class="tab-pane fade" id="navs-pills-justified-email" role="tabpanel">
                             <h5>Update Request</h5>
