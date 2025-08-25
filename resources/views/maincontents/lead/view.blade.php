@@ -258,7 +258,30 @@ $controllerRoute = $module['controller_route'];
                         </div>
                         <div class="tab-pane fade" id="navs-pills-justified-email" role="tabpanel">
                             <h5>Update Request</h5>
-                            
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <td>#</td>
+                                        <td>Request From</td>
+                                        <td>Request Comment</td>
+                                        <td>Request Timestamp</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php $sl_no=1 ; if($update_requests){ foreach($update_requests as $update_request){?>
+                                        <tr>
+                                            <td><?=$sl_no++?></td>
+                                            <td><?=$update_request->first_name.' '.$update_request->last_name?></td>
+                                            <td><?=$update_request->request_comment?></td>
+                                            <td><?=date_format(date_create($update_request->created_at), "d-m-Y h:i:s A")?></td>
+                                        </tr>
+                                    <?php } } else {?>
+                                        <tr>
+                                            <td colspan="4" style="color:red; text-align:center;">No records found</td>
+                                        </tr>
+                                    <?php }?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

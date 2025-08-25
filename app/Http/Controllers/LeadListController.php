@@ -25,6 +25,7 @@ use App\Models\Purpose;
 use App\Models\Mood;
 use App\Models\LeadTransfer;
 use App\Models\FeedbackTag;
+use App\Models\MasterLeadUpdateRequest;
 use App\Services\SiteAuthService;
 use App\Helpers\Helper;
 
@@ -815,7 +816,12 @@ class LeadListController extends Controller
             $totalCampaigns[] = $arr;
         }
 
-
+        $data['update_requests']    = DB::table('master_lead_update_requests')
+                                                ->join('users', 'master_lead_update_requests.assigned_telecaller_id', '=', 'users.id')
+                                                ->select('master_lead_update_requests.*', 'users.first_name', 'users.last_name')
+                                                ->where('master_lead_update_requests.sl_no', '=', $branchLeadArr->lead_sl_no)
+                                                ->orderBy('master_lead_update_requests.id', 'DESC')
+                                                ->get();
 
         $data['module'] = $this->data;
         $title                          = 'View ' . $this->data['title'];
