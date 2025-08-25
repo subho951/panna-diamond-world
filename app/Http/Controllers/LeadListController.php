@@ -824,7 +824,6 @@ class LeadListController extends Controller
         return view('maincontents.' . $page_name, $data)->with(["leadActivityCount" => $leadActivityCount , "leadHistoryArr" => $leadHistoryArr , "eachLeadArr" => $eachLeadArr , "totalCampaigns" => $totalCampaigns ]);
     }
 
-
     /* ajax request */
     public function getLeadCallData(Request $request)
     {
@@ -965,8 +964,7 @@ class LeadListController extends Controller
 
             // return response()->json($leadHistoryArr);
         }
-    }
-    
+    }    
 
     public function updateLeadStatus(Request $request)
     {
@@ -1129,8 +1127,7 @@ class LeadListController extends Controller
 
             return response()->json($arr);
         }
-    }
-   
+    }   
 
     public function individualLeadTransferModalData(Request $request)
     {
