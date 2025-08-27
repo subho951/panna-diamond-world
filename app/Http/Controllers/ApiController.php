@@ -1278,76 +1278,79 @@ class ApiController extends Controller
                             }
 
                             /* last 10 activities */
-                                $getActivities      = LeadActivity::where('status', '=', 1)->orderBy('id', 'DESC')->limit(10)->get();
+                                $getActivities      = LeadActivity::where('status', '=', 1)->where('assigned_telecaller_id', '=', $uId)->orderBy('id', 'DESC')->limit(10)->get();
                                 if($getActivities){
                                     foreach($getActivities as $getActivity){
-                                        $getPurpose         = Purpose::select('name')->where('id', '=', $getActivity->purpose_id)->first();
-                                        $getParentStatus    = LeadStatus::select('name')->where('id', '=', $getActivity->parent_status_id)->first();
-                                        $getChildStatus     = LeadStatus::select('name')->where('id', '=', $getActivity->child_status_id)->first();
-                                        $getTelecaller      = User::select('first_name', 'last_name')->where('id', '=', $getActivity->assigned_telecaller_id)->first();
-                                        $getMood            = Mood::select('name', 'emoji', 'color')->where('id', '=', $getActivity->mood)->first();
-                                        $getMasterLead      = MasterLead::select('lead_no')->where('sl_no', '=', $getActivity->lead_sl_no)->first();
+                                        $checkBranchLead    = BranchLead::where('lead_sl_no', '=', $getActivity->lead_sl_no)->where('status', '=', 1)->count();
+                                        if($checkBranchLead > 0){
+                                            $getPurpose         = Purpose::select('name')->where('id', '=', $getActivity->purpose_id)->first();
+                                            $getParentStatus    = LeadStatus::select('name')->where('id', '=', $getActivity->parent_status_id)->first();
+                                            $getChildStatus     = LeadStatus::select('name')->where('id', '=', $getActivity->child_status_id)->first();
+                                            $getTelecaller      = User::select('first_name', 'last_name')->where('id', '=', $getActivity->assigned_telecaller_id)->first();
+                                            $getMood            = Mood::select('name', 'emoji', 'color')->where('id', '=', $getActivity->mood)->first();
+                                            $getMasterLead      = MasterLead::select('lead_no')->where('sl_no', '=', $getActivity->lead_sl_no)->first();
 
-                                        $next_schedule_activity  = '';
-                                        if($getActivity->next_followup_date != '' && $getActivity->next_followup_time != ''){
-                                            $next_schedule_activity = date_format(date_create($getActivity->next_followup_date), "M d, Y") . ', ' . date_format(date_create($getActivity->next_followup_time), "h:i A");
-                                        }
+                                            $next_schedule_activity  = '';
+                                            if($getActivity->next_followup_date != '' && $getActivity->next_followup_time != ''){
+                                                $next_schedule_activity = date_format(date_create($getActivity->next_followup_date), "M d, Y") . ', ' . date_format(date_create($getActivity->next_followup_time), "h:i A");
+                                            }
 
-                                        $feedback_tags = [];
-                                        if($getActivity->feedback_tag_ids != ''){
-                                            $feedback_tag_ids  = json_decode($getActivity->feedback_tag_ids);
-                                            if(!empty($feedback_tag_ids)){
-                                                for($f=0;$f<count($feedback_tag_ids);$f++){
-                                                    $getTag             = FeedbackTag::select('name')->where('id', '=', $feedback_tag_ids[$f])->first();
-                                                    $feedback_tags[]    = (($getTag)?$getTag->name:'');
+                                            $feedback_tags = [];
+                                            if($getActivity->feedback_tag_ids != ''){
+                                                $feedback_tag_ids  = json_decode($getActivity->feedback_tag_ids);
+                                                if(!empty($feedback_tag_ids)){
+                                                    for($f=0;$f<count($feedback_tag_ids);$f++){
+                                                        $getTag             = FeedbackTag::select('name')->where('id', '=', $feedback_tag_ids[$f])->first();
+                                                        $feedback_tags[]    = (($getTag)?$getTag->name:'');
+                                                    }
                                                 }
                                             }
+
+                                            $getCampaignType    = CampaignType::select('name')->where('id', '=', $getActivity->campaign_type_id)->first();
+                                            $getCampaign        = CampaignType::select('name')->where('id', '=', $getActivity->campaign_id)->first();
+
+                                            $dob_anni_curr_date = date('d-m');
+                                            /* birthday check */
+                                                $getBirthday = $this->getHeaderValueByID($getActivity->lead_sl_no, 12); // 15-08-2000
+                                                $formattedDOB = substr($getBirthday, 0, 5);  // Output: 15-08
+                                                $is_birthday = ($formattedDOB == $dob_anni_curr_date) ? 1 : 0;
+                                            /* birthday check */
+                                            /* anniversary check */
+                                                $getAnniversary = $this->getHeaderValueByID($getActivity->lead_sl_no, 13); // 15-08-2000
+                                                $formattedANNI = substr($getAnniversary, 0, 5);  // Output: 15-08
+                                                $is_anniversary = ($formattedANNI == $dob_anni_curr_date) ? 1 : 0;
+                                            /* anniversary check */
+
+                                            $last_activities[]         = [
+                                                'sl_no'                 => $getActivity->lead_sl_no,
+                                                'lead_no'               => (($getMasterLead)?$getMasterLead->lead_no:''),
+                                                'company_name'          => $this->getHeaderValueByID($getActivity->lead_sl_no, 1),
+                                                'contact_person_name'   => $this->getHeaderValueByID($getActivity->lead_sl_no, 2),
+                                                'email'                 => $this->getHeaderValueByID($getActivity->lead_sl_no, 5),
+                                                'phone_no'              => $this->getHeaderValueByID($getActivity->lead_sl_no, 4),
+                                                'whatsapp_no'           => $this->getHeaderValueByID($getActivity->lead_sl_no, 14),
+                                                'is_vip'                => (int) $this->getHeaderValueByID($getActivity->lead_sl_no, 17),
+                                                'is_purchased'          => (int) $this->getHeaderValueByID($getActivity->lead_sl_no, 18),
+                                                'is_birthday'           => (int) $is_birthday,
+                                                'is_anniversary'        => (int) $is_anniversary,
+                                                'purpose_name'          => (($getPurpose)?$getPurpose->name:''),
+                                                'comment'               => $getActivity->comment,
+                                                'telecaller_name'       => (($getTelecaller)?$getTelecaller->first_name . ' ' . $getTelecaller->last_name:''),
+                                                'parent_status_id'      => $getActivity->parent_status_id,
+                                                'parent_status_name'    => (($getParentStatus)?$getParentStatus->name:''),
+                                                'child_status_id'       => $getActivity->child_status_id,
+                                                'child_status_name'     => (($getChildStatus)?$getChildStatus->name:''),
+                                                'activity_timestamp'    => date_format(date_create($getActivity->created_at), "M d, Y h:i A"),
+                                                'next_schedule'         => $next_schedule_activity,
+                                                'feedback_tags'         => $feedback_tags,
+                                                'mood_id'               => $getActivity->mood,
+                                                'mood_name'             => (($getMood)?$getMood->name:''),
+                                                'mood_emoji'            => (($getMood)?$getMood->emoji:''),
+                                                'mood_color'            => (($getMood)?$getMood->color:''),
+                                                'campaign_type_name'    => (($getCampaignType)?$getCampaignType->name:''),
+                                                'campaign_name'         => (($getCampaign)?$getCampaign->name:''),
+                                            ];
                                         }
-
-                                        $getCampaignType    = CampaignType::select('name')->where('id', '=', $getActivity->campaign_type_id)->first();
-                                        $getCampaign        = CampaignType::select('name')->where('id', '=', $getActivity->campaign_id)->first();
-
-                                        $dob_anni_curr_date = date('d-m');
-                                        /* birthday check */
-                                            $getBirthday = $this->getHeaderValueByID($getActivity->lead_sl_no, 12); // 15-08-2000
-                                            $formattedDOB = substr($getBirthday, 0, 5);  // Output: 15-08
-                                            $is_birthday = ($formattedDOB == $dob_anni_curr_date) ? 1 : 0;
-                                        /* birthday check */
-                                        /* anniversary check */
-                                            $getAnniversary = $this->getHeaderValueByID($getActivity->lead_sl_no, 13); // 15-08-2000
-                                            $formattedANNI = substr($getAnniversary, 0, 5);  // Output: 15-08
-                                            $is_anniversary = ($formattedANNI == $dob_anni_curr_date) ? 1 : 0;
-                                        /* anniversary check */
-
-                                        $last_activities[]         = [
-                                            'sl_no'                 => $getActivity->lead_sl_no,
-                                            'lead_no'               => (($getMasterLead)?$getMasterLead->lead_no:''),
-                                            'company_name'          => $this->getHeaderValueByID($getActivity->lead_sl_no, 1),
-                                            'contact_person_name'   => $this->getHeaderValueByID($getActivity->lead_sl_no, 2),
-                                            'email'                 => $this->getHeaderValueByID($getActivity->lead_sl_no, 5),
-                                            'phone_no'              => $this->getHeaderValueByID($getActivity->lead_sl_no, 4),
-                                            'whatsapp_no'           => $this->getHeaderValueByID($getActivity->lead_sl_no, 14),
-                                            'is_vip'                => (int) $this->getHeaderValueByID($getActivity->lead_sl_no, 17),
-                                            'is_purchased'          => (int) $this->getHeaderValueByID($getActivity->lead_sl_no, 18),
-                                            'is_birthday'           => (int) $is_birthday,
-                                            'is_anniversary'        => (int) $is_anniversary,
-                                            'purpose_name'          => (($getPurpose)?$getPurpose->name:''),
-                                            'comment'               => $getActivity->comment,
-                                            'telecaller_name'       => (($getTelecaller)?$getTelecaller->first_name . ' ' . $getTelecaller->last_name:''),
-                                            'parent_status_id'      => $getActivity->parent_status_id,
-                                            'parent_status_name'    => (($getParentStatus)?$getParentStatus->name:''),
-                                            'child_status_id'       => $getActivity->child_status_id,
-                                            'child_status_name'     => (($getChildStatus)?$getChildStatus->name:''),
-                                            'activity_timestamp'    => date_format(date_create($getActivity->created_at), "M d, Y h:i A"),
-                                            'next_schedule'         => $next_schedule_activity,
-                                            'feedback_tags'         => $feedback_tags,
-                                            'mood_id'               => $getActivity->mood,
-                                            'mood_name'             => (($getMood)?$getMood->name:''),
-                                            'mood_emoji'            => (($getMood)?$getMood->emoji:''),
-                                            'mood_color'            => (($getMood)?$getMood->color:''),
-                                            'campaign_type_name'    => (($getCampaignType)?$getCampaignType->name:''),
-                                            'campaign_name'         => (($getCampaign)?$getCampaign->name:''),
-                                        ];
                                     }
                                 }
                             /* last 10 activities */
