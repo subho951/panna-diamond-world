@@ -5,6 +5,13 @@ $controllerRoute = $module['controller_route'];
 @extends('layouts.main')
 @section('content')
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+    .swal2-container{
+        z-index: 9999 !important;
+    }
+</style>
+
     <div class="container-fluid flex-grow-1 container-p-y">
         <div class="row g-6">
             <h4><?= $page_header ?></h4>
@@ -38,56 +45,167 @@ $controllerRoute = $module['controller_route'];
                   Fetching data. Please wait <span id="dot-animation">.</span>
                </div> --}}
 
-                        {{-- <h6 class="card-title">Filter</h6>
-                        <form class="mb-3">
-                            <div class="row">
-                                <div class="col-md-4 mb-2">
-                                    <select id="filter_id" class="select2 form-select" data-allow-clear="true" required>
-
-                                        <option value="" disable selected>Select Status</option>
-                                        <option value="PHONE NOT CONNECTED">PHONE NOT CONNECTED</option>
-                                        <option value="DID NOT PICKUP">DID NOT PICKUP</option>
-                                        <option value="CALL LATER">CALL LATER</option>
-                                        <option value="FOLLOW UP">FOLLOW UP</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4 mb-2">
-                                    <select id="" class="select2 form-select" data-allow-clear="true">
-                                        <option value="" disable selected>ALL</option>
-
-                                    </select>
-                                </div>
-                                <div class="col-4 col-md-2 mb-2">
-                                    <button type="button" class="btn btn-outline-dark">
-                                        <i class="fa-solid fa-filter"></i>&nbsp;<span>Filter Leads</span>
-                                    </button>
-                                </div>
-                                <div class="col-8 col-md-2 mb-2">
-                                    <button type="button" class="btn btn-label-secondary">
-                                        <i class="fa-solid fa-arrow-rotate-left"></i>&nbsp;<span>Reset</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form> --}}
-
-                        <div class="card mb-3 p-3">
-                            <h6 class="card-title">Transfer Lead To</h6>
-                            <form class="">
+                        {{-- <h6 class="card-title">Filter</h6> --}}
+                        
+                        <div class="card mb-3 p-3" >
+                            <form>
+                                @csrf
                                 <div class="row">
-                                    <div class="col-md-4 mb-2">
-                                        <select id="" class="select2 form-select" data-allow-clear="true" required>
-                                            <option value="" disable selected>Select User</option>
-    
-                                        </select>
+                                    <div class="col-md-9">
+                                        <div class="row">
+                                            <div class="col-md-3 mb-3">
+                                                <label for="selected_branch_id" class="form-label">Branch </label>
+                                                <select id="selected_branch_id" class="select2 form-select" name="selected_branch_id" >
+                                                    <option value="" selected disabled>Select Branch</option>
+                                                    @if(!empty($allBranches))
+                                                       @foreach($allBranches as $branch)
+                                                           <option
+                                                            value="{{ Helper::encoded($branch->id) }}"
+                                                     
+                                                            @if(!empty($selected_branch_id))                                                  
+                                                                @if(Helper::encoded($branch->id) == Helper::encoded($selected_branch_id))
+                                                                    selected
+                                                                @endif                                                     
+                                                            @endif >{{ $branch->name }}
+                                                           </option>
+                                                        @endforeach
+                                                    @endif
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label for="selected_telecaller_id" class="form-label">Telecaller </label>
+                                                <select id="selected_telecaller_id" class="select2 form-select" name="selected_telecaller_id">
+                                                    <option value="" disable selected>Select Telecaller</option>
+                                                    @if(!empty($branchWiseTelecaller))
+                                                       @foreach($branchWiseTelecaller as $telecaller)
+                                                           <option
+                                                            value="{{ Helper::encoded($telecaller->id) }}"
+                                                            @if(!empty($selected_telecaller_id))
+                                                                @if(Helper::encoded($telecaller->id) == Helper::encoded($selected_telecaller_id))
+                                                                   selected
+                                                                @endif
+                                                            @endif
+                                                            >{{ $telecaller->first_name }} {{ $telecaller->last_name }}</option>
+                                                       @endforeach
+                                                    @elseif(!empty($allTelecallers))
+                                                       @foreach($allTelecallers as $telecaller)
+                                                           <option
+                                                            value="{{ Helper::encoded($telecaller->id) }}"
+                                                            @if(!empty($selected_telecaller_id))
+                                                                @if(Helper::encoded($telecaller->id) == Helper::encoded($selected_telecaller_id))
+                                                                   selected
+                                                                @endif
+                                                            @endif
+                                                            >{{ $telecaller->first_name }} {{ $telecaller->last_name }}</option>
+                                                       @endforeach
+                                                    @endif
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label for="parent_status_id" class="form-label">Parent Status </label>
+                                                <select id="parent_status_id" class="select2 form-select" name="parent_status_id">
+                                                    <option value="" disable selected>Select Parent Status</option>
+                                                    @if(!empty($allParentStatus))
+                                                        @foreach($allParentStatus as $parentStatus)
+                                                         <option
+                                                            value="{{ Helper::encoded($parentStatus->id) }}"
+                                                            @if(!empty($selected_parent_status_id))
+                                                                @if(Helper::encoded($parentStatus->id) == Helper::encoded($selected_parent_status_id))
+                                                                    selected
+                                                                @endif   
+                                                            @endif
+                                                          >{{ $parentStatus->name }}</option>
+                                                        @endforeach
+                                                    @endif
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label for="child_status_id" class="form-label">Child Status </label>
+                                                <select id="child_status_id" class="select2 form-select" name="child_status_id">
+                                                    <option value="" disable selected>Select Child Status</option>
+                                                    @if(!empty($parentWiseChildStatus))
+                                                        @foreach($parentWiseChildStatus as $childStatus)
+                                                        <option
+                                                            value="{{ Helper::encoded($childStatus->id) }}"
+                                                            @if(!empty(108))
+                                                                @if(Helper::encoded($childStatus->id) == Helper::encoded(108))
+                                                                    selected
+                                                                @endif   
+                                                            @endif
+                                                        >{{ $childStatus->name }}</option>
+                                                        @endforeach
+                                                    @elseif(!empty($allChildStatus))
+                                                        @foreach($allChildStatus as $childStatus)
+                                                        <option
+                                                            value="{{ Helper::encoded($childStatus->id) }}"
+                                                            @if(!empty(108))
+                                                                @if(Helper::encoded($childStatus->id) == Helper::encoded(108))
+                                                                    selected
+                                                                @endif   
+                                                            @endif
+                                                        >{{ $childStatus->name }}</option>
+                                                        @endforeach
+                                                    @endif
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-md-4 mb-2">
-                                        <button type="button" class="btn btn-outline-dark rounded-pill">
-                                            <i class="fas fa-exchange-alt"></i>&nbsp;<span>Bulk Lead Transfer</span>
-                                        </button>
+                                    <div class="col-md-3 mt-3">
+                                        <div class="row">
+                                            <div class="col-md-12 d-flex gap-2 mt-3">
+                                                <button type="button" class="btn btn-outline-dark filterBtn">
+                                                    <i class="fa-solid fa-filter"></i>&nbsp;<span>Filter</span>
+                                                </button>
+                                                <button type="button" class="btn btn-label-secondary d-none resetBtn">
+                                                    <i class="fa-solid fa-arrow-rotate-left"></i>&nbsp;<span>Reset</span>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                </div>                                       
                             </form>
                         </div>
+
+                        @if(session('user_data')['role_id'] != 3)
+                            @if(!empty($totalLeadArr))
+                                <div class="card mb-3 p-3 bulkTransferSection" style="display: none;">
+                                    <form class="row d-flex align-items-center">
+                                        @csrf
+                                        <div class="col-md-3 mb-3">
+                                            <label for="transfer_branch_id" class="form-label">Transfer To Branch </label>
+                                            <select id="transfer_branch_id" class="select2 form-select" name="transfer_branch_id" >
+                                                <option value="" selected disabled>Select Branch</option>
+                                                <?php if(!empty($allBranches)){ foreach($allBranches as $branch){?>
+                                                <option value="{{ Helper::encoded($branch->id) }}"
+                                                @if(!empty($selected_branch_id))                                                  
+                                                    @if(Helper::encoded($branch->id) == Helper::encoded($selected_branch_id))
+                                                        selected
+                                                    @endif                                                     
+                                                @endif
+                                                ><?= $branch->name ?></option>
+                                                <?php } }?>
+                                            </select>
+                                        </div>                                   
+                                        <div class="col-md-6 mb-3">
+                                            <label for="transfer_telecaller_id" class="form-label">Transfer To Telecaller  </label>
+                                            <select class="select2 form-select" id="transfer_telecaller_id" name="transfer_telecaller_id[]" multiple>
+                                                @if(!empty($branchWiseTelecaller))
+                                                        @foreach($branchWiseTelecaller as $telecaller)
+                                                            <option value="{{ Helper::encoded($telecaller->id) }}">{{ $telecaller->first_name }} {{ $telecaller->last_name }}</option>
+                                                        @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 mt-3">
+                                            <button type="button" class="btn btn-outline-dark w-100 rounded-pill bulkLeadTransferBtn">
+                                                <i class="fas fa-exchange-alt"></i>&nbsp;<span>Bulk Lead Transfer</span>
+                                            </button>
+                                        </div>
+                                
+                                    </form>                                
+                                </div>
+                            @endif
+                        @endif
 
                         <div class="card p-3">
                             {{-- <h5 class="card-header fw-bold text-success p-2">Lead List</h5> --}}
@@ -115,7 +233,9 @@ $controllerRoute = $module['controller_route'];
                                     <thead>
                                         <tr>
                                             @if(!empty($totalLeadArr))
-                                                <th><input type="checkbox" name="" id=""></th>
+                                        
+                                                    <th><input type="checkbox" id="selectAll"></th>
+
                                             @endif
                                             <th>#</th>
                                             <th>Lead No</th>
@@ -138,7 +258,15 @@ $controllerRoute = $module['controller_route'];
                                         @foreach($totalLeadArr as $eachLeadArr)
                                         {{-- @dd($eachLeadArr); --}}
                                         <tr>
-                                            <td><input type="checkbox" name="" id=""></td>
+                                            
+                                                <td>
+                                                    <input type="checkbox"
+                                                    name="branchLead_id_Arr[]" 
+                                                    class="lead-checkbox" 
+                                                    value="{{ Helper::encoded($eachLeadArr->id) }}">
+                                                </td>
+                                            
+
 
                                             <td>{{ ($loop->iteration) + ($perPage * ($page - 1)) }}</td>
                                             <td>{{ $eachLeadArr->lead_no }}</td>
@@ -432,13 +560,21 @@ $controllerRoute = $module['controller_route'];
             }
         });
 
-        //Pagination
-        document.getElementById('perPageSelect').addEventListener('change', function() {
-            const url = new URL(window.location.href);
-            url.searchParams.set('perPage', this.value);
-            url.searchParams.set('page', 1); // reset to first page
-            window.location.href = url.toString();
-        });
+        // Pagination
+        // Pagination (guard if element is absent)
+        const perPageEl = document.getElementById('perPageSelect');
+        if (perPageEl)
+        {
+            perPageEl.addEventListener('change', function() {
+                const url = new URL(window.location.href);
+                url.searchParams.set('perPage', this.value);
+                url.searchParams.set('page', 1); // reset to first page
+                window.location.href = url.toString();
+            });
+        }
+
+       
+         
     
         let baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
         const base_url = document.querySelector('meta[name="baseurl"]').getAttribute('content');
@@ -874,6 +1010,307 @@ $controllerRoute = $module['controller_route'];
         });
 
         
+
+        // select branch
+        let selected_branch_id = "";
+        $(document).on('change', '#selected_branch_id', function()
+        {
+            selected_branch_id = $(this).val();
+
+            $('#selected_telecaller_id').val('').trigger('change');
+            $.ajax({
+                url: base_url + '/lead-list/fetch-branch-wise-telecaller',
+                type: 'POST',
+                data: {
+                    selected_branch_id : selected_branch_id ,
+                },
+                success: function(resp)
+                {
+                    $('#selected_telecaller_id').empty();
+                    $('#selected_telecaller_id').append(`<option value="" disable selected>Select Telecaller</option>`);
+                    resp.forEach(telecaller => {
+                        $('#selected_telecaller_id').append(`<option value="${telecaller.id}">${telecaller.first_name} ${telecaller.last_name}</option>`);
+                    });
+                    
+                },
+                error: function(xhr)
+                {
+                    console.log(xhr);
+                }
+            });      
+        });
+        // select telecaller
+        let selected_telecaller_id = "";
+        $(document).on('change', '#selected_telecaller_id', function(){
+            selected_telecaller_id = $(this).val();
+        });
+
+        let branchFromUrl = "";
+        let urlParams = new URLSearchParams(window.location.search);
+        branchFromUrl = urlParams.get('branch'); // get branch from url 
+        // console.log('branch:', branchFromUrl); // showing correctly
+        
+        //select parent status
+        let selected_parent_status_id = ""
+        $(document).on('change', '#parent_status_id', function(){
+            selected_parent_status_id = $(this).val();
+
+            $('#child_status_id').val('').trigger('change');
+            $.ajax({
+                url: base_url + '/lead-list/fetch-parent-wise-child-status' ,
+                type: 'POST',
+                data: {
+                    parent_status_id : selected_parent_status_id ,
+                },
+                success: function(resp)
+                {
+                    $('#child_status_id').empty();
+                    $('#child_status_id').append(`<option value="" disable selected>Select Child Status</option>`);
+                    resp.forEach(parentStatus => {
+                        $('#child_status_id').append(`<option value="${parentStatus.id}" > ${parentStatus.name}</option>`);
+                    });
+                },
+                error: function(xhr)
+                {
+                    console.log(xhr);
+                }
+                
+            });
+        });
+
+        //select child status
+        let selected_child_status_id = "";
+        $(document).on('change', '#child_status_id', function(){
+            selected_child_status_id = $(this).val();
+        });
+
+
+
+        // filter
+        $(document).on('click', '.filterBtn', function()
+        {
+            // Get values of all filter dropdowns
+            let branch = $('#selected_branch_id').val();
+            let telecaller = $('#selected_telecaller_id').val();
+            let parentStatus = $('#parent_status_id').val();
+            let childStatus = $('#child_status_id').val();
+
+            // Check if all are empty
+            if ((!branch || branch === "") &&
+                (!telecaller || telecaller === "") &&
+                (!parentStatus || parentStatus === "") &&
+                (!childStatus || childStatus === "")) {
+
+                toastAlert('error', 'Please Select Something To Apply Filter');
+            }
+            else
+            {
+                let url = new URL(window.location.href);
+    
+                if(selected_branch_id != "")
+                {
+                    // alert('set branch with: '+ selected_branch_id + ' or ' + branchFromUrl);
+                    url.searchParams.set('branch', selected_branch_id);
+                    url.searchParams.delete('telecaller');
+                }
+    
+                if(selected_telecaller_id != "")
+                {
+                    // alert('set telecaller with: '+ selected_telecaller_id);
+                    url.searchParams.set('telecaller', selected_telecaller_id);
+                }
+
+                if(selected_parent_status_id != "")
+                {
+                //    alert('set parent status with: '+ selected_parent_status_id);
+                   url.searchParams.set('parent-status', selected_parent_status_id);
+                   url.searchParams.delete('child-status');
+                }
+
+                if(selected_child_status_id != "")
+                {
+                    // alert('set child status with: '+ selected_child_status_id);                   
+                    url.searchParams.set('child-status', selected_child_status_id);
+                }
+
+
+                // Always reset to page 1
+                url.searchParams.set('page', 1);
+
+                // Redirect once
+                window.location.href = url.toString();
+            }
+
+
+
+
+            
+
+            
+        });
+
+        // show reset button iff any filter is applied
+        const currentUrl = new URL(window.location.href);
+        if( (currentUrl.searchParams.has('branch')) || (currentUrl.searchParams.has('telecaller')) || (currentUrl.searchParams.has('parent-status')) || (currentUrl.searchParams.has('child-status')) )
+        {
+            $('.resetBtn').removeClass('d-none');
+            // $('.resetBtn').addClass('d-block');
+        }
+
+        // reset
+        $(document).on('click', '.resetBtn', function()
+        {
+            let url = new URL(window.location.href);
+            // safe even if it's not there
+            url.searchParams.delete('branch');
+            url.searchParams.delete('telecaller');
+            url.searchParams.delete('parent-status');
+            url.searchParams.delete('child-status');
+
+
+            url.searchParams.set('page', 1); // reset to first page
+            window.location.href = url.toString();
+        });
+
+
+
+        
+
+        
+        // let selected_telecaller_id = "";
+        // let selected_telecaller_name = "";
+        // $(document).on('change', '#telecaller_id', function()
+        // {
+        //     selected_telecaller_id = $(this).val();
+        //     selected_telecaller_name = $(this).find('option:selected').text();
+        //     // console.log(selected_telecaller_id);
+        // });
+
+
+        // show bulk lead transfer section if atleast one checkbox is checked
+        function toggleBulkTransferSection() 
+        {
+            if ($('input[name="branchLead_id_Arr[]"]:checked').length > 0) {
+                // show with animation
+                // $('.bulkTransferSection').slideDown(); 
+                $('.bulkTransferSection').fadeIn(300); 
+            } else {
+                // hide with animation
+                // $('.bulkTransferSection').slideUp(); 
+                $('.bulkTransferSection').fadeOut(300);
+            }
+        }
+
+        // When any checkbox changes
+        $(document).on('change', 'input[name="branchLead_id_Arr[]"]', function() {
+            toggleBulkTransferSection();
+        });
+
+        // "Select All" checkbox
+        $('#selectAll').on('change', function() {
+            $('input[name="branchLead_id_Arr[]"]').prop('checked', this.checked);
+            toggleBulkTransferSection();
+        });
+
+        // fetch branch wise telecaller for lead transfer
+        let transfer_branch_id = "";
+        $(document).on('change', '#transfer_branch_id', function()
+        {
+            transfer_branch_id = $(this).val();
+            
+            $('#transfer_telecaller_id').val('').trigger('change');
+            $.ajax({
+                url: base_url + '/lead-list/fetch-branch-wise-telecaller',
+                type: 'POST',
+                data: {
+                    selected_branch_id :  transfer_branch_id,
+                },
+                success: function(resp)
+                {
+                    $('#transfer_telecaller_id').empty();
+                    resp.forEach(telecaller => {
+                        $('#transfer_telecaller_id').append(`<option value="${telecaller.id}">${telecaller.first_name} ${telecaller.last_name}</option>`);
+                    });
+                    
+                },
+                error: function(xhr)
+                {
+                    console.log(xhr);
+                }
+            });  
+            
+        });
+
+        // transfer bulk lead
+        // $(document).on('click', '.bulkLeadTransferBtn', function()
+        // {            
+        //     if( (branchFromUrl != "") && (selected_telecaller_id != "") && ($('input[name="branchLead_id_Arr[]"]:checked').length > 0) )
+        //     {    
+        //         // jQuery collection of checked checkboxes
+        //         let checkedCheckboxes = $('input[name="branchLead_id_Arr[]"]:checked');    
+
+        //         // Array of values from those checkboxes
+        //         let branchLead_id_Arr = checkedCheckboxes.map(function()
+        //         {
+        //             return $(this).val();
+        //         }).get();
+
+        //         // console.log("Selected values:", branchLead_id_Arr); 
+                
+        //         Swal.fire({
+        //         text: `Transfer ${$('input[name="branchLead_id_Arr[]"]:checked').length} lead(s) to ${selected_telecaller_name} ?`,
+        //         icon: "question",
+        //         showCancelButton: true,
+        //         confirmButtonColor: "#000000",
+        //         cancelButtonColor: "#ff4c51",
+        //         confirmButtonText: "Confirm"
+        //         }).then((result) => {
+        //         if (result.isConfirmed) 
+        //         {
+        //             $.ajax({
+        //                 url: base_url + '/lead-list/bulk-lead-transfer',
+        //                 type: 'POST',
+        //                 data: {
+        //                     branchLead_id_Arr : branchLead_id_Arr,
+        //                     to_assigned_telecaller_id : selected_telecaller_id,
+        //                 },
+        //                 success: function(resp)
+        //                 {
+        //                     if(resp.status == 'success')
+        //                     {
+        //                         toastAlert('success', resp.message);
+
+        //                         setTimeout(() => {
+        //                             location.reload();
+        //                         }, 1000);
+        //                     }
+        //                     else if(resp.status == 'error')
+        //                     {
+        //                         toastAlert('error', resp.message);
+        //                     }
+        //                 },
+        //                 error: function(xhr)
+        //                 {
+        //                     console.log(xhr);
+        //                 }
+        //             });
+
+        //         }
+        //         });
+
+        //     }
+        //     else
+        //     {
+        //         toastAlert('error', 'Please select branch, telecaller and at least one lead !!!');
+        //     }
+        // });
+
+
+
+        
+        
+
+
     });
     </script>
 

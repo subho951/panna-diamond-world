@@ -1,4 +1,6 @@
-
+<?php
+use App\Helpers\Helper;
+?>
 @if(!empty($telecallerData))
 <div class="row">
     <div class="col mb-4">
@@ -7,7 +9,7 @@
             <select id="" class="select2 form-select" name="to_assigned_telecaller_id" data-allow-clear="true">
                 <option value="" disable selected>Select Telecaller</option>
                 @foreach($telecallerData as $telecaller)
-                    <option value="{{ $telecaller['telecaller_id'] }}">{{ $telecaller['telecaller_name'] }}</option>
+                    <option value="{{ Helper::encoded($telecaller['telecaller_id']) }}">{{ $telecaller['telecaller_name'] }}</option>
                 @endforeach
             </select>
 

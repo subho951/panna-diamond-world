@@ -12,9 +12,11 @@ use Illuminate\Http\Request;
 
 use App\Models\EmailLog;
 use App\Models\User;
+use App\Models\Branch;
 use App\Models\GeneralSetting;
 use App\Models\UserActivity;
 use App\Helpers\Helper;
+use App\Models\BranchLead;
 use Carbon\Carbon;
 use Session;
 use DB;
@@ -260,10 +262,68 @@ class AuthController extends Controller
         public function dashboard()
         {
             $data = [];
+            
+            $allBranch = Branch::where('status', '!=', 3)->get();
+
+            $branchWiseTelecallerActivity = [];
+            foreach($allBranch as $eachBranch)
+            {
+                $branchWiseTelecaller = User::where('branch_id', '=', $eachBranch->id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+
+                $telecallerActivity = [];
+                foreach($branchWiseTelecaller as $eachTelecaller)
+                {
+                    $telecallerWiseLeads = BranchLead::where('assigned_telecaller_id', '=', $eachTelecaller->id)->where('status', '!=', 3)->get();
+
+                    $parentStatus_new_count = 0;
+                    $parentStatus_dumb_count = 0;
+                    $parentStatus_followUp_count = 0;
+                    $parentStatus_success_count = 0;
+                    $total_call_count = 0;
+                    foreach($telecallerWiseLeads as $eachLead)
+                    {
+                        $total_call_count++;
+
+                        if($eachLead->parent_status_id == 0 || $eachLead->parent_status_id == 12)
+                        {
+                            $parentStatus_new_count++;
+                        }
+                        elseif($eachLead->parent_status_id == 1)
+                        {
+                            $parentStatus_dumb_count++;
+                        }
+                        elseif($eachLead->parent_status_id == 5)
+                        {
+                            $parentStatus_followUp_count++;
+                        }
+                        elseif($eachLead->parent_status_id == 10)
+                        {
+                            $parentStatus_success_count++;
+                        }
+                    }
+                    
+                    $telecallerActivity[] = [
+                        'telecaller_name' => $eachTelecaller->first_name . ' ' . $eachTelecaller->last_name ,
+                        'total_call_count' => $total_call_count ,
+                        'parentStatus_new_count' => $parentStatus_new_count ,
+                        'parentStatus_dumb_count' => $parentStatus_dumb_count ,
+                        'parentStatus_followUp_count' => $parentStatus_followUp_count ,
+                        'parentStatus_success_count' => $parentStatus_success_count ,
+                    ];
+
+                }
+
+                $branchWiseTelecallerActivity[] = [
+                    'branch_name' => $eachBranch->name ,
+                    'telecallerActivity' => $telecallerActivity ,
+                ];
+            }
+
+
             $title                                  = 'Dashboard';
             $page_name                              = 'dashboard';
             $data = $this->siteAuthService->admin_after_login_layout($title, $page_name, $data);
-            return view('maincontents.' . $page_name, $data);
+            return view('maincontents.' . $page_name, $data)->with(['branchWiseTelecallerActivity' => $branchWiseTelecallerActivity ]);
         }
         public function getMonthYearList($startDate) {
             $start = new DateTime($startDate);

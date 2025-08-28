@@ -10,6 +10,55 @@ use App\Helpers\Helper;
     <div class="col-lg-12">
       <h3 class="mt-2 main_heading">Welcome to <?=Helper::getSettingValue('site_name')?> masteradmin panel</h2>
     </div>
+   
+    {{-- @dd($branchWiseTelecallerActivity); --}}
+    @foreach($branchWiseTelecallerActivity as $eachBranchWiseTelecallerActivity)
+    {{-- @dd($eachBranchWiseTelecallerActivity); --}}
+      <div class="card mb-3 p-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+              <div>
+                  <span class="card-header fw-bold h6 ps-0">{{ $eachBranchWiseTelecallerActivity["branch_name"] }}</span> 
+              </div>
+          </div>
+          <div class="table-responsive text-nowrap">
+              <table class="table table-striped">
+                  <thead>
+                      <tr>
+                          <th>#</th>
+                          <th>Telecaller</th>
+                          <th class="text-center">Total Calls</th>
+                          <th class="text-center">Pending</th>
+                          <th class="text-center">Follow Up</th>
+                          <th class="text-center">Success</th>
+                          <th class="text-center">Dumb</th>
+                      </tr>
+                  </thead>
+                  <tbody class="table-border-bottom-0">
+                     @if(!empty($eachBranchWiseTelecallerActivity["telecallerActivity"]))
+                        {{-- @dd($eachBranchWiseTelecallerActivity["telecallerActivity"]); --}}
+                        @foreach($eachBranchWiseTelecallerActivity["telecallerActivity"] as $key => $value)
+                          {{-- @dd($value); --}}
+                          <tr>
+                              <td>{{ $loop->iteration }}</td>
+                              <td>{{ $value["telecaller_name"] }}</td>
+                              <td class="text-center">{{ $value["total_call_count"] }}</td>
+                              <td class="text-center">{{ $value["parentStatus_new_count"] }}</td>
+                              <td class="text-center">{{ $value["parentStatus_followUp_count"] }}</td>
+                              <td class="text-center">{{ $value["parentStatus_success_count"] }}</td>
+                              <td class="text-center">{{ $value["parentStatus_dumb_count"] }}</td>
+                          </tr>
+                        @endforeach
+                     @else
+                     <tr>
+                        <td colspan="7" class="text-center text-danger">No Telecallers Found</td>
+                     </tr>
+                     @endif
+                  </tbody>
+              </table>
+          </div>
+
+      </div>
+    @endforeach
 
     {{-- <!-- Average Daily Sales -->
     <div class="col-xxl-2 col-xl-2 col-md-6 col-sm-6">

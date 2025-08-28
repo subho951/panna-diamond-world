@@ -55,15 +55,147 @@ class LeadListController extends Controller
         $perPage = $request->input('perPage', 10); // default is 10
         $page = $request->input('page', 1); // default is 1
 
-        if(session('user_data')['role_id'] == 3)
+        
+        if(!empty($request->input('branch')) && !empty($request->input('telecaller')))
         {
-            $this_telecaller_id = session('user_data')['user_id'] ;
-            $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $this_telecaller_id)->where('status', '!=', 3)->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
+            $selected_branch_id = Helper::decoded($request->input('branch'));
+            $data['branchWiseTelecaller'] = User::where('branch_id', '=', $selected_branch_id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+            $data['selected_branch_id'] = $selected_branch_id;
+
+            $selected_telecaller_id = Helper::decoded($request->input('telecaller'));                              
+            $data['selected_telecaller_id'] = $selected_telecaller_id ;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+                $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('status', '!=', 3)->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
+            }
+            else
+            {
+                $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('branch_id', '=', $selected_branch_id)->where('status', '!=', 3)->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
+            }
+
         }
-        else
+        elseif(!empty($request->input('telecaller')))
         {
-            $branchleadPaginated = BranchLead::where('status', '!=', 3)->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
+            $selected_telecaller_id = Helper::decoded($request->input('telecaller'));                              
+            $data['selected_telecaller_id'] = $selected_telecaller_id ;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+                $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('status', '!=', 3)->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
+            }
+            else
+            {
+                $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('status', '!=', 3)->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
+            }
+
         }
+        elseif(!empty($request->input('branch')))
+        {
+            $selected_branch_id = Helper::decoded($request->input('branch'));
+            // dd($selected_branch_id);
+            $data['branchWiseTelecaller'] = User::where('branch_id', '=', $selected_branch_id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+
+            $data['selected_branch_id'] = $selected_branch_id;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+                $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('assigned_telecaller_id', '=', $this_telecaller_id)->where('status', '!=', 3)->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
+            }
+            else
+            {
+                $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('status', '!=', 3)->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
+            }
+
+        }
+        elseif(!empty($request->input('parent-status')))
+        {
+            $selected_parent_status_id = Helper::decoded($request->input('parent-status'));
+            // dd($selected_branch_id);
+            $data['parentWiseChildStatus'] = LeadStatus::where('parent_id', '=', $selected_parent_status_id)->where('status', '!=', 3)->orderBy('rank', 'asc')->get();
+
+            $data['selected_parent_status_id'] = $selected_parent_status_id;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+
+                if($selected_parent_status_id == 12)
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $this_telecaller_id)->where('parent_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $this_telecaller_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id), function ($query) use ($selected_parent_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('parent_status_id', $selected_parent_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->paginate($perPage)
+                    ->withQueryString();
+                }
+
+
+            }
+            else
+            {
+                if($selected_parent_status_id == 12)
+                {
+                    $branchleadPaginated = BranchLead::where('parent_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id), function ($query) use ($selected_parent_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('parent_status_id', $selected_parent_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->paginate($perPage)
+                    ->withQueryString();
+                }
+            
+            
+            }
+        }
+        else // no filter
+        {
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+                $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $this_telecaller_id)->where('status', '!=', 3)->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
+            }
+            else
+            {
+                $branchleadPaginated = BranchLead::where('status', '!=', 3)->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
+            }
+        }
+        
+
         // dd($branchleadPaginated);
 
         $totalLeadArr = [];
@@ -169,9 +301,14 @@ class LeadListController extends Controller
         // dd($totalLeadArr) ;
         
 
-        $title                          = $this->data['title'].' List';
-        $page_name                      = 'lead.list';
-        $data                           = $this->siteAuthService ->admin_after_login_layout($title,$page_name,$data);
+        $data['allBranches']      = Branch::where('status', '!=', 3)->get();
+        $data['allTelecallers']   = User::where('role_id', '=', 3)->where('status', '!=', 3)->get();
+        $data['allParentStatus']  = LeadStatus::where('parent_id', '=', 0)->where('status', '!=', 3)->orderBy('rank', 'asc')->get();
+        $data['allChildStatus']   = LeadStatus::where('parent_id', '!=', 0)->where('status', '!=', 3)->orderBy('rank', 'asc')->get();
+
+        $title                = $this->data['title'].' List';
+        $page_name            = 'lead.list';
+        $data                 = $this->siteAuthService ->admin_after_login_layout($title,$page_name,$data);
         return view('maincontents.' . $page_name, $data)->with(['totalLeadArr' => $totalLeadArr, 'branchleadPaginated' => $branchleadPaginated, 'perPage' => $perPage , 'page' => $page]);
     }
 
@@ -1029,6 +1166,14 @@ class LeadListController extends Controller
                     'updated_by' => session('user_data')['user_id'],
                 ];
                 LeadActivity::insert($fields);
+
+                BranchLead::where('id', '=', $id)->update([
+                    'parent_status_id' => $fields['parent_status_id'] ,
+                    'child_status_id' => $fields['child_status_id'] ,
+                    'next_followup_date' => $fields['next_followup_date'] ,
+                    'next_followup_time' => $fields['next_followup_time'] ,
+                ]);
+
                 return response()->json(['success_message' => 'Lead Status Updated Successfully !!!']);
             }
             else
@@ -1151,29 +1296,44 @@ class LeadListController extends Controller
             }
 
 
-            //total campaigns for the lead
-            $totalAssignedInBranchLead = BranchLead::where('lead_sl_no', '=', $branchLeadArr->lead_sl_no)->where('status', '!=', 3)->orderBy('id', 'desc')->get() ?? [];
+            //total campaigns for the lead only for that branch
+            $totalAssignedInBranchLead = BranchLead::where('lead_sl_no', '=', $branchLeadArr->lead_sl_no)->where('branch_id', '=', $branchLeadArr->branch_id)->where('status', '!=', 3)->orderBy('id', 'desc')->get() ?? [];
             $totalCampaigns = [];
             foreach($totalAssignedInBranchLead as $assignedInBranchLead)
             {
-                $totalCampaigns[] = [
-                    'campaign_type_name' => CampaignType::where('id', '=', $assignedInBranchLead->campaign_type_id)->where('status', '!=', 3)->value('name') ?? '',
+                $arr = [];
+                
+                $arr['campaign_type_name'] = CampaignType::where('id', '=', $assignedInBranchLead->campaign_type_id)->where('status', '!=', 3)->value('name') ?? '' ;
 
-                    'campaign_name' => Campaign::where('id', '=', $assignedInBranchLead->campaign_id)->where('status', '!=', 3)->value('name') ?? '',
+                $arr['campaign_name'] = Campaign::where('id', '=', $assignedInBranchLead->campaign_id)->where('status', '!=', 3)->value('name') ?? '' ;
 
-                    'campaign_type_id' => $assignedInBranchLead->campaign_type_id,
+                $arr['campaign_type_id'] = CampaignType::where('id', '=', $assignedInBranchLead->campaign_type_id)->where('status', '!=', 3)->value('id') ?? '' ;
 
-                    'campaign_id' => $assignedInBranchLead->campaign_id,
+                $arr['campaign_id'] = Campaign::where('id', '=', $assignedInBranchLead->campaign_id)->where('status', '!=', 3)->value('id') ?? '' ;
 
-                    // 'branchLead_id' => $assignedInBranchLead->id,
+            
+                // 'added_by_name' => ( User::where('id', '=', $assignedInBranchLead->created_by)->where('status', '!=', 3)->value('first_name') . ' '. User::where('id', '=', $assignedInBranchLead->created_by)->where('status', '!=', 3)->value('last_name') ) ?? '',
+                // 'updated_by_name' => ( User::where('id', '=', $assignedInBranchLead->updated_by)->where('status', '!=', 3)->value('first_name') . ' '. User::where('id', '=', $assignedInBranchLead->updated_by)->where('status', '!=', 3)->value('last_name') ) ?? '',
+                // 'created_at' => $assignedInBranchLead->created_at?->format('M d, Y h:i A') ?? '',
+                // 'updated_at' => $assignedInBranchLead->updated_at?->format('M d, Y h:i A') ?? '',
+                
 
-                    'branchLead_id' => Helper::encoded($assignedInBranchLead->id),
+                if($assignedInBranchLead->campaign_type_id == 0 && $assignedInBranchLead->campaign_id == 0)
+                {
+                    $arr['campaign_type_id'] = 0;
+                    $arr['campaign_id'] = 0;
+                    $arr['campaign_type_name'] = 'Without Campaign';
+                    $arr['campaign_name'] = 'Without Campaign';
+                }
 
-                    // 'added_by_name' => ( User::where('id', '=', $assignedInBranchLead->created_by)->where('status', '!=', 3)->value('first_name') . ' '. User::where('id', '=', $assignedInBranchLead->created_by)->where('status', '!=', 3)->value('last_name') ) ?? '',
-                    // 'updated_by_name' => ( User::where('id', '=', $assignedInBranchLead->updated_by)->where('status', '!=', 3)->value('first_name') . ' '. User::where('id', '=', $assignedInBranchLead->updated_by)->where('status', '!=', 3)->value('last_name') ) ?? '',
-                    // 'created_at' => $assignedInBranchLead->created_at?->format('M d, Y h:i A') ?? '',
-                    // 'updated_at' => $assignedInBranchLead->updated_at?->format('M d, Y h:i A') ?? '',
-                ];
+                if(isset($arr['campaign_type_id']) && isset($arr['campaign_id']))
+                {
+                    $arr['branchLead_id'] = Helper::encoded($assignedInBranchLead->id) ;
+                }
+
+                $totalCampaigns[] = $arr;
+
+
             }
             
             
@@ -1218,7 +1378,7 @@ class LeadListController extends Controller
                         'campaign_type_id' => $branchLeadArr->campaign_type_id ,
                         'campaign_id' => $branchLeadArr->campaign_id ,
                         'from_assigned_telecaller_id' => $branchLeadArr->assigned_telecaller_id ,
-                        'to_assigned_telecaller_id' => $request->to_assigned_telecaller_id ,
+                        'to_assigned_telecaller_id' => Helper::decoded($request->to_assigned_telecaller_id) ,
                         'created_by' => session('user_data')['user_id'],
                         'updated_by' => session('user_data')['user_id'],
                     ];
@@ -1231,11 +1391,26 @@ class LeadListController extends Controller
                     LeadTransfer::insert($fields);
 
                     BranchLead::where('id', '=', Helper::decoded($branchLead_id))->update([
-                        'assigned_telecaller_id' => $request->to_assigned_telecaller_id ,
+                        'assigned_telecaller_id' => Helper::decoded($request->to_assigned_telecaller_id) ,
                         'updated_by' => session('user_data')['user_id'],
                     ]);
 
                 }
+
+
+
+                /* user activity */
+                $activityData = [
+                    'user_email'        => session('user_data')['email'],
+                    'user_name'         => session('user_data')['name'],
+                    'user_type'         => 'ADMIN',
+                    'ip_address'        => $request->ip(),
+                    'activity_type'     => 3,
+                    'activity_details'  => $this->data['title'] . ' Transferred',
+                    'platform_type'     => 'WEB',
+                ];
+                UserActivity::insert($activityData);
+                /* user activity */
 
                 return response()->json([
                     'status' => 'success',
@@ -1245,6 +1420,119 @@ class LeadListController extends Controller
             }
 
             
+        }
+    }
+
+    public function bulkLeadTransfer(Request $request)
+    {
+        if ($request->isMethod('post'))
+        {
+            $validator = Validator::make($request->all(), [
+                'to_assigned_telecaller_id' => 'required',
+                'branchLead_id_Arr' => 'required|array|min:1',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Please select branch, telecaller and at least one lead !!!',
+                ]);
+            }
+            else
+            {
+                foreach($request->branchLead_id_Arr as $branchLead_id)
+                {
+                    $branchLeadArr = BranchLead::find(Helper::decoded($branchLead_id));
+
+                    $fields = [];
+                    $fields = [
+                        'upload_id' => $branchLeadArr->upload_id ,
+                        'master_lead_id' => $branchLeadArr->master_lead_id ,
+                        'lead_sl_no' => $branchLeadArr->lead_sl_no ,
+                        'branch_id' => $branchLeadArr->branch_id ,
+                        'campaign_type_id' => $branchLeadArr->campaign_type_id ,
+                        'campaign_id' => $branchLeadArr->campaign_id ,
+                        'from_assigned_telecaller_id' => $branchLeadArr->assigned_telecaller_id ,
+                        'to_assigned_telecaller_id' => Helper::decoded($request->to_assigned_telecaller_id) ,
+                        'created_by' => session('user_data')['user_id'],
+                        'updated_by' => session('user_data')['user_id'],
+                    ];
+
+                    // last parent_status_id and child_status_id from LeadActivity before transfer
+                    $lastLeadActivityRow = LeadActivity::where('lead_sl_no', '=', $branchLeadArr->lead_sl_no)->where('status', '!=', 3)->orderBy('id', 'desc')->first(); 
+                    $fields['parent_status_id'] = !empty($lastLeadActivityRow) ? $lastLeadActivityRow->parent_status_id : 0 ;
+                    $fields['child_status_id'] = !empty($lastLeadActivityRow) ? $lastLeadActivityRow->child_status_id : 0 ;
+                    
+                    LeadTransfer::insert($fields);
+
+                    BranchLead::where('id', '=', Helper::decoded($branchLead_id))->update([
+                        'assigned_telecaller_id' => Helper::decoded($request->to_assigned_telecaller_id) ,
+                        'updated_by' => session('user_data')['user_id'],
+                    ]);
+
+                }
+
+
+                /* user activity */
+                $activityData = [
+                    'user_email'        => session('user_data')['email'],
+                    'user_name'         => session('user_data')['name'],
+                    'user_type'         => 'ADMIN',
+                    'ip_address'        => $request->ip(),
+                    'activity_type'     => 3,
+                    'activity_details'  => $this->data['title'] . ' Transferred',
+                    'platform_type'     => 'WEB',
+                ];
+                UserActivity::insert($activityData);
+                /* user activity */
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Bulk Lead Transferred Successfully !!!',
+                ]);
+
+            }
+
+            
+        }
+    }
+
+    public function fetchBranchWiseTelecaller(Request $request)
+    {
+        if($request->isMethod('post'))
+        {
+            $selected_branch_id = Helper::decoded($request->selected_branch_id);
+            $branchWiseTelecaller = [];
+            $arr = User::where('branch_id', '=', $selected_branch_id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+            foreach($arr as $telecaller)
+            {
+                $branchWiseTelecaller[] = [
+                    'id' => Helper::encoded($telecaller->id),
+                    'first_name' => $telecaller->first_name,
+                    'last_name' => $telecaller->last_name,
+                ];
+            }
+
+            return response()->json($branchWiseTelecaller);
+        }
+    }
+
+    public function fetchParentWiseChildStatus(Request $request)
+    {
+        if($request->isMethod('post'))
+        {
+            $parent_status_id = Helper::decoded($request->parent_status_id);
+            $arr = LeadStatus::where('parent_id', '=', $parent_status_id)->where('status', '!=', 3)->orderBy('rank', 'asc')->get();
+            $childStatusArr = [];
+            foreach($arr as $childStatus)
+            {
+                $childStatusArr[] = [
+                    'id' => Helper::encoded($childStatus->id) ,
+                    'name' => $childStatus->name ,
+                ];
+            }
+
+            return response()->json($childStatusArr);
         }
     }
     /* ajax request */

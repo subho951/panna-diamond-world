@@ -233,6 +233,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('lead-list/get-lead-call-data', [LeadListController::class, 'getLeadCallData']);
         Route::post('lead-list/individual-lead-transfer-modal-data', [LeadListController::class, 'individualLeadTransferModalData']);
         Route::post('lead-list/individual-lead-transfer', [LeadListController::class, 'individualLeadTransfer']);
+        Route::post('lead-list/bulk-lead-transfer', [LeadListController::class, 'bulkLeadTransfer']);
+        Route::post('lead-list/fetch-branch-wise-telecaller', [LeadListController::class, 'fetchBranchWiseTelecaller']);
+        Route::post('lead-list/fetch-parent-wise-child-status', [LeadListController::class, 'fetchParentWiseChildStatus']);
+        
+
     /* Lead List */
 
     /* Feedback Tags */
