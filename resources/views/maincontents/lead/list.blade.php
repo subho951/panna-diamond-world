@@ -1292,7 +1292,7 @@ $controllerRoute = $module['controller_route'];
         //                 error: function(xhr)
         //                 {
         //                     console.log(xhr);
-        //                 }
+        //          }
         //             });
 
         //         }
