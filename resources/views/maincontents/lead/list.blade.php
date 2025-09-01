@@ -46,7 +46,7 @@ $controllerRoute = $module['controller_route'];
                </div> --}}
 
                         {{-- <h6 class="card-title">Filter</h6> --}}
-                        
+                        {{-- filter section --}}
                         <div class="card mb-3 p-3" >
                             <form>
                                 @csrf
@@ -127,8 +127,8 @@ $controllerRoute = $module['controller_route'];
                                                         @foreach($parentWiseChildStatus as $childStatus)
                                                         <option
                                                             value="{{ Helper::encoded($childStatus->id) }}"
-                                                            @if(!empty(108))
-                                                                @if(Helper::encoded($childStatus->id) == Helper::encoded(108))
+                                                            @if(!empty($selected_child_status_id))
+                                                                @if(Helper::encoded($childStatus->id) == Helper::encoded($selected_child_status_id))
                                                                     selected
                                                                 @endif   
                                                             @endif
@@ -138,8 +138,8 @@ $controllerRoute = $module['controller_route'];
                                                         @foreach($allChildStatus as $childStatus)
                                                         <option
                                                             value="{{ Helper::encoded($childStatus->id) }}"
-                                                            @if(!empty(108))
-                                                                @if(Helper::encoded($childStatus->id) == Helper::encoded(108))
+                                                            @if(!empty($selected_child_status_id))
+                                                                @if(Helper::encoded($childStatus->id) == Helper::encoded($selected_child_status_id))
                                                                     selected
                                                                 @endif   
                                                             @endif
@@ -165,7 +165,8 @@ $controllerRoute = $module['controller_route'];
                                 </div>                                       
                             </form>
                         </div>
-
+                        
+                        {{-- bulk lead transfer section --}}
                         @if(session('user_data')['role_id'] != 3)
                             @if(!empty($totalLeadArr))
                                 <div class="card mb-3 p-3 bulkTransferSection" style="display: none;">
@@ -206,7 +207,8 @@ $controllerRoute = $module['controller_route'];
                                 </div>
                             @endif
                         @endif
-
+                         
+                        {{-- lead list section --}}
                         <div class="card p-3">
                             {{-- <h5 class="card-header fw-bold text-success p-2">Lead List</h5> --}}
                             <div class="d-flex justify-content-between align-items-center mb-2">
