@@ -1573,7 +1573,7 @@ class LeadListController extends Controller
         $lead_sl_no = BranchLead::find($id)->lead_sl_no ;
 
         // from MasterLead
-        MasterLead::where('sl_no', '=', $lead_sl_no)->update($fields);
+        // MasterLead::where('sl_no', '=', $lead_sl_no)->update($fields);
 
         // from BranchLead
         BranchLead::where('lead_sl_no', '=', $lead_sl_no)->update($fields);
@@ -2294,49 +2294,74 @@ class LeadListController extends Controller
         if ($request->isMethod('post'))
         {
             $validator = Validator::make($request->all(), [
-                'to_assigned_telecaller_id' => 'required',
+                'branchFromUrl' => 'required', 
+                'transfer_branch' => 'required',
+                'transfer_telecaller_id_arr' => 'required|array|min:1',
                 'branchLead_id_Arr' => 'required|array|min:1',
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Please select branch, telecaller and at least one lead !!!',
+                    'message' => 'Please Filter By Branch, Then Select At Least One Lead To Transfer, Then Select "Transfer To Branch" And Select "Transfer To Telecaller(s)" !!!',
                 ]);
             }
             else
             {
-                foreach($request->branchLead_id_Arr as $branchLead_id)
+
+                $branchLeadIds = $request->branchLead_id_Arr; // encoded lead IDs
+                $telecallerIdsEncoded = $request->transfer_telecaller_id_arr; // encoded telecaller IDs
+
+                // Decode all telecaller IDs
+                $telecallerIds = array_map(function ($id) {
+                    return Helper::decoded($id);
+                }, $telecallerIdsEncoded);
+
+                $totalTelecallers = count($telecallerIds);
+                $index = 0; // For circular distribution
+
+                foreach ($branchLeadIds as $branchLead_id) 
                 {
                     $branchLeadArr = BranchLead::find(Helper::decoded($branchLead_id));
 
-                    $fields = [];
+                    // Pick telecaller in round-robin manner
+                    $toTelecallerId = $telecallerIds[$index];
+
                     $fields = [
-                        'upload_id' => $branchLeadArr->upload_id ,
-                        'master_lead_id' => $branchLeadArr->master_lead_id ,
-                        'lead_sl_no' => $branchLeadArr->lead_sl_no ,
-                        'branch_id' => $branchLeadArr->branch_id ,
-                        'campaign_type_id' => $branchLeadArr->campaign_type_id ,
-                        'campaign_id' => $branchLeadArr->campaign_id ,
-                        'from_assigned_telecaller_id' => $branchLeadArr->assigned_telecaller_id ,
-                        'to_assigned_telecaller_id' => Helper::decoded($request->to_assigned_telecaller_id) ,
+                        'upload_id' => $branchLeadArr->upload_id,
+                        'master_lead_id' => $branchLeadArr->master_lead_id,
+                        'lead_sl_no' => $branchLeadArr->lead_sl_no,
+                        'branch_id' => $branchLeadArr->branch_id,
+                        'campaign_type_id' => $branchLeadArr->campaign_type_id,
+                        'campaign_id' => $branchLeadArr->campaign_id,
+                        'from_assigned_telecaller_id' => $branchLeadArr->assigned_telecaller_id,
+                        'to_assigned_telecaller_id' => $toTelecallerId,
                         'created_by' => session('user_data')['user_id'],
                         'updated_by' => session('user_data')['user_id'],
                     ];
 
-                    // last parent_status_id and child_status_id from LeadActivity before transfer
-                    $lastLeadActivityRow = LeadActivity::where('lead_sl_no', '=', $branchLeadArr->lead_sl_no)->where('status', '!=', 3)->orderBy('id', 'desc')->first(); 
-                    $fields['parent_status_id'] = !empty($lastLeadActivityRow) ? $lastLeadActivityRow->parent_status_id : 0 ;
-                    $fields['child_status_id'] = !empty($lastLeadActivityRow) ? $lastLeadActivityRow->child_status_id : 0 ;
-                    
+                    // last LeadActivity status before transfer
+                    $lastLeadActivityRow = LeadActivity::where('lead_sl_no', '=', $branchLeadArr->lead_sl_no)
+                        ->where('status', '!=', 3)
+                        ->orderBy('id', 'desc')
+                        ->first();
+
+                    $fields['parent_status_id'] = !empty($lastLeadActivityRow) ? $lastLeadActivityRow->parent_status_id : 0;
+                    $fields['child_status_id'] = !empty($lastLeadActivityRow) ? $lastLeadActivityRow->child_status_id : 0;
+
                     LeadTransfer::insert($fields);
 
+                    // Update BranchLead with new telecaller
                     BranchLead::where('id', '=', Helper::decoded($branchLead_id))->update([
-                        'assigned_telecaller_id' => Helper::decoded($request->to_assigned_telecaller_id) ,
+                        'assigned_telecaller_id' => $toTelecallerId,
+                        'branch_id' => Helper::decoded($request->transfer_branch),
                         'updated_by' => session('user_data')['user_id'],
                     ]);
 
+                    // Move to next telecaller (circular)
+                    $index = ($index + 1) % $totalTelecallers;
                 }
+
 
 
                 /* user activity */
