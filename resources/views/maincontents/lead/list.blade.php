@@ -188,7 +188,7 @@ $controllerRoute = $module['controller_route'];
                                             </select>
                                         </div>                                   
                                         <div class="col-md-6 mb-3">
-                                            <label for="transfer_telecaller_id" class="form-label">Transfer To Telecaller  </label>
+                                            <label for="transfer_telecaller_id" class="form-label">Transfer To Telecaller(s)  </label>
                                             <select class="select2 form-select" id="transfer_telecaller_id" name="transfer_telecaller_id[]" multiple>
                                                 @if(!empty($branchWiseTelecaller))
                                                         @foreach($branchWiseTelecaller as $telecaller)
@@ -1176,18 +1176,6 @@ $controllerRoute = $module['controller_route'];
 
 
 
-        
-
-        
-        // let selected_telecaller_id = "";
-        // let selected_telecaller_name = "";
-        // $(document).on('change', '#telecaller_id', function()
-        // {
-        //     selected_telecaller_id = $(this).val();
-        //     selected_telecaller_name = $(this).find('option:selected').text();
-        //     // console.log(selected_telecaller_id);
-        // });
-
 
         // show bulk lead transfer section if atleast one checkbox is checked
         function toggleBulkTransferSection() 
@@ -1243,69 +1231,114 @@ $controllerRoute = $module['controller_route'];
             
         });
 
+        
+        
         // transfer bulk lead
-        // $(document).on('click', '.bulkLeadTransferBtn', function()
-        // {            
-        //     if( (branchFromUrl != "") && (selected_telecaller_id != "") && ($('input[name="branchLead_id_Arr[]"]:checked').length > 0) )
-        //     {    
-        //         // jQuery collection of checked checkboxes
-        //         let checkedCheckboxes = $('input[name="branchLead_id_Arr[]"]:checked');    
+        $(document).on('click', '.bulkLeadTransferBtn', function()
+        {   
+            if (branchFromUrl !== null && branchFromUrl !== "") 
+            {
+                let transfer_branch = "";
+                transfer_branch = $('#transfer_branch_id').val();
+                if(transfer_branch != "")
+                {
+                    let transfer_telecaller_id_arr = "";
+                    transfer_telecaller_id_arr = $('#transfer_telecaller_id').val();
+                    
+                    if(transfer_telecaller_id_arr != "" && transfer_telecaller_id_arr.length > 0)
+                    {
+                        if($('input[name="branchLead_id_Arr[]"]:checked').length > 0)
+                        {
+                            // jQuery collection of checked checkboxes
+                            let checkedCheckboxes = $('input[name="branchLead_id_Arr[]"]:checked');    
 
-        //         // Array of values from those checkboxes
-        //         let branchLead_id_Arr = checkedCheckboxes.map(function()
-        //         {
-        //             return $(this).val();
-        //         }).get();
+                            // Array of values from those checkboxes
+                            let branchLead_id_Arr = checkedCheckboxes.map(function()
+                            {
+                                return $(this).val();
+                            }).get();
 
-        //         // console.log("Selected values:", branchLead_id_Arr); 
-                
-        //         Swal.fire({
-        //         text: `Transfer ${$('input[name="branchLead_id_Arr[]"]:checked').length} lead(s) to ${selected_telecaller_name} ?`,
-        //         icon: "question",
-        //         showCancelButton: true,
-        //         confirmButtonColor: "#000000",
-        //         cancelButtonColor: "#ff4c51",
-        //         confirmButtonText: "Confirm"
-        //         }).then((result) => {
-        //         if (result.isConfirmed) 
-        //         {
-        //             $.ajax({
-        //                 url: base_url + '/lead-list/bulk-lead-transfer',
-        //                 type: 'POST',
-        //                 data: {
-        //                     branchLead_id_Arr : branchLead_id_Arr,
-        //                     to_assigned_telecaller_id : selected_telecaller_id,
-        //                 },
-        //                 success: function(resp)
-        //                 {
-        //                     if(resp.status == 'success')
-        //                     {
-        //                         toastAlert('success', resp.message);
+                            // console.log("Selected values:", branchLead_id_Arr); 
 
-        //                         setTimeout(() => {
-        //                             location.reload();
-        //                         }, 1000);
-        //                     }
-        //                     else if(resp.status == 'error')
-        //                     {
-        //                         toastAlert('error', resp.message);
-        //                     }
-        //                 },
-        //                 error: function(xhr)
-        //                 {
-        //                     console.log(xhr);
-        //          }
-        //             });
+                            let transfer_telecaller_name_arr = [];
 
-        //         }
-        //         });
+                            $('#transfer_telecaller_id option:selected').each(function() {
+                                transfer_telecaller_name_arr.push($(this).text().trim());
+                            });
 
-        //     }
-        //     else
-        //     {
-        //         toastAlert('error', 'Please select branch, telecaller and at least one lead !!!');
-        //     }
-        // });
+                            let transfer_telecaller_name_str = "";
+
+                            if (transfer_telecaller_id_arr && transfer_telecaller_id_arr.length > 0) 
+                            {
+                                transfer_telecaller_name_str = transfer_telecaller_name_arr.join(", ");
+                            }
+                            
+                            Swal.fire({
+                            text: `Transfer ${$('input[name="branchLead_id_Arr[]"]:checked').length} lead(s) to ${transfer_telecaller_name_str} ?`,
+                            icon: "question",
+                            showCancelButton: true,
+                            confirmButtonColor: "#000000",
+                            cancelButtonColor: "#ff4c51",
+                            confirmButtonText: "Confirm"
+                            }).then((result) => {
+                            if (result.isConfirmed) 
+                            {
+                                $.ajax({
+                                    url: base_url + '/lead-list/bulk-lead-transfer',
+                                    type: 'POST',
+                                    data: {
+                                        branchFromUrl : branchFromUrl ,
+                                        transfer_branch : transfer_branch ,
+                                        branchLead_id_Arr : branchLead_id_Arr,
+                                        transfer_telecaller_id_arr : transfer_telecaller_id_arr ,
+                                    },
+                                    success: function(resp)
+                                    {
+                                        if(resp.status == 'success')
+                                        {
+                                            toastAlert('success', resp.message);
+
+                                            setTimeout(() => {
+                                                location.reload();
+                                            }, 1000);
+                                        }
+                                        else if(resp.status == 'error')
+                                        {
+                                            toastAlert('error', resp.message);
+                                        }
+                                    },
+                                    error: function(xhr)
+                                    {
+                                        console.log(xhr);
+                                    }
+                                });
+
+                            }
+                            });
+                        }
+                        else if($('input[name="branchLead_id_Arr[]"]:checked').length == 0)
+                        {
+                            toastAlert('error', 'Please Select At Least One Lead To Transfer !!!');
+                        }
+                    }
+                    else if(transfer_telecaller_id_arr == "")
+                    {
+                        toastAlert('error', 'Please Select "Transfer To Telecaller(s)" !!!');
+                    }
+                }
+                else if(transfer_branch == "")
+                {
+                    toastAlert('error', 'Please Select "Transfer To Branch" !!!');
+                }
+
+            }
+            else if (branchFromUrl === null || branchFromUrl === "") 
+            {
+                toastAlert('error', 'Please Filter By Branch !!!');
+            }
+                    
+            
+        });
 
 
 
