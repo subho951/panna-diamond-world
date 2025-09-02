@@ -277,7 +277,7 @@ class ApiController extends Controller
                     $phone                      = $requestData['phone'];
                     // $checkUser                  = User::where('phone', '=', $phone)->where('status', '=', 1)->first();
                     $checkUser                  = User::where('status', '=', 1)
-                                                    ->where(function ($query, $phone) {
+                                                    ->where(function ($query)  use ($phone) {
                                                         $query->where('phone', $phone)
                                                             ->orWhere('email', $phone);
                                                     })
