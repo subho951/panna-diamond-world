@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Models\EmailLog;
 use App\Models\User;
 use App\Models\Branch;
+use App\Models\LeadActivity;
 use App\Models\GeneralSetting;
 use App\Models\UserActivity;
 use App\Helpers\Helper;
@@ -259,66 +260,340 @@ class AuthController extends Controller
         }
     /* forgot password */
     /* dashboard */
-        public function dashboard()
+        public function dashboard(Request $request)
         {
             $data = [];
             
-            $allBranch = Branch::where('status', '!=', 3)->get();
-
-            $branchWiseTelecallerActivity = [];
-            foreach($allBranch as $eachBranch)
+            if(!empty($request->input('assigned-from-date')) && !empty($request->input('assigned-to-date')))
             {
-                $branchWiseTelecaller = User::where('branch_id', '=', $eachBranch->id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+                $assignedToDate = $request->input('assigned-to-date');
+                $data['assignedToDate'] = $assignedToDate ;
 
-                $telecallerActivity = [];
-                foreach($branchWiseTelecaller as $eachTelecaller)
+                $assignedFromDate = $request->input('assigned-from-date');
+                $data['assignedFromDate'] = $assignedFromDate ;
+               
+                $allBranch = Branch::where('status', '!=', 3)->get();
+
+                $branchWiseTelecallerActivity = [];
+                foreach($allBranch as $eachBranch)
                 {
-                    $telecallerWiseLeads = BranchLead::where('assigned_telecaller_id', '=', $eachTelecaller->id)->where('status', '!=', 3)->get();
-
-                    $parentStatus_new_count = 0;
-                    $parentStatus_dumb_count = 0;
-                    $parentStatus_followUp_count = 0;
-                    $parentStatus_success_count = 0;
-                    $total_call_count = 0;
-                    foreach($telecallerWiseLeads as $eachLead)
+                    if(session('user_data')['role_id'] == 3)
                     {
-                        $total_call_count++;
-
-                        if($eachLead->parent_status_id == 0 || $eachLead->parent_status_id == 12)
-                        {
-                            $parentStatus_new_count++;
-                        }
-                        elseif($eachLead->parent_status_id == 1)
-                        {
-                            $parentStatus_dumb_count++;
-                        }
-                        elseif($eachLead->parent_status_id == 5)
-                        {
-                            $parentStatus_followUp_count++;
-                        }
-                        elseif($eachLead->parent_status_id == 10)
-                        {
-                            $parentStatus_success_count++;
-                        }
+                        $this_telecaller_id = session('user_data')['user_id'] ;
+                        $branchWiseTelecaller = User::where('id', '=', $this_telecaller_id)->where('branch_id', '=', $eachBranch->id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
                     }
-                    
-                    $telecallerActivity[] = [
-                        'telecaller_name' => $eachTelecaller->first_name . ' ' . $eachTelecaller->last_name ,
-                        'total_call_count' => $total_call_count ,
-                        'parentStatus_new_count' => $parentStatus_new_count ,
-                        'parentStatus_dumb_count' => $parentStatus_dumb_count ,
-                        'parentStatus_followUp_count' => $parentStatus_followUp_count ,
-                        'parentStatus_success_count' => $parentStatus_success_count ,
+                    else
+                    {                     
+                        $branchWiseTelecaller = User::where('branch_id', '=', $eachBranch->id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+                    }
+
+                    $telecallerActivity = [];
+                    foreach($branchWiseTelecaller as $eachTelecaller)
+                    {
+                        $telecallerWiseLeads = BranchLead::whereDate('created_at', '>=', $assignedFromDate)->whereDate('created_at', '<=', $assignedToDate)->where('assigned_telecaller_id', '=', $eachTelecaller->id)->where('status', '!=', 3)->get();
+
+                        $parentStatus_new_count = 0;
+                        $parentStatus_dumb_count = 0;
+                        $parentStatus_followUp_count = 0;
+                        $parentStatus_success_count = 0;
+                        $total_call_count = 0;
+                        foreach($telecallerWiseLeads as $eachLead)
+                        {
+                            $total_call_count++;
+
+                            if($eachLead->parent_status_id == 0 || $eachLead->parent_status_id == 12)
+                            {
+                                $parentStatus_new_count++;
+                            }
+                            elseif($eachLead->parent_status_id == 1)
+                            {
+                                $parentStatus_dumb_count++;
+                            }
+                            elseif($eachLead->parent_status_id == 5)
+                            {
+                                $parentStatus_followUp_count++;
+                            }
+                            elseif($eachLead->parent_status_id == 10)
+                            {
+                                $parentStatus_success_count++;
+                            }
+                        }
+                        
+                        // last call of of telecaller
+                        $lastCallOfTelecaller = LeadActivity::where('assigned_telecaller_id', '=', $eachTelecaller->id)->where('status', '!=', 3)->orderBy('id', 'desc')->first();
+                        if(!empty($lastCallOfTelecaller))
+                        {
+                            $formatedLastCallOfTelecaller = $lastCallOfTelecaller->created_at->format('M d, Y h:i A') ;
+                        }
+                        else
+                        {
+                            $formatedLastCallOfTelecaller = '' ;
+                        }
+
+                        $telecallerActivity[] = [
+                            'telecaller_name' => $eachTelecaller->first_name . ' ' . $eachTelecaller->last_name ,
+                            'last_call_of_telecaller' => $formatedLastCallOfTelecaller ,
+                            'total_call_count' => $total_call_count ,
+                            'parentStatus_new_count' => $parentStatus_new_count ,
+                            'parentStatus_dumb_count' => $parentStatus_dumb_count ,
+                            'parentStatus_followUp_count' => $parentStatus_followUp_count ,
+                            'parentStatus_success_count' => $parentStatus_success_count ,
+                        ];
+
+                    }
+
+                    $branchWiseTelecallerActivity[] = [
+                        'branch_name' => $eachBranch->name ,
+                        'telecallerActivity' => $telecallerActivity ,
                     ];
-
                 }
-
-                $branchWiseTelecallerActivity[] = [
-                    'branch_name' => $eachBranch->name ,
-                    'telecallerActivity' => $telecallerActivity ,
-                ];
+            
             }
+            elseif(!empty($request->input('assigned-to-date')))
+            {
+               $assignedToDate = $request->input('assigned-to-date');
+               $data['assignedToDate'] = $assignedToDate ;
+               
+               $allBranch = Branch::where('status', '!=', 3)->get();
 
+               $branchWiseTelecallerActivity = [];
+               foreach($allBranch as $eachBranch)
+               {
+                   if(session('user_data')['role_id'] == 3)
+                   {
+                       $this_telecaller_id = session('user_data')['user_id'] ;
+                       $branchWiseTelecaller = User::where('id', '=', $this_telecaller_id)->where('branch_id', '=', $eachBranch->id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+                   }
+                   else
+                   {                     
+                       $branchWiseTelecaller = User::where('branch_id', '=', $eachBranch->id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+                   }
+
+                   $telecallerActivity = [];
+                   foreach($branchWiseTelecaller as $eachTelecaller)
+                   {
+                       $telecallerWiseLeads = BranchLead::whereDate('created_at', '<=', $assignedToDate)->where('assigned_telecaller_id', '=', $eachTelecaller->id)->where('status', '!=', 3)->get();
+
+                       $parentStatus_new_count = 0;
+                       $parentStatus_dumb_count = 0;
+                       $parentStatus_followUp_count = 0;
+                       $parentStatus_success_count = 0;
+                       $total_call_count = 0;
+                       foreach($telecallerWiseLeads as $eachLead)
+                       {
+                           $total_call_count++;
+
+                           if($eachLead->parent_status_id == 0 || $eachLead->parent_status_id == 12)
+                           {
+                               $parentStatus_new_count++;
+                           }
+                           elseif($eachLead->parent_status_id == 1)
+                           {
+                               $parentStatus_dumb_count++;
+                           }
+                           elseif($eachLead->parent_status_id == 5)
+                           {
+                               $parentStatus_followUp_count++;
+                           }
+                           elseif($eachLead->parent_status_id == 10)
+                           {
+                               $parentStatus_success_count++;
+                           }
+                       }
+                       
+                       // last call of of telecaller
+                       $lastCallOfTelecaller = LeadActivity::where('assigned_telecaller_id', '=', $eachTelecaller->id)->where('status', '!=', 3)->orderBy('id', 'desc')->first();
+                       if(!empty($lastCallOfTelecaller))
+                       {
+                           $formatedLastCallOfTelecaller = $lastCallOfTelecaller->created_at->format('M d, Y h:i A') ;
+                       }
+                       else
+                       {
+                           $formatedLastCallOfTelecaller = '' ;
+                       }
+
+                       $telecallerActivity[] = [
+                           'telecaller_name' => $eachTelecaller->first_name . ' ' . $eachTelecaller->last_name ,
+                           'last_call_of_telecaller' => $formatedLastCallOfTelecaller ,
+                           'total_call_count' => $total_call_count ,
+                           'parentStatus_new_count' => $parentStatus_new_count ,
+                           'parentStatus_dumb_count' => $parentStatus_dumb_count ,
+                           'parentStatus_followUp_count' => $parentStatus_followUp_count ,
+                           'parentStatus_success_count' => $parentStatus_success_count ,
+                       ];
+
+                   }
+
+                   $branchWiseTelecallerActivity[] = [
+                       'branch_name' => $eachBranch->name ,
+                       'telecallerActivity' => $telecallerActivity ,
+                   ];
+               }
+           
+            }
+            elseif(!empty($request->input('assigned-from-date')))
+            {
+               $assignedFromDate = $request->input('assigned-from-date');
+               $data['assignedFromDate'] = $assignedFromDate ;
+               // dd($assignedFromDate);
+                             
+               $allBranch = Branch::where('status', '!=', 3)->get();
+
+               $branchWiseTelecallerActivity = [];
+               foreach($allBranch as $eachBranch)
+               {
+                   if(session('user_data')['role_id'] == 3)
+                   {
+                       $this_telecaller_id = session('user_data')['user_id'] ;
+                       $branchWiseTelecaller = User::where('id', '=', $this_telecaller_id)->where('branch_id', '=', $eachBranch->id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+                   }
+                   else
+                   {                     
+                       $branchWiseTelecaller = User::where('branch_id', '=', $eachBranch->id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+                   }
+
+                   $telecallerActivity = [];
+                   foreach($branchWiseTelecaller as $eachTelecaller)
+                   {
+                       $telecallerWiseLeads = BranchLead::whereDate('created_at', '>=', $assignedFromDate)->where('assigned_telecaller_id', '=', $eachTelecaller->id)->where('status', '!=', 3)->get();
+
+                       $parentStatus_new_count = 0;
+                       $parentStatus_dumb_count = 0;
+                       $parentStatus_followUp_count = 0;
+                       $parentStatus_success_count = 0;
+                       $total_call_count = 0;
+                       foreach($telecallerWiseLeads as $eachLead)
+                       {
+                           $total_call_count++;
+
+                           if($eachLead->parent_status_id == 0 || $eachLead->parent_status_id == 12)
+                           {
+                               $parentStatus_new_count++;
+                           }
+                           elseif($eachLead->parent_status_id == 1)
+                           {
+                               $parentStatus_dumb_count++;
+                           }
+                           elseif($eachLead->parent_status_id == 5)
+                           {
+                               $parentStatus_followUp_count++;
+                           }
+                           elseif($eachLead->parent_status_id == 10)
+                           {
+                               $parentStatus_success_count++;
+                           }
+                       }
+                       
+                       // last call of of telecaller
+                       $lastCallOfTelecaller = LeadActivity::where('assigned_telecaller_id', '=', $eachTelecaller->id)->where('status', '!=', 3)->orderBy('id', 'desc')->first();
+                       if(!empty($lastCallOfTelecaller))
+                       {
+                           $formatedLastCallOfTelecaller = $lastCallOfTelecaller->created_at->format('M d, Y h:i A') ;
+                       }
+                       else
+                       {
+                           $formatedLastCallOfTelecaller = '' ;
+                       }
+
+                       $telecallerActivity[] = [
+                           'telecaller_name' => $eachTelecaller->first_name . ' ' . $eachTelecaller->last_name ,
+                           'last_call_of_telecaller' => $formatedLastCallOfTelecaller ,
+                           'total_call_count' => $total_call_count ,
+                           'parentStatus_new_count' => $parentStatus_new_count ,
+                           'parentStatus_dumb_count' => $parentStatus_dumb_count ,
+                           'parentStatus_followUp_count' => $parentStatus_followUp_count ,
+                           'parentStatus_success_count' => $parentStatus_success_count ,
+                       ];
+
+                   }
+
+                   $branchWiseTelecallerActivity[] = [
+                       'branch_name' => $eachBranch->name ,
+                       'telecallerActivity' => $telecallerActivity ,
+                   ];
+               }
+                     
+            }
+            else // no filter
+            {
+
+                $allBranch = Branch::where('status', '!=', 3)->get();
+
+                $branchWiseTelecallerActivity = [];
+                foreach($allBranch as $eachBranch)
+                {
+                    if(session('user_data')['role_id'] == 3)
+                    {
+                        $this_telecaller_id = session('user_data')['user_id'] ;
+                        $branchWiseTelecaller = User::where('id', '=', $this_telecaller_id)->where('branch_id', '=', $eachBranch->id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+                    }
+                    else
+                    {                     
+                        $branchWiseTelecaller = User::where('branch_id', '=', $eachBranch->id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+                    }
+
+                    $telecallerActivity = [];
+                    foreach($branchWiseTelecaller as $eachTelecaller)
+                    {
+                        $telecallerWiseLeads = BranchLead::where('assigned_telecaller_id', '=', $eachTelecaller->id)->where('status', '!=', 3)->get();
+
+                        $parentStatus_new_count = 0;
+                        $parentStatus_dumb_count = 0;
+                        $parentStatus_followUp_count = 0;
+                        $parentStatus_success_count = 0;
+                        $total_call_count = 0;
+                        foreach($telecallerWiseLeads as $eachLead)
+                        {
+                            $total_call_count++;
+
+                            if($eachLead->parent_status_id == 0 || $eachLead->parent_status_id == 12)
+                            {
+                                $parentStatus_new_count++;
+                            }
+                            elseif($eachLead->parent_status_id == 1)
+                            {
+                                $parentStatus_dumb_count++;
+                            }
+                            elseif($eachLead->parent_status_id == 5)
+                            {
+                                $parentStatus_followUp_count++;
+                            }
+                            elseif($eachLead->parent_status_id == 10)
+                            {
+                                $parentStatus_success_count++;
+                            }
+                        }
+                        
+                        // last call of of telecaller
+                        $lastCallOfTelecaller = LeadActivity::where('assigned_telecaller_id', '=', $eachTelecaller->id)->where('status', '!=', 3)->orderBy('id', 'desc')->first();
+                        if(!empty($lastCallOfTelecaller))
+                        {
+                            $formatedLastCallOfTelecaller = $lastCallOfTelecaller->created_at->format('M d, Y h:i A') ;
+                        }
+                        else
+                        {
+                            $formatedLastCallOfTelecaller = '' ;
+                        }
+
+                        $telecallerActivity[] = [
+                            'telecaller_name' => $eachTelecaller->first_name . ' ' . $eachTelecaller->last_name ,
+                            'last_call_of_telecaller' => $formatedLastCallOfTelecaller ,
+                            'total_call_count' => $total_call_count ,
+                            'parentStatus_new_count' => $parentStatus_new_count ,
+                            'parentStatus_dumb_count' => $parentStatus_dumb_count ,
+                            'parentStatus_followUp_count' => $parentStatus_followUp_count ,
+                            'parentStatus_success_count' => $parentStatus_success_count ,
+                        ];
+
+                    }
+
+                    $branchWiseTelecallerActivity[] = [
+                        'branch_name' => $eachBranch->name ,
+                        'telecallerActivity' => $telecallerActivity ,
+                    ];
+                }
+            
+            }
 
             $title                                  = 'Dashboard';
             $page_name                              = 'dashboard';
