@@ -305,7 +305,14 @@ class ApiController extends Controller
                         /* email log save */
                             $postData2 = [
                                 'name'                  => $checkUser->first_name.' '.$checkUser->last_name,
-                                'email'                 => $checkUser->email,
+                                'email'                 => 'graphics@diamondworldllp.com',
+                                'subject'               => $subject,
+                                'message'               => $message
+                            ];
+                            EmailLog::insert($postData2);
+                            $postData2 = [
+                                'name'                  => $checkUser->first_name.' '.$checkUser->last_name,
+                                'email'                 => 'ecommerce@diamondworldllp.com',
                                 'subject'               => $subject,
                                 'message'               => $message
                             ];
