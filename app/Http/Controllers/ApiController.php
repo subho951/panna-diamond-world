@@ -1795,7 +1795,7 @@ class ApiController extends Controller
                                         $isShow         = 0;
                                     }
 
-                                    if($isShow)
+                                    if($isShow){
                                         $apiResponse[]      = [
                                             'sl_no'                 => $leadNo->lead_sl_no,
                                             'lead_no'               => (($getMasterLead)?$getMasterLead->lead_no:''),
