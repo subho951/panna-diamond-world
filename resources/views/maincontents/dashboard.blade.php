@@ -10,11 +10,114 @@ use App\Helpers\Helper;
     <div class="col-lg-12">
       <h3 class="mt-2 main_heading">Welcome to <?=Helper::getSettingValue('site_name')?> masteradmin panel</h2>
     </div>
-   
-    {{-- @dd($branchWiseTelecallerActivity); --}}
+    {{-- filter section start --}}
+    <div class="card mb-3 p-3" >
+      <form>
+          @csrf
+          <div class="row">
+              <div class="col-md-9">
+                  <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label for="assigned_from_date" class="form-label">Assigned From </label>
+                        <input class="form-control" type="date" id="assigned_from_date" name="assigned_from_date"
+                          @if(!empty($assignedFromDate))
+                            value="{{ $assignedFromDate }}" 
+                          @endif
+                          max="<?=date('Y-m-d')?>" />
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label for="assigned_to_date" class="form-label">Assigned To </label>
+                        <input class="form-control" type="date" id="assigned_to_date" name="assigned_to_date"
+                          @if(!empty($assignedToDate))
+                            value="{{ $assignedToDate }}"
+                          @endif
+                          max="<?=date('Y-m-d')?>" />
+                      </div>
+                  </div>
+              </div>
+              <div class="col-md-3 mt-3">
+                  <div class="row">
+                      <div class="col-md-12 d-flex gap-2 mt-3">
+                          <button type="button" class="w-100 btn btn-outline-dark filterBtn">
+                              <i class="fa-solid fa-filter"></i>&nbsp;<span>Filter</span>
+                          </button>
+                          <button type="button" class="w-100 btn btn-label-secondary d-none resetBtn">
+                              <i class="fa-solid fa-arrow-rotate-left"></i>&nbsp;<span>Reset</span>
+                          </button>
+                      </div>
+                  </div>
+              </div>
+          </div>                                       
+      </form>
+    </div>
+    {{-- filter section end --}}
+
     @foreach($branchWiseTelecallerActivity as $eachBranchWiseTelecallerActivity)
     {{-- @dd($eachBranchWiseTelecallerActivity); --}}
-      <div class="card mb-3 p-3">
+      @if(session('user_data')['role_id'] == 3)
+
+        @if(!empty($eachBranchWiseTelecallerActivity["telecallerActivity"]))
+          <div class="card mb-3 p-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div>
+                      <span class="card-header fw-bold h6 ps-0">{{ $eachBranchWiseTelecallerActivity["branch_name"] }}</span> 
+                  </div>
+              </div>
+              <div class="table-responsive text-nowrap">
+                  <table class="table table-striped">
+                      <thead>
+                          <tr>
+                              <th>Telecaller | Last Call</th>
+                              <th class="text-center">Total Calls</th>
+                              <th class="text-center">Pending</th>
+                              <th class="text-center">Follow Up</th>
+                              <th class="text-center">Success</th>
+                              <th class="text-center">Dump</th>
+                          </tr>
+                      </thead>
+                      <tbody class="table-border-bottom-0">
+                        @if(!empty($eachBranchWiseTelecallerActivity["telecallerActivity"]))
+                            {{-- @dd($eachBranchWiseTelecallerActivity["telecallerActivity"]); --}}
+                            @foreach($eachBranchWiseTelecallerActivity["telecallerActivity"] as $key => $value)
+                              {{-- @dd($value); --}}
+                              <tr>
+                                  <td>
+                                    @if(!empty($value["telecaller_name"]))
+                                      <span class="badge badge-center rounded-pill bg-label-danger">
+                                        <i class="fa-solid fa-user-tie"></i>
+                                      </span>
+                                      <strong>{{ $value["telecaller_name"] }} </strong>
+                                      <br>
+                                    @endif
+                                    @if(!empty($value["last_call_of_telecaller"]))
+                                      <span class="badge badge-center rounded-pill bg-label-warning mt-1">
+                                        <i class="fa-solid fa-headset"></i>
+                                      </span>
+                                      <strong class="text-muted">{{ $value["last_call_of_telecaller"]}}</strong>
+                                    @endif
+                                  </td>
+                                  <td class="text-center">{{ $value["total_call_count"] }}</td>
+                                  <td class="text-center">{{ $value["parentStatus_new_count"] }}</td>
+                                  <td class="text-center">{{ $value["parentStatus_followUp_count"] }}</td>
+                                  <td class="text-center">{{ $value["parentStatus_success_count"] }}</td>
+                                  <td class="text-center">{{ $value["parentStatus_dumb_count"] }}</td>
+                              </tr>
+                            @endforeach
+                        @else
+                        <tr>
+                            <td colspan="7" class="text-center text-danger">No Telecallers Found</td>
+                        </tr>
+                        @endif
+                      </tbody>
+                  </table>
+              </div>
+
+          </div>
+        @endif
+        
+      @else
+
+        <div class="card mb-3 p-3">
           <div class="d-flex justify-content-between align-items-center mb-2">
               <div>
                   <span class="card-header fw-bold h6 ps-0">{{ $eachBranchWiseTelecallerActivity["branch_name"] }}</span> 
@@ -25,22 +128,36 @@ use App\Helpers\Helper;
                   <thead>
                       <tr>
                           <th>#</th>
-                          <th>Telecaller</th>
+                          <th>Telecaller | Last Call</th>
                           <th class="text-center">Total Calls</th>
                           <th class="text-center">Pending</th>
                           <th class="text-center">Follow Up</th>
                           <th class="text-center">Success</th>
-                          <th class="text-center">Dumb</th>
+                          <th class="text-center">Dump</th>
                       </tr>
                   </thead>
                   <tbody class="table-border-bottom-0">
-                     @if(!empty($eachBranchWiseTelecallerActivity["telecallerActivity"]))
+                    @if(!empty($eachBranchWiseTelecallerActivity["telecallerActivity"]))
                         {{-- @dd($eachBranchWiseTelecallerActivity["telecallerActivity"]); --}}
                         @foreach($eachBranchWiseTelecallerActivity["telecallerActivity"] as $key => $value)
                           {{-- @dd($value); --}}
                           <tr>
                               <td>{{ $loop->iteration }}</td>
-                              <td>{{ $value["telecaller_name"] }}</td>
+                              <td>
+                                @if(!empty($value["telecaller_name"]))
+                                  <span class="badge badge-center rounded-pill bg-label-danger">
+                                    <i class="fa-solid fa-user-tie"></i>
+                                  </span>
+                                  <strong>{{ $value["telecaller_name"] }} </strong>
+                                  <br>
+                                @endif
+                                @if(!empty($value["last_call_of_telecaller"]))
+                                  <span class="badge badge-center rounded-pill bg-label-warning mt-1">
+                                    <i class="fa-solid fa-headset"></i>
+                                  </span>
+                                  <strong class="text-muted">{{ $value["last_call_of_telecaller"]}}</strong>
+                                @endif
+                              </td>
                               <td class="text-center">{{ $value["total_call_count"] }}</td>
                               <td class="text-center">{{ $value["parentStatus_new_count"] }}</td>
                               <td class="text-center">{{ $value["parentStatus_followUp_count"] }}</td>
@@ -48,18 +165,24 @@ use App\Helpers\Helper;
                               <td class="text-center">{{ $value["parentStatus_dumb_count"] }}</td>
                           </tr>
                         @endforeach
-                     @else
-                     <tr>
+                    @else
+                    <tr>
                         <td colspan="7" class="text-center text-danger">No Telecallers Found</td>
-                     </tr>
-                     @endif
+                    </tr>
+                    @endif
                   </tbody>
               </table>
           </div>
 
-      </div>
+        </div>
+
+      @endif
     @endforeach
 
+
+
+
+    
     {{-- <!-- Average Daily Sales -->
     <div class="col-xxl-2 col-xl-2 col-md-6 col-sm-6">
       <div class="card h-100">
@@ -216,6 +339,80 @@ use App\Helpers\Helper;
 @section('scripts')
 <!-- Page JS -->
 <script src="<?=config('constants.admin_assets_url')?>assets/js/dashboards-crm.js"></script>
+
+<script>
+$(document).ready(function(){
+
+  // get assigned from date
+  let selected_assigned_from_date = "";
+  $(document).on('change', '#assigned_from_date', function(){
+     selected_assigned_from_date = $(this).val();
+  });
+
+  // get assigned to date
+  let selected_assigned_to_date = "";
+  $(document).on('change', '#assigned_to_date', function(){
+     selected_assigned_to_date = $(this).val();
+  });
+
+  // filter
+  $(document).on('click', '.filterBtn', function()
+  {
+    let assigned_from_date = $('#assigned_from_date').val();
+    let assigned_to_date = $('#assigned_to_date').val();
+
+    if(assigned_from_date == "" && assigned_to_date == "")
+    {
+      toastAlert('error', 'Please Select Something To Apply Filter');
+    }
+    else
+    {
+      // alert('filter applied successfully');
+      let url = new URL(window.location.href);
+
+      if(selected_assigned_from_date != "")
+      {
+        url.searchParams.set('assigned-from-date', selected_assigned_from_date);
+      }
+  
+      if(selected_assigned_to_date != "")
+      {
+        url.searchParams.set('assigned-to-date', selected_assigned_to_date);
+      }
+
+      // Redirect once
+      window.location.href = url.toString();
+    }
+
+
+  });
+
+
+  // show reset button iff any filter is applied
+  const currentUrl = new URL(window.location.href);
+  if( (currentUrl.searchParams.has('assigned-from-date')) || (currentUrl.searchParams.has('assigned-to-date')) )
+  {
+    $('.resetBtn').removeClass('d-none');
+    // $('.resetBtn').addClass('d-block');
+
+    toastAlert('success', 'Filter Applied Successfully !!!');
+  }
+  
+
+  //reset
+  $(document).on('click', '.resetBtn', function()
+  {
+    let url = new URL(window.location.href);
+    // safe even if it's not there
+    url.searchParams.delete('assigned-from-date');
+    url.searchParams.delete('assigned-to-date');
+
+    window.location.href = url.toString();
+  });
+
+
+});
+</script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
 <script>

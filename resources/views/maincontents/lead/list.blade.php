@@ -153,10 +153,10 @@ $controllerRoute = $module['controller_route'];
                                     <div class="col-md-3 mt-3">
                                         <div class="row">
                                             <div class="col-md-12 d-flex gap-2 mt-3">
-                                                <button type="button" class="btn btn-outline-dark filterBtn">
+                                                <button type="button" class="w-100 btn btn-outline-dark filterBtn">
                                                     <i class="fa-solid fa-filter"></i>&nbsp;<span>Filter</span>
                                                 </button>
-                                                <button type="button" class="btn btn-label-secondary d-none resetBtn">
+                                                <button type="button" class="w-100 btn btn-label-secondary d-none resetBtn">
                                                     <i class="fa-solid fa-arrow-rotate-left"></i>&nbsp;<span>Reset</span>
                                                 </button>
                                             </div>
@@ -1157,6 +1157,8 @@ $controllerRoute = $module['controller_route'];
         {
             $('.resetBtn').removeClass('d-none');
             // $('.resetBtn').addClass('d-block');
+
+            toastAlert('success', 'Filter Applied Successfully !!!');
         }
 
         // reset
