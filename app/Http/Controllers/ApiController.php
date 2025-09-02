@@ -1879,6 +1879,8 @@ class ApiController extends Controller
                         $page_no                = $requestData['page_no'];
                         $per_page               = $requestData['per_page'];
                         $date_type              = $requestData['date_type'];
+                        $search_text            = $requestData['search_text'];
+
                         if($getUser){
                             $branch_id                      = $getUser->branch_id;
                             $assigned_telecaller_id         = $uId;
@@ -1917,6 +1919,8 @@ class ApiController extends Controller
 
                             if($leadNos){
                                 foreach($leadNos as $leadNo){
+                                    $isShow         = 1;
+
                                     $activity_count = LeadActivity::where('lead_sl_no', '=', $leadNo->lead_sl_no)->count();
                                     $last_activity  = LeadActivity::where('lead_sl_no', '=', $leadNo->lead_sl_no)->orderBy('id', 'DESC')->first();
                                     $next_schedule  = '';
@@ -1943,29 +1947,38 @@ class ApiController extends Controller
                                         $is_anniversary = ($formattedANNI == $dob_anni_curr_date) ? 1 : 0;
                                     /* anniversary check */
 
-                                    $apiResponse[]      = [
-                                        'sl_no'                 => $leadNo->lead_sl_no,
-                                        'lead_no'               => (($getMasterLead)?$getMasterLead->lead_no:''),
-                                        'company_name'          => $this->getHeaderValueByID($leadNo->lead_sl_no, 1),
-                                        'contact_person_name'   => $this->getHeaderValueByID($leadNo->lead_sl_no, 2),
-                                        'email'                 => $this->getHeaderValueByID($leadNo->lead_sl_no, 5),
-                                        'phone_no'              => $this->getHeaderValueByID($leadNo->lead_sl_no, 4),
-                                        'whatsapp_no'           => $this->getHeaderValueByID($leadNo->lead_sl_no, 14),
-                                        'is_vip'                => (int) $this->getHeaderValueByID($leadNo->lead_sl_no, 17),
-                                        'is_purchased'          => (int) $this->getHeaderValueByID($leadNo->lead_sl_no, 18),
-                                        'is_birthday'           => (int) $is_birthday,
-                                        'is_anniversary'        => (int) $is_anniversary,
-                                        'parent_status_id'      => (($leadNo->parent_status_id > 0)?$leadNo->parent_status_id:12),
-                                        'parent_status_name'    => (($getParentStatus)?$getParentStatus->name:'New'),
-                                        'child_status_id'       => (($leadNo->child_status_id > 0)?$leadNo->child_status_id:13),
-                                        'child_status_name'     => (($getChildStatus)?$getChildStatus->name:'New'),
-                                        'campaign_type_name'    => (($getCampaignType)?$getCampaignType->name:''),
-                                        'campaign_name'         => (($getCampaign)?$getCampaign->name:''),
-                                        'last_call'             => (($activity_count > 0)?date_format(date_create($last_activity->created_at), "M d Y, h:i a"):''),
-                                        'next_schedule'         => $next_schedule,
-                                        'activity_count'        => $activity_count,
-                                        'telecaller_name'       => $getUser->first_name . ' ' . $getUser->last_name,
-                                    ];
+                                    $getDataSearch  = MasterLead::where('status', '=', 1)->where('sl_no', '=', $leadNo->lead_sl_no)->where('header_value', 'LIKE', '%' . $search_text. '%')->count();
+                                    if($getDataSearch > 0){
+                                        $isShow         = 1;
+                                    } else {
+                                        $isShow         = 0;
+                                    }
+
+                                    if($isShow){
+                                        $apiResponse[]      = [
+                                            'sl_no'                 => $leadNo->lead_sl_no,
+                                            'lead_no'               => (($getMasterLead)?$getMasterLead->lead_no:''),
+                                            'company_name'          => $this->getHeaderValueByID($leadNo->lead_sl_no, 1),
+                                            'contact_person_name'   => $this->getHeaderValueByID($leadNo->lead_sl_no, 2),
+                                            'email'                 => $this->getHeaderValueByID($leadNo->lead_sl_no, 5),
+                                            'phone_no'              => $this->getHeaderValueByID($leadNo->lead_sl_no, 4),
+                                            'whatsapp_no'           => $this->getHeaderValueByID($leadNo->lead_sl_no, 14),
+                                            'is_vip'                => (int) $this->getHeaderValueByID($leadNo->lead_sl_no, 17),
+                                            'is_purchased'          => (int) $this->getHeaderValueByID($leadNo->lead_sl_no, 18),
+                                            'is_birthday'           => (int) $is_birthday,
+                                            'is_anniversary'        => (int) $is_anniversary,
+                                            'parent_status_id'      => (($leadNo->parent_status_id > 0)?$leadNo->parent_status_id:12),
+                                            'parent_status_name'    => (($getParentStatus)?$getParentStatus->name:'New'),
+                                            'child_status_id'       => (($leadNo->child_status_id > 0)?$leadNo->child_status_id:13),
+                                            'child_status_name'     => (($getChildStatus)?$getChildStatus->name:'New'),
+                                            'campaign_type_name'    => (($getCampaignType)?$getCampaignType->name:''),
+                                            'campaign_name'         => (($getCampaign)?$getCampaign->name:''),
+                                            'last_call'             => (($activity_count > 0)?date_format(date_create($last_activity->created_at), "M d Y, h:i a"):''),
+                                            'next_schedule'         => $next_schedule,
+                                            'activity_count'        => $activity_count,
+                                            'telecaller_name'       => $getUser->first_name . ' ' . $getUser->last_name,
+                                        ];
+                                    }
                                 }
                             }
 
