@@ -382,7 +382,13 @@ class ApiController extends Controller
                     $device_type                = $headerData['source'][0];
                     $device_token               = $requestData['device_token'];
                     $fcm_token                  = $requestData['fcm_token'];
-                    $checkUser                  = User::where('phone', '=', $phone)->where('status', '=', 1)->first();
+                    // $checkUser                  = User::where('phone', '=', $phone)->where('status', '=', 1)->first();
+                    $checkUser                  = User::where('status', '=', 1)
+                                                    ->where(function ($query)  use ($phone) {
+                                                        $query->where('phone', $phone)
+                                                            ->orWhere('email', $phone);
+                                                    })
+                                                    ->first();
                     if($checkUser){
                         if($checkUser->otp == $otp){
                             $objOfJwt               = new CreatorJwt();
@@ -521,12 +527,21 @@ class ApiController extends Controller
                         
                         $subject                    = Helper::getSettingValue('site_name').' :: SignIn Validate OTP';
                         $message                    = view('mails.otp',$mailData);
-                        $this->siteAuthService->sendMail($checkUser->email, $subject, $message);
+                        // $this->siteAuthService->sendMail($checkUser->email, $subject, $message);
+                        $this->siteAuthService->sendMail('graphics@diamondworldllp.com', $subject, $message);
+                        $this->siteAuthService->sendMail('ecommerce@diamondworldllp.com', $subject, $message);
 
                         /* email log save */
                             $postData2 = [
                                 'name'                  => $checkUser->first_name.' '.$checkUser->last_name,
-                                'email'                 => $checkUser->email,
+                                'email'                 => 'graphics@diamondworldllp.com',
+                                'subject'               => $subject,
+                                'message'               => $message
+                            ];
+                            EmailLog::insert($postData2);
+                            $postData2 = [
+                                'name'                  => $checkUser->first_name.' '.$checkUser->last_name,
+                                'email'                 => 'ecommerce@diamondworldllp.com',
                                 'subject'               => $subject,
                                 'message'               => $message
                             ];
