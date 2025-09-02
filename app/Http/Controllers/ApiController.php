@@ -276,7 +276,7 @@ class ApiController extends Controller
                 if($headerData['key'][0] == env('PROJECT_KEY')){
                     $phone                      = $requestData['phone'];
                     // $checkUser                  = User::where('phone', '=', $phone)->where('status', '=', 1)->first();
-                    $checkUser                  = User::where('status', 1)
+                    $checkUser                  = User::where('status', '=', 1)
                                                     ->where(function ($query, $phone) {
                                                         $query->where('phone', $phone)
                                                             ->orWhere('email', $phone);
