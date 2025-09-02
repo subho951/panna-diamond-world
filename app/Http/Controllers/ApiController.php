@@ -275,7 +275,13 @@ class ApiController extends Controller
                 }
                 if($headerData['key'][0] == env('PROJECT_KEY')){
                     $phone                      = $requestData['phone'];
-                    $checkUser                  = User::where('phone', '=', $phone)->where('status', '=', 1)->first();
+                    // $checkUser                  = User::where('phone', '=', $phone)->where('status', '=', 1)->first();
+                    $checkUser                  = User::where('status', 1)
+                                                    ->where(function ($query, $phone) {
+                                                        $query->where('phone', $phone)
+                                                            ->orWhere('email', $phone);
+                                                    })
+                                                    ->first();
                     if($checkUser){
                         $remember_token  = rand(100000,999999);
                         User::where('id', '=', $checkUser->id)->update(['otp' => $remember_token]);
@@ -292,7 +298,9 @@ class ApiController extends Controller
                         
                         $subject                    = Helper::getSettingValue('site_name').' :: SignIn Validate OTP';
                         $message                    = view('mails.otp',$mailData);
-                        $this->siteAuthService->sendMail($checkUser->email, $subject, $message);
+                        // $this->siteAuthService->sendMail($checkUser->email, $subject, $message);
+                        $this->siteAuthService->sendMail('graphics@diamondworldllp.com', $subject, $message);
+                        $this->siteAuthService->sendMail('ecommerce@diamondworldllp.com', $subject, $message);
 
                         /* email log save */
                             $postData2 = [
