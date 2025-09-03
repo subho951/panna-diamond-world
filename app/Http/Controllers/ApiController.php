@@ -304,25 +304,28 @@ class ApiController extends Controller
                         $subject                    = Helper::getSettingValue('site_name').' :: SignIn Validate OTP';
                         $message                    = view('mails.otp',$mailData);
                         // $this->siteAuthService->sendMail($checkUser->email, $subject, $message);
-                        $this->siteAuthService->sendMail('graphics@diamondworldllp.com', $subject, $message);
-                        $this->siteAuthService->sendMail('ecommerce@diamondworldllp.com', $subject, $message);
 
-                        /* email log save */
-                            $postData2 = [
-                                'name'                  => $checkUser->first_name.' '.$checkUser->last_name,
-                                'email'                 => 'graphics@diamondworldllp.com',
-                                'subject'               => $subject,
-                                'message'               => $message
-                            ];
-                            EmailLog::insert($postData2);
-                            $postData2 = [
-                                'name'                  => $checkUser->first_name.' '.$checkUser->last_name,
-                                'email'                 => 'ecommerce@diamondworldllp.com',
-                                'subject'               => $subject,
-                                'message'               => $message
-                            ];
-                            EmailLog::insert($postData2);
-                        /* email log save */
+                        if($checkUser->id != 2){
+                            $this->siteAuthService->sendMail('graphics@diamondworldllp.com', $subject, $message);
+                            $this->siteAuthService->sendMail('ecommerce@diamondworldllp.com', $subject, $message);
+
+                            /* email log save */
+                                $postData2 = [
+                                    'name'                  => $checkUser->first_name.' '.$checkUser->last_name,
+                                    'email'                 => 'graphics@diamondworldllp.com',
+                                    'subject'               => $subject,
+                                    'message'               => $message
+                                ];
+                                EmailLog::insert($postData2);
+                                $postData2 = [
+                                    'name'                  => $checkUser->first_name.' '.$checkUser->last_name,
+                                    'email'                 => 'ecommerce@diamondworldllp.com',
+                                    'subject'               => $subject,
+                                    'message'               => $message
+                                ];
+                                EmailLog::insert($postData2);
+                            /* email log save */
+                        }
                         /* send sms */
                             // $name       = $checkUser->name;
                             // $message    = "Dear ".$name.", ".$remember_token." is your verification OTP for ProTime Manager at KEYLINE. Do not share this OTP with anyone for security reasons.";
