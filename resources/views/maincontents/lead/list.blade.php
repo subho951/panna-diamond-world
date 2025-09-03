@@ -610,7 +610,7 @@ $controllerRoute = $module['controller_route'];
             });
         });
 
-        //disable next follow up date and time if lead status is dump
+        //disable next follow up date and time if lead status is dump or success
         $(document).on("change", "#leadStatus", function () 
         {
             let selectedStatus = $("#leadStatus option:selected");
@@ -625,8 +625,10 @@ $controllerRoute = $module['controller_route'];
 
             // Define the red star span selector
             let redStar = "<span class=\"text-danger\">*</span>";
-
-            if (statusVal.toLowerCase().includes("[dump]")) {
+            
+            
+            if (statusVal.toLowerCase().includes("[dump]")) //handling dump
+            {
                 // Disable inputs
                 $followUpDate.prop("disabled", true).removeAttr("required").val("");
                 $followUpTime.prop("disabled", true).removeAttr("required").val("");
@@ -634,8 +636,19 @@ $controllerRoute = $module['controller_route'];
                 // Remove star spans from labels
                 $dateLabel.find("span.text-danger").remove();
                 $timeLabel.find("span.text-danger").remove();
+            }
+            else if (statusVal.toLowerCase().includes("[success]"))  // handling success
+            {
+                // Disable inputs
+                $followUpDate.prop("disabled", true).removeAttr("required").val("");
+                $followUpTime.prop("disabled", true).removeAttr("required").val("");
 
-            } else {
+                // Remove star spans from labels
+                $dateLabel.find("span.text-danger").remove();
+                $timeLabel.find("span.text-danger").remove();
+            }
+            else
+            {
                 // Re-enable inputs
                 $followUpDate.prop("disabled", false).attr("required", true);
                 $followUpTime.prop("disabled", false).attr("required", true);
@@ -648,6 +661,7 @@ $controllerRoute = $module['controller_route'];
                     $timeLabel.append(redStar);
                 }
             }
+
 
         });
 
@@ -1158,7 +1172,7 @@ $controllerRoute = $module['controller_route'];
             $('.resetBtn').removeClass('d-none');
             // $('.resetBtn').addClass('d-block');
 
-            toastAlert('success', 'Filter Applied Successfully !!!');
+            // toastAlert('success', 'Filter Applied Successfully !!!');
         }
 
         // reset

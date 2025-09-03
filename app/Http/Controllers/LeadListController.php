@@ -1870,11 +1870,11 @@ class LeadListController extends Controller
             $campaignArr['campaign_name'] = Campaign::where('id', '=', $branchLeadArr->campaign_id)->where('status', '!=', 3)->value('name') ?? '';
 
             // fetch lead status
-            $parentStatusArr = LeadStatus::where('parent_id', '=', 0)->where('status', '!=', 3)->get();
+            $parentStatusArr = LeadStatus::where('parent_id', '=', 0)->where('id', '!=', 12)->where('status', '!=', 3)->orderBy('rank', 'desc')->get();
             $ChildParentStatusArr = [];
             foreach($parentStatusArr as $parentStatus)
             {
-                $childStatusArr = LeadStatus::where('parent_id', '=', $parentStatus->id)->where('status', '!=', 3)->get();
+                $childStatusArr = LeadStatus::where('parent_id', '=', $parentStatus->id)->where('status', '!=', 3)->orderBy('rank', 'asc')->get();
                 $statusArr = [];
                 foreach($childStatusArr as $childStatus)
                 {
@@ -1987,7 +1987,7 @@ class LeadListController extends Controller
 
             if($request->leadStatus)
             {
-               if(!Str::contains(strtolower($request->leadStatus), '[dump]'))
+               if(!Str::contains(strtolower($request->leadStatus), '[dump]') && !Str::contains(strtolower($request->leadStatus), '[success]'))
                {
                     $rules["nextFollowUpDate"] = 'required';
                     $rules["nextFollowUpTime"] = 'required';

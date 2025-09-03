@@ -51,11 +51,11 @@ use App\Helpers\Helper;
       </form>
     </div>
     {{-- filter section end --}}
+   
 
-    @foreach($branchWiseTelecallerActivity as $eachBranchWiseTelecallerActivity)
-    {{-- @dd($eachBranchWiseTelecallerActivity); --}}
-      @if(session('user_data')['role_id'] == 3)
+    @if(session('user_data')['role_id'] == 3) {{-- for telecaller --}}
 
+      @foreach($branchWiseTelecallerActivity as $eachBranchWiseTelecallerActivity)
         @if(!empty($eachBranchWiseTelecallerActivity["telecallerActivity"]))
           <div class="card mb-3 p-3">
               <div class="d-flex justify-content-between align-items-center mb-2">
@@ -111,16 +111,23 @@ use App\Helpers\Helper;
                       </tbody>
                   </table>
               </div>
-
           </div>
         @endif
-        
-      @else
+      @endforeach
 
-        <div class="card mb-3 p-3">
+    @else {{-- for admin --}}
+
+      @foreach($branchWiseTelecallerActivity as $eachBranchWiseTelecallerActivity)
+      {{-- @dd($eachBranchWiseTelecallerActivity); --}}
+        
+        <div class="card mb-3 p-3 branchWiseTelecallerAcitivity">
           <div class="d-flex justify-content-between align-items-center mb-2">
-              <div>
-                  <span class="card-header fw-bold h6 ps-0">{{ $eachBranchWiseTelecallerActivity["branch_name"] }}</span> 
+              <div class="d-flex align-items-center justify-content-between w-100">
+                  <span class="branchName card-header fw-bold h6 p-0">{{ $eachBranchWiseTelecallerActivity["branch_name"] }}</span>
+                  <button class="exportAsCSV btn btn-sm"
+                      style="border: 1px solid green; background-color: green; color: #FFF;">
+                      <i class="fa-solid fa-file-csv"></i>&nbsp;Export CSV
+                  </button>
               </div>
           </div>
           <div class="table-responsive text-nowrap">
@@ -143,13 +150,12 @@ use App\Helpers\Helper;
                           {{-- @dd($value); --}}
                           <tr>
                               <td>{{ $loop->iteration }}</td>
-                              <td>
+                              <td class="telecaller_lastcall">
                                 @if(!empty($value["telecaller_name"]))
                                   <span class="badge badge-center rounded-pill bg-label-danger">
                                     <i class="fa-solid fa-user-tie"></i>
                                   </span>
-                                  <strong>{{ $value["telecaller_name"] }} </strong>
-                                  <br>
+                                  <strong>{{ $value["telecaller_name"] }} </strong><br>
                                 @endif
                                 @if(!empty($value["last_call_of_telecaller"]))
                                   <span class="badge badge-center rounded-pill bg-label-warning mt-1">
@@ -176,10 +182,9 @@ use App\Helpers\Helper;
 
         </div>
 
-      @endif
-    @endforeach
+      @endforeach
 
-
+    @endif
 
 
     
@@ -343,42 +348,62 @@ use App\Helpers\Helper;
 <script>
 $(document).ready(function(){
 
-  // get assigned from date
-  let selected_assigned_from_date = "";
-  $(document).on('change', '#assigned_from_date', function(){
-     selected_assigned_from_date = $(this).val();
-  });
+  // handling clear buttons of date fields
+  let clearedByUser = false;
+  $('#assigned_from_date, #assigned_to_date').on('input', function() {
+      let fromEmpty = $('#assigned_from_date').val() === "";
+      let toEmpty = $('#assigned_to_date').val() === "";
 
-  // get assigned to date
-  let selected_assigned_to_date = "";
-  $(document).on('change', '#assigned_to_date', function(){
-     selected_assigned_to_date = $(this).val();
+      // only true if both are cleared
+      clearedByUser = (fromEmpty && toEmpty);
+      if (clearedByUser)
+      {
+        $('.resetBtn').not('.d-none').addClass('d-none');
+      }
   });
 
   // filter
   $(document).on('click', '.filterBtn', function()
   {
-    let assigned_from_date = $('#assigned_from_date').val();
-    let assigned_to_date = $('#assigned_to_date').val();
+    let selected_assigned_from_date = $('#assigned_from_date').val();
+    let selected_assigned_to_date = $('#assigned_to_date').val();
 
-    if(assigned_from_date == "" && assigned_to_date == "")
+    if(selected_assigned_from_date == "" && selected_assigned_to_date == "")
     {
+      $('.resetBtn').not('.d-none').addClass('d-none');
       toastAlert('error', 'Please Select Something To Apply Filter');
+
+      // if both are cleared
+      // if (clearedByUser)
+      // {
+      //   clearedByUser = false;
+      //   let url = new URL(window.location.href);
+      //   url.searchParams.delete('assigned-from-date');
+      //   url.searchParams.delete('assigned-to-date');
+      //   window.location.href = url.toString();
+      // }
     }
     else
     {
       // alert('filter applied successfully');
       let url = new URL(window.location.href);
 
-      if(selected_assigned_from_date != "")
+      if(selected_assigned_from_date != "" && selected_assigned_to_date != "")
       {
         url.searchParams.set('assigned-from-date', selected_assigned_from_date);
-      }
-  
-      if(selected_assigned_to_date != "")
-      {
         url.searchParams.set('assigned-to-date', selected_assigned_to_date);
       }
+      else if(selected_assigned_from_date != "")
+      {
+        url.searchParams.set('assigned-from-date', selected_assigned_from_date);
+        url.searchParams.delete('assigned-to-date');
+      }
+      else if(selected_assigned_to_date != "")
+      {
+        url.searchParams.set('assigned-to-date', selected_assigned_to_date);
+        url.searchParams.delete('assigned-from-date');
+      }
+      
 
       // Redirect once
       window.location.href = url.toString();
@@ -395,7 +420,7 @@ $(document).ready(function(){
     $('.resetBtn').removeClass('d-none');
     // $('.resetBtn').addClass('d-block');
 
-    toastAlert('success', 'Filter Applied Successfully !!!');
+    // toastAlert('success', 'Filter Applied Successfully !!!');
   }
   
 
@@ -409,6 +434,65 @@ $(document).ready(function(){
 
     window.location.href = url.toString();
   });
+
+
+
+
+  // download as CSV
+  $(document).on('click', '.exportAsCSV', function() {
+      let card = $(this).closest('.card');
+      let branchName = card.find('.branchName').text().trim();
+      let table = card.find('table');
+      let csv = [];
+
+      // Table headers
+      let headers = [];
+      table.find('thead th').each(function() {
+          let text = $(this).text().replace(/\s+/g, ' ').trim();
+          headers.push(text);
+      });
+      csv.push(headers.join(','));
+
+      // Table rows
+      table.find('tbody tr').each(function() {
+          let rowData = [];
+          $(this).find('td').each(function() {
+            let html = $(this).html() || '';
+            let text = html.replace(/<br\s*\/?>/gi, '\n');
+
+            text = $('<div>').html(text).text();
+
+            text = text
+                .replace(/[ \t]+/g, ' ')
+                .replace(/\n\s*/g, '\n')
+                .replace(/^\n+|\n+$/g, '')
+                .trim()
+                .replace(/"/g, '""');
+
+            // ✅ Only wrap in quotes if not empty
+            if (text.length > 0) {
+                rowData.push(`"${text}"`);
+            } else {
+                rowData.push(""); // keep cell empty without extra quotes
+            }
+        });
+
+          csv.push(rowData.join(','));
+      });
+
+      // Add BOM for Excel and download
+      let csvContent = "\uFEFF" + csv.join('\n');
+      let blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      let link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = branchName + ".csv";
+      link.click();
+  });
+
+
+
+
+
 
 
 });
