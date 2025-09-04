@@ -33,7 +33,7 @@ abstract class Controller
         $mailLibrary->SMTPSecure    = 'smtp';
         $mailLibrary->From          = Helper::getSettingValue('from_email');
         $mailLibrary->FromName      = Helper::getSettingValue('from_name');
-        // $mailLibrary->AddReplyTo($generalSetting->from_email, $generalSetting->from_name);
+        
         if(is_array($email)) :
             foreach($email as $eml):
                 $mailLibrary->addAddress($eml);
@@ -49,7 +49,6 @@ abstract class Controller
         if (!empty($file)):
             $mailLibrary->AddAttachment($file);
         endif;
-        Helper::pr($mailLibrary);
         return (!$mailLibrary->send()) ? false : true;
     }
     // single file upload
