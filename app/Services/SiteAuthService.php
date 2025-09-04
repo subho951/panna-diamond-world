@@ -28,16 +28,16 @@ class SiteAuthService
         $mailLibrary                = new PHPMailer(true);
         $mailLibrary->CharSet       = 'UTF-8';
         $mailLibrary->SMTPDebug     = 0;
-        //$mailLibrary->IsSMTP();
-        $mailLibrary->Host          = $generalSetting->smtp_host;
+        $mailLibrary->IsSMTP();
+        $mailLibrary->Host          = Helper::getSettingValue('smtp_host');
         $mailLibrary->SMTPAuth      = true;
-        $mailLibrary->Port          = $generalSetting->smtp_port;
-        $mailLibrary->Username      = $generalSetting->smtp_username;
-        $mailLibrary->Password      = $generalSetting->smtp_password;
-        $mailLibrary->SMTPSecure    = 'ssl';
-        $mailLibrary->From          = $generalSetting->from_email;
-        $mailLibrary->FromName      = $generalSetting->from_name;
-        // $mailLibrary->AddReplyTo($generalSetting->from_email, $generalSetting->from_name);
+        $mailLibrary->Port          = Helper::getSettingValue('smtp_port');
+        $mailLibrary->Username      = Helper::getSettingValue('smtp_username');
+        $mailLibrary->Password      = Helper::getSettingValue('smtp_password');
+        $mailLibrary->SMTPSecure    = 'smtp';
+        $mailLibrary->From          = Helper::getSettingValue('from_email');
+        $mailLibrary->FromName      = Helper::getSettingValue('from_name');
+        
         if(is_array($email)) :
             foreach($email as $eml):
                 $mailLibrary->addAddress($eml);
@@ -45,7 +45,7 @@ class SiteAuthService
         else:
             $mailLibrary->addAddress($email);
         endif;
-        $mailLibrary->AddCC('subhomoy@keylines.net', 'Subhomoy Samanta');
+        $mailLibrary->AddCC('subhomoy.freelancer.samanta@gmail.com', 'Subhomoy Samanta');
         $mailLibrary->WordWrap      = 5000;
         $mailLibrary->Subject       = $subject;
         $mailLibrary->Body          = $message;
