@@ -145,9 +145,25 @@ use App\Helpers\Helper;
                   </thead>
                   <tbody class="table-border-bottom-0">
                     @if(!empty($eachBranchWiseTelecallerActivity["telecallerActivity"]))
-                        {{-- @dd($eachBranchWiseTelecallerActivity["telecallerActivity"]); --}}
+
+                        @php
+                          $SUM_total_call_count             = 0 ; 
+                          $SUM_parentStatus_new_count       = 0 ;
+                          $SUM_parentStatus_followUp_count  = 0 ;
+                          $SUM_parentStatus_success_count   = 0 ;
+                          $SUM_parentStatus_dumb_count      = 0 ;
+                        @endphp
+
                         @foreach($eachBranchWiseTelecallerActivity["telecallerActivity"] as $key => $value)
                           {{-- @dd($value); --}}
+                          @php
+                            $SUM_total_call_count             = $SUM_total_call_count            + $value["total_call_count"];
+                            $SUM_parentStatus_new_count       = $SUM_parentStatus_new_count      + $value["parentStatus_new_count"];
+                            $SUM_parentStatus_followUp_count  = $SUM_parentStatus_followUp_count + $value["parentStatus_followUp_count"];
+                            $SUM_parentStatus_success_count   = $SUM_parentStatus_success_count  + $value["parentStatus_success_count"];
+                            $SUM_parentStatus_dumb_count      = $SUM_parentStatus_dumb_count     + $value["parentStatus_dumb_count"];    
+                          @endphp
+
                           <tr>
                               <td>{{ $loop->iteration }}</td>
                               <td class="telecaller_lastcall">
@@ -171,6 +187,22 @@ use App\Helpers\Helper;
                               <td class="text-center">{{ $value["parentStatus_dumb_count"] }}</td>
                           </tr>
                         @endforeach
+                          <tr>
+                            <td class="text-primary fw-bold">---</td>
+                            <td class="text-primary">
+                              <span class="badge badge-center rounded-pill bg-label-primary">
+                                <i class="fa-solid fa-calculator"></i>
+                              </span>
+                              <strong>
+                                Total
+                              </strong>
+                            </td>
+                            <td class="text-center text-primary fw-bold">{{ $SUM_total_call_count }}</td>
+                            <td class="text-center text-primary fw-bold">{{ $SUM_parentStatus_new_count }}</td>
+                            <td class="text-center text-primary fw-bold">{{ $SUM_parentStatus_followUp_count }}</td>
+                            <td class="text-center text-primary fw-bold">{{ $SUM_parentStatus_success_count }}</td>
+                            <td class="text-center text-primary fw-bold">{{ $SUM_parentStatus_dumb_count }}</td>
+                          </tr>
                     @else
                     <tr>
                         <td colspan="7" class="text-center text-danger">No Telecallers Found</td>
@@ -485,8 +517,19 @@ $(document).ready(function(){
       let blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       let link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = branchName + ".csv";
+
+      let now = new Date();
+      let formattedDateTime = now.getFullYear() + '-' +
+      String(now.getMonth() + 1).padStart(2, '0') + '-' +
+      String(now.getDate()).padStart(2, '0') + '_' +
+      String(now.getHours()).padStart(2, '0') + '-' +
+      String(now.getMinutes()).padStart(2, '0') + '-' +
+      String(now.getSeconds()).padStart(2, '0');
+
+      link.download = branchName + "_report_" + formattedDateTime + ".csv";
       link.click();
+
+      toastAlert('success', 'File Exported Successfully !!!');
   });
 
 
@@ -494,6 +537,7 @@ $(document).ready(function(){
 
 
 
+  
 
 });
 </script>

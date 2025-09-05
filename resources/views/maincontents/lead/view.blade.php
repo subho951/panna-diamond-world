@@ -274,8 +274,8 @@ $controllerRoute = $module['controller_route'];
                                 <tbody>
                                     <?php $sl_no=1 ; if($transfers){ foreach($transfers as $transfer){?>
                                         <?php
-                                        $getTransferFrom = LeadTransfer::select('first_name', 'last_name')->where('id', '=', $transfer->from_assigned_telecaller_id)->first();
-                                        $getTransferTo = LeadTransfer::select('first_name', 'last_name')->where('id', '=', $transfer->to_assigned_telecaller_id)->first();
+                                        $getTransferFrom = User::select('first_name', 'last_name')->where('id', '=', $transfer->from_assigned_telecaller_id)->first();
+                                        $getTransferTo = User::select('first_name', 'last_name')->where('id', '=', $transfer->to_assigned_telecaller_id)->first();
                                         $getCampaignType = CampaignType::select('name')->where('id', '=', $transfer->campaign_type_id)->first();
                                         $getCampaign = Campaign::select('name')->where('id', '=', $transfer->campaign_id)->first();
                                         $getParentStatus = LeadStatus::select('name')->where('id', '=', $transfer->parent_status_id)->first();

@@ -41,9 +41,7 @@ $controllerRoute = $module['controller_route'];
                             class="btn btn-outline-success btn-sm float-end">Add <?= $module['title'] ?></a>
                     </div> --}}
                     <div class="card-body">
-                        {{-- <div id="table-overlay-loader" class="text-loader">
-                  Fetching data. Please wait <span id="dot-animation">.</span>
-               </div> --}}
+                       
 
                         {{-- <h6 class="card-title">Filter</h6> --}}
                         {{-- filter section --}}
@@ -227,6 +225,10 @@ $controllerRoute = $module['controller_route'];
                                         <span style="font-size: 12px;">entries</span>
                                     @endif
                                 </div>
+                                <button class="exportAllLeadsAsCSV btn btn-sm"
+                                    style="border: 1px solid green; background-color: green; color: #FFF;">
+                                    <i class="fa-solid fa-file-csv"></i>&nbsp;Export CSV
+                                </button>
                             </div>
                             
                             <div class="table-responsive text-nowrap">
@@ -1061,11 +1063,20 @@ $controllerRoute = $module['controller_route'];
             selected_telecaller_id = $(this).val();
         });
 
-        let branchFromUrl = "";
+
+        // get url params
         let urlParams = new URLSearchParams(window.location.search);
+        let branchFromUrl = "";
         branchFromUrl = urlParams.get('branch'); // get branch from url 
-        // console.log('branch:', branchFromUrl); // showing correctly
+        let telecallerFromUrl = "";
+        telecallerFromUrl = urlParams.get('telecaller'); 
+        let parentStatusFromUrl = "";
+        parentStatusFromUrl = urlParams.get('parent-status'); 
+        let childStatusFromUrl = "";
+        childStatusFromUrl = urlParams.get('child-status'); 
         
+
+
         //select parent status
         let selected_parent_status_id = ""
         $(document).on('change', '#parent_status_id', function(){
@@ -1356,7 +1367,118 @@ $controllerRoute = $module['controller_route'];
             
         });
 
+         
 
+        // Export All Leads with filter as CSV
+        $(document).on('click', '.exportAllLeadsAsCSV', function()
+        {
+            if(branchFromUrl === null || branchFromUrl === "")
+            {
+                toastAlert('error', 'Please Filter By Branch !!!');
+            }
+            else
+            {
+
+                $.ajax({
+                    url: base_url + '/lead-list/export-all-leads-as-csv',
+                    type: 'POST',
+                    data: {
+                    branch : branchFromUrl ,
+                    telecaller : telecallerFromUrl ,
+                    'parent-status' : parentStatusFromUrl ,
+                    'child-status' : childStatusFromUrl ,
+                    },
+                    xhrFields: {
+                        responseType: 'blob'
+                    },
+                    beforeSend: function() {
+                        Swal.fire({
+                            title: 'Please Wait',
+                            text: 'Your file is being prepared...',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            showConfirmButton: false,
+                            didOpen: () => {
+                                Swal.showLoading(); // adds spinner
+                            }
+                        });
+                    },
+                    // success: function(blob, status, xhr) {
+                    //     Swal.close(); // Close the loading popup
+
+                    //     // Get filename from header
+                    //     var disposition = xhr.getResponseHeader('Content-Disposition');
+                    //     var filename = 'download.csv';
+                    //     if (disposition && disposition.indexOf('filename=') !== -1) {
+                    //         filename = disposition.split('filename=')[1].replace(/"/g, '');
+                    //     }
+
+                    //     // Trigger file download
+                    //     var link = document.createElement('a');
+                    //     var url = window.URL.createObjectURL(blob);
+                    //     link.href = url;
+                    //     link.download = filename;
+                    //     document.body.appendChild(link);
+                    //     link.click();
+
+                    //     setTimeout(() => {
+                    //         document.body.removeChild(link);
+                    //         window.URL.revokeObjectURL(url);
+                    //     }, 100);
+                    // },
+                    success: function(blob, status, xhr) {
+                        // Check if response is JSON instead of blob
+                        var contentType = xhr.getResponseHeader('Content-Type');
+
+                        if (contentType && contentType.includes('application/json')) {
+                            // Parse JSON
+                            var reader = new FileReader();
+                            reader.onload = function() {
+                                var json = JSON.parse(reader.result);
+                                if (json.error) {
+                                    Swal.fire('Oops!', json.error, 'warning');
+                                }
+                            };
+                            reader.readAsText(blob); // blob contains JSON
+                            return; // stop further download code
+                        }
+
+                        // If not JSON, proceed with download
+                        Swal.close(); // Close loading popup
+
+                        var disposition = xhr.getResponseHeader('Content-Disposition');
+                        var filename = 'download.csv';
+                        if (disposition && disposition.indexOf('filename=') !== -1) {
+                            filename = disposition.split('filename=')[1].replace(/"/g, '');
+                        }
+
+                        var link = document.createElement('a');
+                        var url = window.URL.createObjectURL(blob);
+                        link.href = url;
+                        link.download = filename;
+                        document.body.appendChild(link);
+                        link.click();
+                        setTimeout(() => {
+                            document.body.removeChild(link);
+                            window.URL.revokeObjectURL(url);
+                        }, 100);
+
+                        toastAlert('success', 'File Exported Successfully !!!');
+                    },
+
+                    error: function(xhr) {
+                        Swal.close(); // Close popup on error
+                        // Swal.fire('Error', 'Something went wrong while downloading the file.', 'error');
+                        Swal.fire('Error', 'No data found', 'error');
+                        console.log(xhr);
+                    }
+
+                });
+
+            }
+
+
+        });
 
         
         
