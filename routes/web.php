@@ -236,7 +236,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('lead-list/fetch-branch-wise-telecaller', [LeadListController::class, 'fetchBranchWiseTelecaller']);
         Route::post('lead-list/fetch-parent-wise-child-status', [LeadListController::class, 'fetchParentWiseChildStatus']);
         
-
+        Route::match(['get', 'post'],'lead-list/export-all-leads-as-csv', [LeadListController::class, 'exportAllLeadsAsCSV']);
     /* Lead List */
 
     /* Feedback Tags */

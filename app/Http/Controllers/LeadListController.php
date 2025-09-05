@@ -1057,7 +1057,7 @@ class LeadListController extends Controller
             }
         }
         
-
+        
         // dd($branchleadPaginated);
 
         $totalLeadArr = [];
@@ -1109,8 +1109,8 @@ class LeadListController extends Controller
             if ($lastLeadActivityRow && $lastLeadActivityRow->next_followup_time) {
                 $time = $lastLeadActivityRow->next_followup_time;
                 
-                // validate format using regex: 24-hr format like "18:14"
-                if (preg_match('/^(2[0-3]|[01]?[0-9]):[0-5][0-9]$/', $time)) {
+                // validate format using regex: 24-hr format like "18:14:16"
+                if (preg_match('/^(2[0-3]|[01]?[0-9]):[0-5][0-9]:[0-5][0-9]$/', $time)) {
                     try {
                         $next_followup_time = Carbon::createFromFormat('H:i:s', $time)->format('h:i A');
                     } catch (\Exception $e) {
@@ -2425,6 +2425,1161 @@ class LeadListController extends Controller
 
             return response()->json($childStatusArr);
         }
+    }
+
+
+    public function exportAllLeadsAsCSV(Request $request)
+    {
+
+        if(!empty($request->input('branch')) && !empty($request->input('telecaller')) && !empty($request->input('parent-status')) && !empty($request->input('child-status')) )
+        {
+            $selected_parent_status_id = Helper::decoded($request->input('parent-status'));
+            $data['parentWiseChildStatus'] = LeadStatus::where('parent_id', '=', $selected_parent_status_id)->where('status', '!=', 3)->orderBy('rank', 'asc')->get();
+            $data['selected_parent_status_id'] = $selected_parent_status_id;
+
+            $selected_child_status_id = Helper::decoded($request->input('child-status'));
+            $data['selected_child_status_id'] = $selected_child_status_id;
+
+            $selected_branch_id = Helper::decoded($request->input('branch'));
+            $data['branchWiseTelecaller'] = User::where('branch_id', '=', $selected_branch_id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+            $data['selected_branch_id'] = $selected_branch_id;
+
+            $selected_telecaller_id = Helper::decoded($request->input('telecaller'));                              
+            $data['selected_telecaller_id'] = $selected_telecaller_id ;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+               
+                if($selected_parent_status_id == 12 && $selected_child_status_id == 13)
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('parent_status_id', '=', 0)->where('child_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id) && !empty($selected_child_status_id), function ($query) use ($selected_parent_status_id, $selected_child_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id, $selected_child_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->when(!empty($selected_parent_status_id), function ($q) use ($selected_parent_status_id) {
+                                    $q->where('parent_status_id', $selected_parent_status_id);
+                                })
+                                ->when(!empty($selected_child_status_id), function ($q) use ($selected_child_status_id) {
+                                    $q->where('child_status_id', $selected_child_status_id);
+                                })
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                
+                }
+            
+            }
+            else
+            {
+                if($selected_parent_status_id == 12 && $selected_child_status_id == 13)
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('branch_id', '=', $selected_branch_id)->where('parent_status_id', '=', 0)->where('child_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('branch_id', '=', $selected_branch_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id) && !empty($selected_child_status_id), function ($query) use ($selected_parent_status_id, $selected_child_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id, $selected_child_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->when(!empty($selected_parent_status_id), function ($q) use ($selected_parent_status_id) {
+                                    $q->where('parent_status_id', $selected_parent_status_id);
+                                })
+                                ->when(!empty($selected_child_status_id), function ($q) use ($selected_child_status_id) {
+                                    $q->where('child_status_id', $selected_child_status_id);
+                                })
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                
+                }
+            
+            
+            }
+
+        }
+        elseif(!empty($request->input('branch')) && !empty($request->input('telecaller')) && !empty($request->input('child-status')))
+        {
+            $selected_branch_id = Helper::decoded($request->input('branch'));
+            $data['branchWiseTelecaller'] = User::where('branch_id', '=', $selected_branch_id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+            $data['selected_branch_id'] = $selected_branch_id;
+
+            $selected_telecaller_id = Helper::decoded($request->input('telecaller'));                              
+            $data['selected_telecaller_id'] = $selected_telecaller_id ;
+
+            $selected_child_status_id = Helper::decoded($request->input('child-status'));
+            $data['selected_child_status_id'] = $selected_child_status_id;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+                
+                if($selected_child_status_id == 13)
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('child_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_child_status_id), function ($query) use ($selected_child_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_child_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('child_status_id', $selected_child_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                }
+
+            }
+            else
+            {
+                
+                if($selected_child_status_id == 13)
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('branch_id', '=', $selected_branch_id)->where('child_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('branch_id', '=', $selected_branch_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_child_status_id), function ($query) use ($selected_child_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_child_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('child_status_id', $selected_child_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                }
+            
+
+            }
+
+        }
+        elseif(!empty($request->input('branch')) && !empty($request->input('telecaller')) && !empty($request->input('parent-status')))
+        {
+            $selected_branch_id = Helper::decoded($request->input('branch'));
+            $data['branchWiseTelecaller'] = User::where('branch_id', '=', $selected_branch_id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+            $data['selected_branch_id'] = $selected_branch_id;
+
+            $selected_telecaller_id = Helper::decoded($request->input('telecaller'));                              
+            $data['selected_telecaller_id'] = $selected_telecaller_id ;
+
+            $selected_parent_status_id = Helper::decoded($request->input('parent-status'));
+    
+            $data['parentWiseChildStatus'] = LeadStatus::where('parent_id', '=', $selected_parent_status_id)->where('status', '!=', 3)->orderBy('rank', 'asc')->get();
+
+            $data['selected_parent_status_id'] = $selected_parent_status_id;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+               
+                if($selected_parent_status_id == 12)
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('parent_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id), function ($query) use ($selected_parent_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('parent_status_id', $selected_parent_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                }
+
+
+            }
+            else
+            {
+                
+                if($selected_parent_status_id == 12)
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('branch_id', '=', $selected_branch_id)->where('parent_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('branch_id', '=', $selected_branch_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id), function ($query) use ($selected_parent_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('parent_status_id', $selected_parent_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                }
+            }
+
+        }
+        elseif(!empty($request->input('telecaller')) && !empty($request->input('parent-status')) && !empty($request->input('child-status')))
+        {
+            $selected_parent_status_id = Helper::decoded($request->input('parent-status'));
+            $data['parentWiseChildStatus'] = LeadStatus::where('parent_id', '=', $selected_parent_status_id)->where('status', '!=', 3)->orderBy('rank', 'asc')->get();
+            $data['selected_parent_status_id'] = $selected_parent_status_id;
+
+            $selected_child_status_id = Helper::decoded($request->input('child-status'));
+            $data['selected_child_status_id'] = $selected_child_status_id;
+
+            $selected_telecaller_id = Helper::decoded($request->input('telecaller'));                              
+            $data['selected_telecaller_id'] = $selected_telecaller_id ;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;                
+
+                if($selected_parent_status_id == 12 && $selected_child_status_id == 13)
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('parent_status_id', '=', 0)->where('child_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id) && !empty($selected_child_status_id), function ($query) use ($selected_parent_status_id, $selected_child_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id, $selected_child_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->when(!empty($selected_parent_status_id), function ($q) use ($selected_parent_status_id) {
+                                    $q->where('parent_status_id', $selected_parent_status_id);
+                                })
+                                ->when(!empty($selected_child_status_id), function ($q) use ($selected_child_status_id) {
+                                    $q->where('child_status_id', $selected_child_status_id);
+                                })
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                
+                }
+            
+            }
+            else
+            {
+
+                if($selected_parent_status_id == 12 && $selected_child_status_id == 13)
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('parent_status_id', '=', 0)->where('child_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id) && !empty($selected_child_status_id), function ($query) use ($selected_parent_status_id, $selected_child_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id, $selected_child_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->when(!empty($selected_parent_status_id), function ($q) use ($selected_parent_status_id) {
+                                    $q->where('parent_status_id', $selected_parent_status_id);
+                                })
+                                ->when(!empty($selected_child_status_id), function ($q) use ($selected_child_status_id) {
+                                    $q->where('child_status_id', $selected_child_status_id);
+                                })
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                
+                }
+            
+            
+            }
+
+        }
+        elseif(!empty($request->input('branch')) && !empty($request->input('parent-status')) && !empty($request->input('child-status')))
+        {
+            $selected_parent_status_id = Helper::decoded($request->input('parent-status'));
+            $data['parentWiseChildStatus'] = LeadStatus::where('parent_id', '=', $selected_parent_status_id)->where('status', '!=', 3)->orderBy('rank', 'asc')->get();
+            $data['selected_parent_status_id'] = $selected_parent_status_id;
+
+            $selected_child_status_id = Helper::decoded($request->input('child-status'));
+            $data['selected_child_status_id'] = $selected_child_status_id;
+
+            $selected_branch_id = Helper::decoded($request->input('branch'));
+            $data['branchWiseTelecaller'] = User::where('branch_id', '=', $selected_branch_id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+            $data['selected_branch_id'] = $selected_branch_id;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+
+                if($selected_parent_status_id == 12 && $selected_child_status_id == 13)
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('assigned_telecaller_id', '=', $this_telecaller_id)->where('parent_status_id', '=', 0)->where('child_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('assigned_telecaller_id', '=', $this_telecaller_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id) && !empty($selected_child_status_id), function ($query) use ($selected_parent_status_id, $selected_child_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id, $selected_child_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->when(!empty($selected_parent_status_id), function ($q) use ($selected_parent_status_id) {
+                                    $q->where('parent_status_id', $selected_parent_status_id);
+                                })
+                                ->when(!empty($selected_child_status_id), function ($q) use ($selected_child_status_id) {
+                                    $q->where('child_status_id', $selected_child_status_id);
+                                })
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                
+                }
+            
+            }
+            else
+            {
+               
+                if($selected_parent_status_id == 12 && $selected_child_status_id == 13)
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('parent_status_id', '=', 0)->where('child_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id) && !empty($selected_child_status_id), function ($query) use ($selected_parent_status_id, $selected_child_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id, $selected_child_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->when(!empty($selected_parent_status_id), function ($q) use ($selected_parent_status_id) {
+                                    $q->where('parent_status_id', $selected_parent_status_id);
+                                })
+                                ->when(!empty($selected_child_status_id), function ($q) use ($selected_child_status_id) {
+                                    $q->where('child_status_id', $selected_child_status_id);
+                                })
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                
+                }
+            
+            
+            }
+
+        }
+        elseif(!empty($request->input('telecaller')) && !empty($request->input('child-status')))
+        {
+            $selected_telecaller_id = Helper::decoded($request->input('telecaller'));                              
+            $data['selected_telecaller_id'] = $selected_telecaller_id ;
+
+            $selected_child_status_id = Helper::decoded($request->input('child-status'));
+            $data['selected_child_status_id'] = $selected_child_status_id;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+
+                if($selected_child_status_id == 13)
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('child_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_child_status_id), function ($query) use ($selected_child_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_child_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('child_status_id', $selected_child_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                }
+
+            }
+            else
+            {
+
+                if($selected_child_status_id == 13)
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('child_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_child_status_id), function ($query) use ($selected_child_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_child_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('child_status_id', $selected_child_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                }
+            
+            }
+        }
+        elseif(!empty($request->input('telecaller')) && !empty($request->input('parent-status')))
+        {
+            $selected_telecaller_id = Helper::decoded($request->input('telecaller'));                              
+            $data['selected_telecaller_id'] = $selected_telecaller_id ;
+
+            $selected_parent_status_id = Helper::decoded($request->input('parent-status'));
+            $data['parentWiseChildStatus'] = LeadStatus::where('parent_id', '=', $selected_parent_status_id)->where('status', '!=', 3)->orderBy('rank', 'asc')->get();
+            $data['selected_parent_status_id'] = $selected_parent_status_id;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+
+                if($selected_parent_status_id == 12)
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('parent_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id), function ($query) use ($selected_parent_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('parent_status_id', $selected_parent_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                }
+
+            }
+            else
+            {
+
+                if($selected_parent_status_id == 12)
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('parent_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id), function ($query) use ($selected_parent_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('parent_status_id', $selected_parent_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                }
+            
+            }
+        }
+        elseif(!empty($request->input('branch')) && !empty($request->input('child-status')))
+        {
+            $selected_branch_id = Helper::decoded($request->input('branch'));
+            $data['branchWiseTelecaller'] = User::where('branch_id', '=', $selected_branch_id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+            $data['selected_branch_id'] = $selected_branch_id;
+
+            $selected_child_status_id = Helper::decoded($request->input('child-status'));
+            $data['selected_child_status_id'] = $selected_child_status_id;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+                
+                if($selected_child_status_id == 13)
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('assigned_telecaller_id', '=', $this_telecaller_id)->where('child_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('assigned_telecaller_id', '=', $this_telecaller_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_child_status_id), function ($query) use ($selected_child_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_child_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('child_status_id', $selected_child_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                }
+                
+            }
+            else
+            {
+
+                if($selected_child_status_id == 13)
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('child_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_child_status_id), function ($query) use ($selected_child_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_child_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('child_status_id', $selected_child_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                }
+            
+            }
+        }
+        elseif(!empty($request->input('branch')) && !empty($request->input('parent-status')))
+        {           
+            $selected_branch_id = Helper::decoded($request->input('branch'));
+            $data['branchWiseTelecaller'] = User::where('branch_id', '=', $selected_branch_id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+            $data['selected_branch_id'] = $selected_branch_id;
+
+            $selected_parent_status_id = Helper::decoded($request->input('parent-status'));   
+            $data['parentWiseChildStatus'] = LeadStatus::where('parent_id', '=', $selected_parent_status_id)->where('status', '!=', 3)->orderBy('rank', 'asc')->get();
+            $data['selected_parent_status_id'] = $selected_parent_status_id;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+                
+                if($selected_parent_status_id == 12)
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('assigned_telecaller_id', '=', $this_telecaller_id)->where('parent_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('assigned_telecaller_id', '=', $this_telecaller_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id), function ($query) use ($selected_parent_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('parent_status_id', $selected_parent_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                }
+
+
+            }
+            else
+            {                
+                
+                if($selected_parent_status_id == 12)
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('parent_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id), function ($query) use ($selected_parent_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('parent_status_id', $selected_parent_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                }
+            
+
+            }
+
+        }
+        elseif(!empty($request->input('branch')) && !empty($request->input('telecaller')))
+        {
+            $selected_branch_id = Helper::decoded($request->input('branch'));
+            $data['branchWiseTelecaller'] = User::where('branch_id', '=', $selected_branch_id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+            $data['selected_branch_id'] = $selected_branch_id;
+
+            $selected_telecaller_id = Helper::decoded($request->input('telecaller'));                              
+            $data['selected_telecaller_id'] = $selected_telecaller_id ;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+                $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+            }
+            else
+            {
+                $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('branch_id', '=', $selected_branch_id)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+            }
+
+        }
+        elseif(!empty($request->input('telecaller')))
+        {
+            $selected_telecaller_id = Helper::decoded($request->input('telecaller'));                              
+            $data['selected_telecaller_id'] = $selected_telecaller_id ;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+                $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+            }
+            else
+            {
+                $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $selected_telecaller_id)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+            }
+
+        }
+        elseif(!empty($request->input('branch')))
+        {
+            $selected_branch_id = Helper::decoded($request->input('branch'));
+            // dd($selected_branch_id);
+            $data['branchWiseTelecaller'] = User::where('branch_id', '=', $selected_branch_id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+
+            $data['selected_branch_id'] = $selected_branch_id;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+                $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('assigned_telecaller_id', '=', $this_telecaller_id)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+            }
+            else
+            {
+                $branchleadPaginated = BranchLead::where('branch_id', '=', $selected_branch_id)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+            }
+
+        }
+        elseif(!empty($request->input('parent-status')) && !empty($request->input('child-status')))
+        {
+            $selected_parent_status_id = Helper::decoded($request->input('parent-status'));
+            $data['parentWiseChildStatus'] = LeadStatus::where('parent_id', '=', $selected_parent_status_id)->where('status', '!=', 3)->orderBy('rank', 'asc')->get();
+            $data['selected_parent_status_id'] = $selected_parent_status_id;
+
+            $selected_child_status_id = Helper::decoded($request->input('child-status'));
+            $data['selected_child_status_id'] = $selected_child_status_id;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+                // where('assigned_telecaller_id', '=', $this_telecaller_id)
+
+                if($selected_parent_status_id == 12 && $selected_child_status_id == 13)
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $this_telecaller_id)->where('parent_status_id', '=', 0)->where('child_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $this_telecaller_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id) && !empty($selected_child_status_id), function ($query) use ($selected_parent_status_id, $selected_child_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id, $selected_child_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->when(!empty($selected_parent_status_id), function ($q) use ($selected_parent_status_id) {
+                                    $q->where('parent_status_id', $selected_parent_status_id);
+                                })
+                                ->when(!empty($selected_child_status_id), function ($q) use ($selected_child_status_id) {
+                                    $q->where('child_status_id', $selected_child_status_id);
+                                })
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                
+                }
+            
+            }
+            else
+            {
+                if($selected_parent_status_id == 12 && $selected_child_status_id == 13)
+                {
+                    $branchleadPaginated = BranchLead::where('parent_status_id', '=', 0)->where('child_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id) && !empty($selected_child_status_id), function ($query) use ($selected_parent_status_id, $selected_child_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id, $selected_child_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->when(!empty($selected_parent_status_id), function ($q) use ($selected_parent_status_id) {
+                                    $q->where('parent_status_id', $selected_parent_status_id);
+                                })
+                                ->when(!empty($selected_child_status_id), function ($q) use ($selected_child_status_id) {
+                                    $q->where('child_status_id', $selected_child_status_id);
+                                })
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                
+                }
+            
+            
+            }
+
+        }
+        elseif(!empty($request->input('child-status')))
+        {
+            $selected_child_status_id = Helper::decoded($request->input('child-status'));
+
+            $data['selected_child_status_id'] = $selected_child_status_id;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+                // where('assigned_telecaller_id', '=', $this_telecaller_id)
+
+                if($selected_child_status_id == 13)
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $this_telecaller_id)->where('child_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $this_telecaller_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_child_status_id), function ($query) use ($selected_child_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_child_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('child_status_id', $selected_child_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                }
+            }
+            else
+            {
+                if($selected_child_status_id == 13)
+                {
+                    $branchleadPaginated = BranchLead::where('child_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_child_status_id), function ($query) use ($selected_child_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_child_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('child_status_id', $selected_child_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                }
+            
+            
+            }
+        }
+        elseif(!empty($request->input('parent-status')))
+        {
+            $selected_parent_status_id = Helper::decoded($request->input('parent-status'));
+    
+            $data['parentWiseChildStatus'] = LeadStatus::where('parent_id', '=', $selected_parent_status_id)->where('status', '!=', 3)->orderBy('rank', 'asc')->get();
+
+            $data['selected_parent_status_id'] = $selected_parent_status_id;
+
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+
+                if($selected_parent_status_id == 12)
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $this_telecaller_id)->where('parent_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $this_telecaller_id)->where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id), function ($query) use ($selected_parent_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('parent_status_id', $selected_parent_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                }
+
+
+            }
+            else
+            {
+                if($selected_parent_status_id == 12)
+                {
+                    $branchleadPaginated = BranchLead::where('parent_status_id', '=', 0)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+                }
+                else
+                {
+                    $branchleadPaginated = BranchLead::where('status', '!=', 3)
+                    ->whereHas('leadActivities', function ($query) {
+                        $query->where('status', '!=', 3);
+                    })
+                    ->when(!empty($selected_parent_status_id), function ($query) use ($selected_parent_status_id) {
+                        $query->whereIn('lead_sl_no', function ($subQuery) use ($selected_parent_status_id) {
+                            $subQuery->select('lead_sl_no')
+                                ->from('lead_activities as la')
+                                ->where('status', '!=', 3)
+                                ->where('parent_status_id', $selected_parent_status_id)
+                                ->whereRaw('la.id = (
+                                    SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                                )'); // only latest
+                        });
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                }
+            
+            
+            }
+        }
+        else // no filter
+        {
+            if(session('user_data')['role_id'] == 3)
+            {
+                $this_telecaller_id = session('user_data')['user_id'] ;
+                $branchleadPaginated = BranchLead::where('assigned_telecaller_id', '=', $this_telecaller_id)->where('status', '!=', 3)->orderBy('id', 'desc')->get();
+            }
+            else
+            {
+                $branchleadPaginated = BranchLead::where('status', '!=', 3)->orderBy('id', 'desc')->get();
+            }
+        }
+        
+        
+        // creation of csv headers 
+        $csvHeaders = [];
+        if(count($branchleadPaginated) > 0)
+        {
+            foreach($branchleadPaginated as $branchlead)
+            {
+                $csvHeaders[] = '#';
+                $header_id_arr = MasterLead::where('sl_no', '=', $branchlead->lead_sl_no)->where('status', '!=', 3)->pluck('header_id')->toArray();
+                foreach($header_id_arr as $header_id)
+                {
+                    $header_name = LeadHeader::where('id', '=', $header_id)->where('status', '!=', 3)->value('name');
+                    if(!empty($header_name))
+                    {
+                        $csvHeaders[] = $header_name;
+                    }
+                }
+                $csvHeaders[] = 'Lead No.';
+                $csvHeaders[] = 'Last Call';
+                $csvHeaders[] = 'Last Parent Status';
+                $csvHeaders[] = 'Last Child Status';
+                $csvHeaders[] = 'Activities';
+                $csvHeaders[] = 'Next Schedule';
+                $csvHeaders[] = 'Telecaller';
+                $csvHeaders[] = 'Campaign Type';
+                $csvHeaders[] = 'Campaign';
+                $csvHeaders[] = 'Branch';
+                
+                $branch_name = Branch::where('id', '=', $branchlead->branch_id)->where('status', '!=', 3)->value('name');
+                break; // running loop for the first iteration
+            }
+        }
+        else
+        {
+            return response()->json(['error' => 'No data found']);
+        }
+
+
+        if(!empty($csvHeaders))
+        {
+            // File name
+            $fileName = $branch_name . '_leads_' . date('Y-m-d_H-i-s') . '.csv';
+
+            // Create CSV using output buffering
+            $handle = fopen('php://temp', 'r+');
+
+            // Write CSV headers once
+            fputcsv($handle, $csvHeaders);
+
+            $count = 1;
+
+            foreach($branchleadPaginated as $branchlead)
+            {
+                $eachCsvRow = [];
+                $eachCsvRow[] = $count;
+
+                // collecting lead details start
+                $masterleadArr = MasterLead::where('sl_no', '=', $branchlead->lead_sl_no)->where('status', '!=', 3)->get() ?? [];
+                foreach($masterleadArr as $masterlead)
+                {
+                    $eachCsvRow[] = $masterlead->header_value ?? '';
+                }
+                // collecting lead details end
+
+                // 'Lead No.' 
+                $leadNo = MasterLead::where('sl_no', '=', $branchlead->lead_sl_no)->where('status', '!=', 3)->first()->lead_no ?? '';
+                $eachCsvRow[] = '="' . $leadNo . '"'; // to preserve leading zeros
+                
+                // Last Lead Activity
+                $lastLeadActivityRow = LeadActivity::where('lead_sl_no', '=', $branchlead->lead_sl_no)->where('status', '!=', 3)->orderBy('id', 'desc')->first();      
+              
+                // 'Last Call'
+                $eachCsvRow[] = $lastLeadActivityRow?->created_at?->format('M d, Y h:i A') ?? '';
+
+                //Lead Status
+                if(!empty($lastLeadActivityRow))
+                {
+                    // 'Last Parent Status'
+                    $eachCsvRow[] = LeadStatus::where('id', '=', $lastLeadActivityRow->parent_status_id)->where('parent_id', '=', 0)->where('status', '!=', 3)->value('name') ?? '';
+                    
+                    // 'Last Child Status'
+                    $eachCsvRow[] = LeadStatus::where('id', '=', $lastLeadActivityRow->child_status_id)->where('parent_id', '=', $lastLeadActivityRow->parent_status_id)->where('status', '!=', 3)->value('name') ?? '';             
+                }
+                else 
+                {
+                    $eachCsvRow[] = '';
+                    $eachCsvRow[] = '';
+                }
+
+                // 'Activities'
+                $lead_activity_count = LeadActivity::where('lead_sl_no', '=', $branchlead->lead_sl_no)->where('status', '!=', 3)->count();
+                if($lead_activity_count > 0)
+                {
+                    $eachCsvRow[] = $lead_activity_count . ' Update' ;
+                }
+                else
+                {
+                    $eachCsvRow[] = 'New' ;
+                }
+
+                // 'Next Schedule'
+                $next_followup_date = '';
+                $next_followup_time = '';
+
+                if ($lastLeadActivityRow && $lastLeadActivityRow->next_followup_date) {
+                    try {
+                        $next_followup_date = Carbon::parse($lastLeadActivityRow->next_followup_date)->format('M d, Y');
+                    } catch (\Exception $e) {
+                        $next_followup_date = '';
+                    }
+                }
+
+                if ($lastLeadActivityRow && $lastLeadActivityRow->next_followup_time) {
+                    $time = $lastLeadActivityRow->next_followup_time;
+                    
+                    // validate format using regex: 24-hr format like "18:14:16"
+                    if (preg_match('/^(2[0-3]|[01]?[0-9]):[0-5][0-9]:[0-5][0-9]$/', $time)) {
+                        try {
+                            $next_followup_time = Carbon::createFromFormat('H:i:s', $time)->format('h:i A');
+                        } catch (\Exception $e) {
+                            $next_followup_time = '';
+                        }
+                    } else {
+                        $next_followup_time = '';
+                    }
+                }
+            
+                if(!empty($next_followup_date) && !empty($next_followup_time))
+                {
+                    $eachCsvRow[] = $next_followup_date . ' ' . $next_followup_time;
+                }
+                else
+                {
+                    $eachCsvRow[] = '' ;
+                }
+     
+                // 'Telecaller'
+                $eachCsvRow[] = ( User::where('id', '=', $branchlead->assigned_telecaller_id)->where('status', '!=', 3)->value('first_name') . ' '. User::where('id', '=', $branchlead->assigned_telecaller_id)->where('status', '!=', 3)->value('last_name') ) ?? '';
+
+                // 'Campaign Type'
+                $eachCsvRow[] = CampaignType::where('id', '=', $branchlead->campaign_type_id)->where('status', '!=', 3)->value('name') ?? '';
+
+                // 'Campaign'
+                $eachCsvRow[] = Campaign::where('id', '=', $branchlead->campaign_id)->where('status', '!=', 3)->value('name') ?? '';
+                
+                // 'Branch'
+                $eachCsvRow[] = Branch::where('id', '=', $branchlead->branch_id)->where('status', '!=', 3)->value('name') ?? '';
+
+    
+
+    
+                 // Write this row to CSV
+                fputcsv($handle, $eachCsvRow);
+
+                $count++;
+            }
+
+
+            // Prepare CSV for download
+            rewind($handle);
+            $csvContent = stream_get_contents($handle);
+            fclose($handle);
+
+            return response($csvContent)
+                ->header('Content-Type', 'text/csv')
+                ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+
+        }
+        
+         
+
+        
     }
     /* ajax request */
 }
