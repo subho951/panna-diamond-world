@@ -225,10 +225,12 @@ $controllerRoute = $module['controller_route'];
                                         <span style="font-size: 12px;">entries</span>
                                     @endif
                                 </div>
-                                <button class="exportAllLeadsAsCSV btn btn-sm"
-                                    style="border: 1px solid green; background-color: green; color: #FFF;">
-                                    <i class="fa-solid fa-file-csv"></i>&nbsp;Export CSV
-                                </button>
+                                @if(session('user_data')['role_id'] != 3)
+                                    <button class="exportAllLeadsAsCSV btn btn-sm"
+                                        style="border: 1px solid green; background-color: green; color: #FFF;">
+                                        <i class="fa-solid fa-file-csv"></i>&nbsp;Export CSV
+                                    </button>
+                                @endif
                             </div>
                             
                             <div class="table-responsive text-nowrap">
