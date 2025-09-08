@@ -78,7 +78,7 @@ class AuthController extends Controller
                 // Initiate cURL
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $verifyURL);
-                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, option: option: CURLOPT_POST, true);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 $response = curl_exec($ch);

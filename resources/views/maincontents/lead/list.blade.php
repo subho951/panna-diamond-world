@@ -45,124 +45,235 @@ $controllerRoute = $module['controller_route'];
 
                         {{-- <h6 class="card-title">Filter</h6> --}}
                         {{-- filter section --}}
-                        <div class="card mb-3 p-3" >
-                            <form>
-                                @csrf
-                                <div class="row">
-                                    <div class="col-md-9">
-                                        <div class="row">
-                                            <div class="col-md-3 mb-3">
-                                                <label for="selected_branch_id" class="form-label">Branch </label>
-                                                <select id="selected_branch_id" class="select2 form-select" name="selected_branch_id" >
-                                                    <option value="" selected disabled>Select Branch</option>
-                                                    @if(!empty($allBranches))
-                                                       @foreach($allBranches as $branch)
-                                                           <option
-                                                            value="{{ Helper::encoded($branch->id) }}"
-                                                     
-                                                            @if(!empty($selected_branch_id))                                                  
-                                                                @if(Helper::encoded($branch->id) == Helper::encoded($selected_branch_id))
+                        @if(session('user_data')['role_id'] != 3)
+                            <div class="card mb-3 p-3" >
+                                <form>
+                                    @csrf
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-3 mb-3">
+                                                    <label for="selected_branch_id" class="form-label">Branch </label>
+                                                    <select id="selected_branch_id" class="select2 form-select" name="selected_branch_id" >
+                                                        <option value="" selected disabled>Select Branch</option>
+                                                        @if(!empty($allBranches))
+                                                        @foreach($allBranches as $branch)
+                                                            <option
+                                                                value="{{ Helper::encoded($branch->id) }}"
+                                                        
+                                                                @if(!empty($selected_branch_id))                                                  
+                                                                    @if(Helper::encoded($branch->id) == Helper::encoded($selected_branch_id))
+                                                                        selected
+                                                                    @endif                                                     
+                                                                @endif >{{ $branch->name }}
+                                                            </option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3 mb-3">
+                                                    <label for="selected_telecaller_id" class="form-label">Telecaller </label>
+                                                    <select id="selected_telecaller_id" class="select2 form-select" name="selected_telecaller_id">
+                                                        <option value="" disable selected>Select Telecaller</option>
+                                                        @if(!empty($branchWiseTelecaller))
+                                                        @foreach($branchWiseTelecaller as $telecaller)
+                                                            <option
+                                                                value="{{ Helper::encoded($telecaller->id) }}"
+                                                                @if(!empty($selected_telecaller_id))
+                                                                    @if(Helper::encoded($telecaller->id) == Helper::encoded($selected_telecaller_id))
                                                                     selected
-                                                                @endif                                                     
-                                                            @endif >{{ $branch->name }}
-                                                           </option>
-                                                        @endforeach
-                                                    @endif
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3 mb-3">
-                                                <label for="selected_telecaller_id" class="form-label">Telecaller </label>
-                                                <select id="selected_telecaller_id" class="select2 form-select" name="selected_telecaller_id">
-                                                    <option value="" disable selected>Select Telecaller</option>
-                                                    @if(!empty($branchWiseTelecaller))
-                                                       @foreach($branchWiseTelecaller as $telecaller)
-                                                           <option
-                                                            value="{{ Helper::encoded($telecaller->id) }}"
-                                                            @if(!empty($selected_telecaller_id))
-                                                                @if(Helper::encoded($telecaller->id) == Helper::encoded($selected_telecaller_id))
-                                                                   selected
+                                                                    @endif
                                                                 @endif
-                                                            @endif
-                                                            >{{ $telecaller->first_name }} {{ $telecaller->last_name }}</option>
-                                                       @endforeach
-                                                    @elseif(!empty($allTelecallers))
-                                                       @foreach($allTelecallers as $telecaller)
-                                                           <option
-                                                            value="{{ Helper::encoded($telecaller->id) }}"
-                                                            @if(!empty($selected_telecaller_id))
-                                                                @if(Helper::encoded($telecaller->id) == Helper::encoded($selected_telecaller_id))
-                                                                   selected
+                                                                >{{ $telecaller->first_name }} {{ $telecaller->last_name }}</option>
+                                                        @endforeach
+                                                        @elseif(!empty($allTelecallers))
+                                                        @foreach($allTelecallers as $telecaller)
+                                                            <option
+                                                                value="{{ Helper::encoded($telecaller->id) }}"
+                                                                @if(!empty($selected_telecaller_id))
+                                                                    @if(Helper::encoded($telecaller->id) == Helper::encoded($selected_telecaller_id))
+                                                                    selected
+                                                                    @endif
                                                                 @endif
-                                                            @endif
-                                                            >{{ $telecaller->first_name }} {{ $telecaller->last_name }}</option>
-                                                       @endforeach
-                                                    @endif
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3 mb-3">
-                                                <label for="parent_status_id" class="form-label">Parent Status </label>
-                                                <select id="parent_status_id" class="select2 form-select" name="parent_status_id">
-                                                    <option value="" disable selected>Select Parent Status</option>
-                                                    @if(!empty($allParentStatus))
-                                                        @foreach($allParentStatus as $parentStatus)
-                                                         <option
-                                                            value="{{ Helper::encoded($parentStatus->id) }}"
-                                                            @if(!empty($selected_parent_status_id))
-                                                                @if(Helper::encoded($parentStatus->id) == Helper::encoded($selected_parent_status_id))
-                                                                    selected
-                                                                @endif   
-                                                            @endif
-                                                          >{{ $parentStatus->name }}</option>
+                                                                >{{ $telecaller->first_name }} {{ $telecaller->last_name }}</option>
                                                         @endforeach
-                                                    @endif
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3 mb-3">
-                                                <label for="child_status_id" class="form-label">Child Status </label>
-                                                <select id="child_status_id" class="select2 form-select" name="child_status_id">
-                                                    <option value="" disable selected>Select Child Status</option>
-                                                    @if(!empty($parentWiseChildStatus))
-                                                        @foreach($parentWiseChildStatus as $childStatus)
-                                                        <option
-                                                            value="{{ Helper::encoded($childStatus->id) }}"
-                                                            @if(!empty($selected_child_status_id))
-                                                                @if(Helper::encoded($childStatus->id) == Helper::encoded($selected_child_status_id))
-                                                                    selected
-                                                                @endif   
-                                                            @endif
-                                                        >{{ $childStatus->name }}</option>
-                                                        @endforeach
-                                                    @elseif(!empty($allChildStatus))
-                                                        @foreach($allChildStatus as $childStatus)
-                                                        <option
-                                                            value="{{ Helper::encoded($childStatus->id) }}"
-                                                            @if(!empty($selected_child_status_id))
-                                                                @if(Helper::encoded($childStatus->id) == Helper::encoded($selected_child_status_id))
-                                                                    selected
-                                                                @endif   
-                                                            @endif
-                                                        >{{ $childStatus->name }}</option>
-                                                        @endforeach
-                                                    @endif
-                                                </select>
+                                                        @endif
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3 mb-3">
+                                                    <label for="parent_status_id" class="form-label">Parent Status </label>
+                                                    <select id="parent_status_id" class="select2 form-select" name="parent_status_id">
+                                                        <option value="" disable selected>Select Parent Status</option>
+                                                        @if(!empty($allParentStatus))
+                                                            @foreach($allParentStatus as $parentStatus)
+                                                            <option
+                                                                value="{{ Helper::encoded($parentStatus->id) }}"
+                                                                @if(!empty($selected_parent_status_id))
+                                                                    @if(Helper::encoded($parentStatus->id) == Helper::encoded($selected_parent_status_id))
+                                                                        selected
+                                                                    @endif   
+                                                                @endif
+                                                            >{{ $parentStatus->name }}</option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3 mb-3">
+                                                    <label for="child_status_id" class="form-label">Child Status </label>
+                                                    <select id="child_status_id" class="select2 form-select" name="child_status_id">
+                                                        <option value="" disable selected>Select Child Status</option>
+                                                        @if(!empty($parentWiseChildStatus))
+                                                            @foreach($parentWiseChildStatus as $childStatus)
+                                                            <option
+                                                                value="{{ Helper::encoded($childStatus->id) }}"
+                                                                @if(!empty($selected_child_status_id))
+                                                                    @if(Helper::encoded($childStatus->id) == Helper::encoded($selected_child_status_id))
+                                                                        selected
+                                                                    @endif   
+                                                                @endif
+                                                            >{{ $childStatus->name }}</option>
+                                                            @endforeach
+                                                        @elseif(!empty($allChildStatus))
+                                                            @foreach($allChildStatus as $childStatus)
+                                                            <option
+                                                                value="{{ Helper::encoded($childStatus->id) }}"
+                                                                @if(!empty($selected_child_status_id))
+                                                                    @if(Helper::encoded($childStatus->id) == Helper::encoded($selected_child_status_id))
+                                                                        selected
+                                                                    @endif   
+                                                                @endif
+                                                            >{{ $childStatus->name }}</option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-3 mt-3">
-                                        <div class="row">
-                                            <div class="col-md-12 d-flex gap-2 mt-3">
-                                                <button type="button" class="w-100 btn btn-outline-dark filterBtn">
-                                                    <i class="fa-solid fa-filter"></i>&nbsp;<span>Filter</span>
-                                                </button>
-                                                <button type="button" class="w-100 btn btn-label-secondary d-none resetBtn">
-                                                    <i class="fa-solid fa-arrow-rotate-left"></i>&nbsp;<span>Reset</span>
-                                                </button>
+                                        <div class="col-md-9">
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                <label for="assigned_from_date" class="form-label">Assigned From </label>
+                                                <input class="form-control" type="date" id="assigned_from_date" name="assigned_from_date"
+                                                    @if(!empty($assignedFromDate))
+                                                    value="{{ $assignedFromDate }}" 
+                                                    @endif
+                                                    max="<?=date('Y-m-d')?>" />
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                <label for="assigned_to_date" class="form-label">Assigned To </label>
+                                                <input class="form-control" type="date" id="assigned_to_date" name="assigned_to_date"
+                                                    @if(!empty($assignedToDate))
+                                                    value="{{ $assignedToDate }}"
+                                                    @endif
+                                                    max="<?=date('Y-m-d')?>" />
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>                                       
-                            </form>
-                        </div>
+                                        <div class="col-md-3 mt-3">
+                                            <div class="row">
+                                                <div class="col-md-12 d-flex gap-2 mt-3">
+                                                    <button type="button" class="w-100 btn btn-outline-dark filterBtn">
+                                                        <i class="fa-solid fa-filter"></i>&nbsp;<span>Filter</span>
+                                                    </button>
+                                                    <button type="button" class="w-100 btn btn-label-secondary d-none resetBtn">
+                                                        <i class="fa-solid fa-arrow-rotate-left"></i>&nbsp;<span>Reset</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                                       
+                                </form>
+                            </div>
+                        @else
+                         {{-- for telecaller --}}
+                            <div class="card mb-3 p-3" >
+                                <form>
+                                    @csrf
+                                    <div class="row">
+                                        <div class="col-md-9">
+                                            <div class="row">
+                                                <div class="col-md-3 mb-3">
+                                                    <label for="parent_status_id" class="form-label">Parent Status </label>
+                                                    <select id="parent_status_id" class="select2 form-select" name="parent_status_id">
+                                                        <option value="" disable selected>Select Parent Status</option>
+                                                        @if(!empty($allParentStatus))
+                                                            @foreach($allParentStatus as $parentStatus)
+                                                            <option
+                                                                value="{{ Helper::encoded($parentStatus->id) }}"
+                                                                @if(!empty($selected_parent_status_id))
+                                                                    @if(Helper::encoded($parentStatus->id) == Helper::encoded($selected_parent_status_id))
+                                                                        selected
+                                                                    @endif   
+                                                                @endif
+                                                            >{{ $parentStatus->name }}</option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3 mb-3">
+                                                    <label for="child_status_id" class="form-label">Child Status </label>
+                                                    <select id="child_status_id" class="select2 form-select" name="child_status_id">
+                                                        <option value="" disable selected>Select Child Status</option>
+                                                        @if(!empty($parentWiseChildStatus))
+                                                            @foreach($parentWiseChildStatus as $childStatus)
+                                                            <option
+                                                                value="{{ Helper::encoded($childStatus->id) }}"
+                                                                @if(!empty($selected_child_status_id))
+                                                                    @if(Helper::encoded($childStatus->id) == Helper::encoded($selected_child_status_id))
+                                                                        selected
+                                                                    @endif   
+                                                                @endif
+                                                            >{{ $childStatus->name }}</option>
+                                                            @endforeach
+                                                        @elseif(!empty($allChildStatus))
+                                                            @foreach($allChildStatus as $childStatus)
+                                                            <option
+                                                                value="{{ Helper::encoded($childStatus->id) }}"
+                                                                @if(!empty($selected_child_status_id))
+                                                                    @if(Helper::encoded($childStatus->id) == Helper::encoded($selected_child_status_id))
+                                                                        selected
+                                                                    @endif   
+                                                                @endif
+                                                            >{{ $childStatus->name }}</option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3 mb-3">
+                                                <label for="assigned_from_date" class="form-label">Assigned From </label>
+                                                <input class="form-control" type="date" id="assigned_from_date" name="assigned_from_date"
+                                                    @if(!empty($assignedFromDate))
+                                                    value="{{ $assignedFromDate }}" 
+                                                    @endif
+                                                    max="<?=date('Y-m-d')?>" />
+                                                </div>
+                                                <div class="col-md-3 mb-3">
+                                                <label for="assigned_to_date" class="form-label">Assigned To </label>
+                                                <input class="form-control" type="date" id="assigned_to_date" name="assigned_to_date"
+                                                    @if(!empty($assignedToDate))
+                                                    value="{{ $assignedToDate }}"
+                                                    @endif
+                                                    max="<?=date('Y-m-d')?>" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mt-3">
+                                            <div class="row">
+                                                <div class="col-md-12 d-flex gap-2 mt-3">
+                                                    <button type="button" class="w-100 btn btn-outline-dark filterBtn">
+                                                        <i class="fa-solid fa-filter"></i>&nbsp;<span>Filter</span>
+                                                    </button>
+                                                    <button type="button" class="w-100 btn btn-label-secondary d-none resetBtn">
+                                                        <i class="fa-solid fa-arrow-rotate-left"></i>&nbsp;<span>Reset</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                                       
+                                </form>
+                            </div>
+                        @endif
+
                         
                         {{-- bulk lead transfer section --}}
                         @if(session('user_data')['role_id'] != 3)
@@ -1076,8 +1187,10 @@ $controllerRoute = $module['controller_route'];
         parentStatusFromUrl = urlParams.get('parent-status'); 
         let childStatusFromUrl = "";
         childStatusFromUrl = urlParams.get('child-status'); 
-        
-
+        let assignedFromDateFromUrl = "";
+        assignedFromDateFromUrl = urlParams.get('assigned-from-date');
+        let assignedToDateFromUrl = "";
+        assignedToDateFromUrl = urlParams.get('assigned-to-date');
 
         //select parent status
         let selected_parent_status_id = ""
@@ -1114,7 +1227,30 @@ $controllerRoute = $module['controller_route'];
         });
 
 
+        // handling clear buttons of date fields
+        $('#assigned_from_date, #assigned_to_date').on('input', function() {
+            // Get values of all filter dropdowns
+            let branch = $('#selected_branch_id').val();
+            let telecaller = $('#selected_telecaller_id').val();
+            let parentStatus = $('#parent_status_id').val();
+            let childStatus = $('#child_status_id').val();
+            let selected_assigned_from_date = $('#assigned_from_date').val();
+            let selected_assigned_to_date = $('#assigned_to_date').val();
 
+            // Check if all are empty
+            if ((!branch || branch === "") &&
+                (!telecaller || telecaller === "") &&
+                (!parentStatus || parentStatus === "") &&
+                (!childStatus || childStatus === "") && 
+                (!selected_assigned_from_date || selected_assigned_from_date === "") &&
+                (!selected_assigned_to_date || selected_assigned_to_date === "") 
+            )
+            {
+                $('.resetBtn').not('.d-none').addClass('d-none');
+            }
+        });
+
+        
         // filter
         $(document).on('click', '.filterBtn', function()
         {
@@ -1123,12 +1259,17 @@ $controllerRoute = $module['controller_route'];
             let telecaller = $('#selected_telecaller_id').val();
             let parentStatus = $('#parent_status_id').val();
             let childStatus = $('#child_status_id').val();
+            let selected_assigned_from_date = $('#assigned_from_date').val();
+            let selected_assigned_to_date = $('#assigned_to_date').val();
 
             // Check if all are empty
             if ((!branch || branch === "") &&
                 (!telecaller || telecaller === "") &&
                 (!parentStatus || parentStatus === "") &&
-                (!childStatus || childStatus === "")) {
+                (!childStatus || childStatus === "") && 
+                (!selected_assigned_from_date || selected_assigned_from_date === "") &&
+                (!selected_assigned_to_date || selected_assigned_to_date === "") 
+            ) {
 
                 toastAlert('error', 'Please Select Something To Apply Filter');
             }
@@ -1162,6 +1303,24 @@ $controllerRoute = $module['controller_route'];
                     url.searchParams.set('child-status', selected_child_status_id);
                 }
 
+                // assigned date
+                if(selected_assigned_from_date != "" && selected_assigned_to_date != "")
+                {
+                    url.searchParams.set('assigned-from-date', selected_assigned_from_date);
+                    url.searchParams.set('assigned-to-date', selected_assigned_to_date);
+                }
+                else if(selected_assigned_from_date != "")
+                {
+                    url.searchParams.set('assigned-from-date', selected_assigned_from_date);
+                    url.searchParams.delete('assigned-to-date');
+                }
+                else if(selected_assigned_to_date != "")
+                {
+                    url.searchParams.set('assigned-to-date', selected_assigned_to_date);
+                    url.searchParams.delete('assigned-from-date');
+                }
+
+
 
                 // Always reset to page 1
                 url.searchParams.set('page', 1);
@@ -1180,7 +1339,7 @@ $controllerRoute = $module['controller_route'];
 
         // show reset button iff any filter is applied
         const currentUrl = new URL(window.location.href);
-        if( (currentUrl.searchParams.has('branch')) || (currentUrl.searchParams.has('telecaller')) || (currentUrl.searchParams.has('parent-status')) || (currentUrl.searchParams.has('child-status')) )
+        if( (currentUrl.searchParams.has('branch')) || (currentUrl.searchParams.has('telecaller')) || (currentUrl.searchParams.has('parent-status')) || (currentUrl.searchParams.has('child-status')) || (currentUrl.searchParams.has('assigned-from-date')) || (currentUrl.searchParams.has('assigned-to-date')))
         {
             $('.resetBtn').removeClass('d-none');
             // $('.resetBtn').addClass('d-block');
@@ -1197,6 +1356,8 @@ $controllerRoute = $module['controller_route'];
             url.searchParams.delete('telecaller');
             url.searchParams.delete('parent-status');
             url.searchParams.delete('child-status');
+            url.searchParams.delete('assigned-from-date');
+            url.searchParams.delete('assigned-to-date');
 
 
             url.searchParams.set('page', 1); // reset to first page
@@ -1385,10 +1546,12 @@ $controllerRoute = $module['controller_route'];
                     url: base_url + '/lead-list/export-all-leads-as-csv',
                     type: 'POST',
                     data: {
-                    branch : branchFromUrl ,
-                    telecaller : telecallerFromUrl ,
-                    'parent-status' : parentStatusFromUrl ,
-                    'child-status' : childStatusFromUrl ,
+                        'branch' : branchFromUrl ,
+                        'telecaller' : telecallerFromUrl ,
+                        'parent-status' : parentStatusFromUrl ,
+                        'child-status' : childStatusFromUrl ,
+                        'assigned-from-date' : assignedFromDateFromUrl ,
+                        'assigned-to-date' : assignedToDateFromUrl ,
                     },
                     xhrFields: {
                         responseType: 'blob'
