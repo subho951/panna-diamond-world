@@ -8,7 +8,7 @@ use App\Helpers\Helper;
 <div class="container-fluid flex-grow-1 container-p-y">
   <div class="row g-6">
     <div class="col-lg-12">
-      <h3 class="mt-2 main_heading">Welcome to <?=Helper::getSettingValue('site_name')?> masteradmin panel</h2>
+      <h3 class="mt-2 main_heading">Welcome to <?=Helper::getSettingValue('site_name')?></h2>
     </div>
     {{-- filter section start --}}
     <div class="card mb-3 p-3" >

@@ -153,6 +153,7 @@ class AuthController extends Controller
 
 
         }
+
         public function logout(Request $request)
         {
             $user_email                             = Auth::user()->email;
