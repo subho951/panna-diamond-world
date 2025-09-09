@@ -336,11 +336,13 @@ $controllerRoute = $module['controller_route'];
                                         <span style="font-size: 12px;">entries</span>
                                     @endif
                                 </div>
-                                @if(session('user_data')['role_id'] != 3)
-                                    <button class="exportAllLeadsAsCSV btn btn-sm"
-                                        style="border: 1px solid green; background-color: green; color: #FFF;">
-                                        <i class="fa-solid fa-file-csv"></i>&nbsp;Export CSV
-                                    </button>
+                                @if(!empty($totalLeadArr))
+                                    @if(session('user_data')['role_id'] != 3)
+                                        <button class="exportAllLeadsAsCSV btn btn-sm"
+                                            style="border: 1px solid green; background-color: green; color: #FFF;">
+                                            <i class="fa-solid fa-file-csv"></i>&nbsp;Export CSV
+                                        </button>
+                                    @endif
                                 @endif
                             </div>
                             
@@ -1319,6 +1321,25 @@ $controllerRoute = $module['controller_route'];
                     url.searchParams.set('assigned-to-date', selected_assigned_to_date);
                     url.searchParams.delete('assigned-from-date');
                 }
+
+                // clear assigned date
+                if(selected_assigned_from_date == "" && selected_assigned_to_date == "")
+                {
+                    url.searchParams.delete('assigned-from-date');
+                    url.searchParams.delete('assigned-to-date');
+                }
+                else if(selected_assigned_from_date == "")
+                {
+                    url.searchParams.delete('assigned-from-date');
+                }
+                else if(selected_assigned_to_date == "")
+                {
+                    url.searchParams.delete('assigned-to-date');
+                }
+
+
+
+                
 
 
 

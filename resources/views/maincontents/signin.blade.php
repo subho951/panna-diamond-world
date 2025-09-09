@@ -46,9 +46,9 @@ use App\Helpers\Helper;
           <!-- <input class="form-check-input" type="checkbox" id="remember-me" />
           <label class="form-check-label" for="remember-me"> Remember Me </label> -->
         </div>
-        <a href="{{url('forgot-password')}}">
+        {{-- <a href="{{url('forgot-password')}}">
           <p class="mb-0 text-dark">Forgot Password?</p>
-        </a>
+        </a> --}}
       </div>
     </div>
   </form>
