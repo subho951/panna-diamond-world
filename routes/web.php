@@ -25,6 +25,7 @@ use App\Http\Controllers\IndividualLeadController;
 use App\Http\Controllers\LeadListController;
 use App\Http\Controllers\FeedbackTagController;
 use App\Http\Controllers\PurposeController;
+use App\Http\Controllers\ReportController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -254,4 +255,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('purpose/delete/{id}', [PurposeController::class, 'delete']);
         Route::get('purpose/change-status/{id}', [PurposeController::class, 'change_status']);
     /* Purpose */
+
+
+
+    /* Report */
+        Route::get('report', [ReportController::class, 'report']);
+    /* Report */
 });

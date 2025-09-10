@@ -231,6 +231,19 @@ $role_id      = (($user)?$user->role_id:0);
   </li>
   <?php }?>
 
+  <?php if(in_array(28, $moduleIds)){?>
+  <!-- Report -->
+  <li class="menu-item <?=(($pageSegment == 'report')?'active':'')?>">
+    <a href="<?=url('/report')?>" class="menu-link">
+      <i class="menu-icon fa-solid fa-file-alt"></i>
+      <div data-i18n="Report">Report</div>
+    </a>
+  </li>
+  <?php }?>
+
+
+
+
   <?php if(in_array(10, $moduleIds) || in_array(11, $moduleIds) || in_array(12, $moduleIds)){?>
     <!-- Logs -->
     <li class="menu-item active <?=(($pageSegment == 'email-logs' || $pageSegment == 'login-logs' || $pageSegment == 'user-activity-logs')?'open':'')?>">
