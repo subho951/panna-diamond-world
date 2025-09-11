@@ -259,6 +259,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     /* Report */
-        Route::get('report', [ReportController::class, 'report']);
+        Route::get('activity-report', [ReportController::class, 'activityReport']);
+        Route::get('assign-report', [ReportController::class, 'assignReport']);
     /* Report */
 });
