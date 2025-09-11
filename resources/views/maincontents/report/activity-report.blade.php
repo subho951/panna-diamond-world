@@ -398,7 +398,7 @@ $controllerRoute = $module['controller_route'];
           String(now.getMinutes()).padStart(2, '0') + '-' +
           String(now.getSeconds()).padStart(2, '0');
     
-          link.download = branchName + "_report_" + formattedDateTime + ".csv";
+          link.download = branchName + "_activity_report_" + formattedDateTime + ".csv";
           link.click();
     
           toastAlert('success', 'File Exported Successfully !!!');

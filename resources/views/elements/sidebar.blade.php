@@ -231,15 +231,43 @@ $role_id      = (($user)?$user->role_id:0);
   </li>
   <?php }?>
 
-  <?php if(in_array(28, $moduleIds)){?>
-  <!-- Report -->
-  <li class="menu-item <?=(($pageSegment == 'report')?'active':'')?>">
-    <a href="<?=url('/report')?>" class="menu-link">
-      <i class="menu-icon fa-solid fa-file-alt"></i>
-      <div data-i18n="Report">Report</div>
-    </a>
-  </li>
+
+
+  
+
+
+  <?php if(in_array(29, $moduleIds) || in_array(28, $moduleIds)){?>
+    <!-- Report -->
+    <li class="menu-item active <?=(($pageSegment == 'assign-report' || $pageSegment == 'activity-report')?'open':'')?>">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon fa-solid fa-clipboard-list"></i>
+        <div data-i18n="Report">Report</div>
+      </a>
+      <ul class="menu-sub">
+        <?php if(in_array(29, $moduleIds)){?>
+          {{-- Assign Report --}}
+          <li class="menu-item <?=(($pageSegment == 'assign-report')?'active':'')?>">
+            <a href="<?=url('/assign-report')?>" class="menu-link">
+              <div data-i18n="Assign Report"><i class="fa-solid fa-arrow-right"></i>Assign Report</div>
+            </a>
+          </li>
+        <?php }?>
+
+        <?php if(in_array(28, $moduleIds)){?>
+          {{-- Activity Report --}}
+          <li class="menu-item <?=(($pageSegment == 'activity-report')?'active':'')?>">
+            <a href="<?=url('/activity-report')?>" class="menu-link">
+              <div data-i18n="Activity Report"><i class="fa-solid fa-arrow-right"></i>Activity Report</div>
+            </a>
+          </li>
+          <?php }?>
+
+        
+
+      </ul>
+    </li>
   <?php }?>
+
 
 
 
