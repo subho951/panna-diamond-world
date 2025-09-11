@@ -26,6 +26,7 @@ use App\Http\Controllers\LeadListController;
 use App\Http\Controllers\FeedbackTagController;
 use App\Http\Controllers\PurposeController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\WpApiController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -262,4 +263,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('activity-report', [ReportController::class, 'activityReport']);
         Route::get('assign-report', [ReportController::class, 'assignReport']);
     /* Report */
+
+
+
+    /* WP API testing */
+    Route::match(['get', 'post'], 'wp-message', [WpApiController::class, 'wpMessage']);
+    /* WP API testing */
 });
