@@ -1744,43 +1744,86 @@ class ApiController extends Controller
                                                             ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
                                                             ->where('parent_status_id', '=', 0)
                                                             ->where('child_status_id', '=', 0)
-                                                           ->where('created_at', 'NOT LIKE', '%' . $today . '%')
+                                                            ->where('created_at', 'NOT LIKE', '%' . $today . '%')
                                                             ->orderBy('lead_sl_no', 'ASC')
                                                             ->offset($offset)
                                                             ->limit($limit)
                                                             ->get();
                                 }
                             } elseif($parent_status != '' && $child_status == ''){
-                                $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
-                                                        ->where('status', '=', 1)
-                                                        ->where('branch_id', '=', $branch_id)
-                                                        ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
-                                                        ->where('parent_status_id', '=', $parent_status)
-                                                        ->orderBy('lead_sl_no', 'ASC')
-                                                        ->offset($offset)
-                                                        ->limit($limit)
-                                                        ->get();
+                                if($lead_type == 0){
+                                    $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
+                                                            ->where('status', '=', 1)
+                                                            ->where('branch_id', '=', $branch_id)
+                                                            ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                            ->where('parent_status_id', '=', $parent_status)
+                                                            ->where('next_followup_date', '=', $today)
+                                                            ->orderBy('lead_sl_no', 'ASC')
+                                                            ->offset($offset)
+                                                            ->limit($limit)
+                                                            ->get();
+                                } else {
+                                    $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
+                                                            ->where('status', '=', 1)
+                                                            ->where('branch_id', '=', $branch_id)
+                                                            ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                            ->where('parent_status_id', '=', $parent_status)
+                                                            ->where('next_followup_date', '!=', $today)
+                                                            ->orderBy('lead_sl_no', 'ASC')
+                                                            ->offset($offset)
+                                                            ->limit($limit)
+                                                            ->get();
+                                }
                             } elseif($parent_status == '' && $child_status != ''){
-                                $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
+                                if($lead_type == 0){
+                                    $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
+                                                            ->where('status', '=', 1)
+                                                            ->where('branch_id', '=', $branch_id)
+                                                            ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                            ->where('child_status_id', '=', $child_status)
+                                                            ->where('next_followup_date', '=', $today)
+                                                            ->orderBy('lead_sl_no', 'ASC')
+                                                            ->offset($offset)
+                                                            ->limit($limit)
+                                                            ->get();
+                                } else {
+                                    $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
                                                         ->where('status', '=', 1)
                                                         ->where('branch_id', '=', $branch_id)
                                                         ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
                                                         ->where('child_status_id', '=', $child_status)
+                                                        ->where('next_followup_date', '!=', $today)
                                                         ->orderBy('lead_sl_no', 'ASC')
                                                         ->offset($offset)
                                                         ->limit($limit)
                                                         ->get();
+                                }
                             } elseif($parent_status != '' && $child_status != ''){
-                                $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
+                                if($lead_type == 0){
+                                    $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
+                                                            ->where('status', '=', 1)
+                                                            ->where('branch_id', '=', $branch_id)
+                                                            ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                            ->where('parent_status_id', '=', $parent_status)
+                                                            ->where('child_status_id', '=', $child_status)
+                                                            ->where('next_followup_date', '=', $today)
+                                                            ->orderBy('lead_sl_no', 'ASC')
+                                                            ->offset($offset)
+                                                            ->limit($limit)
+                                                            ->get();
+                                } else {
+                                    $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
                                                         ->where('status', '=', 1)
                                                         ->where('branch_id', '=', $branch_id)
                                                         ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
                                                         ->where('parent_status_id', '=', $parent_status)
                                                         ->where('child_status_id', '=', $child_status)
+                                                        ->where('next_followup_date', '!=', $today)
                                                         ->orderBy('lead_sl_no', 'ASC')
                                                         ->offset($offset)
                                                         ->limit($limit)
                                                         ->get();
+                                }
                             }
 
                             if($leadNos){
