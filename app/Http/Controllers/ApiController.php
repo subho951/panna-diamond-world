@@ -1724,6 +1724,13 @@ class ApiController extends Controller
 
                             $today          = date('Y-m-d');
 
+                            $getDataSearch  = MasterLead::where('status', '=', 1)->where('sl_no', '=', $leadNo->lead_sl_no)->where('header_value', 'LIKE', '%' . $search_text. '%')->count();
+                            if($getDataSearch > 0){
+                                $isShow         = 1;
+                            } else {
+                                $isShow         = 0;
+                            }
+
                             if($parent_status == '' && $child_status == ''){
                                 if($lead_type == 0){
                                     $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
@@ -1738,17 +1745,34 @@ class ApiController extends Controller
                                                             ->limit($limit)
                                                             ->get();
                                 } else {
-                                    $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
-                                                            ->where('status', '=', 1)
-                                                            ->where('branch_id', '=', $branch_id)
-                                                            ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
-                                                            ->where('parent_status_id', '=', 0)
-                                                            ->where('child_status_id', '=', 0)
-                                                            ->where('created_at', 'NOT LIKE', '%' . $today . '%')
-                                                            ->orderBy('lead_sl_no', 'ASC')
-                                                            ->offset($offset)
-                                                            ->limit($limit)
-                                                            ->get();
+                                    if($search_text == ''){
+                                        $leadNos                  = BranchLead::select('lead_sl_no', 'parent_status_id', 'child_status_id', 'next_followup_date', 'next_followup_time', 'created_at', 'campaign_type_id', 'campaign_id')
+                                                                ->where('status', '=', 1)
+                                                                ->where('branch_id', '=', $branch_id)
+                                                                ->where('assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                                ->where('parent_status_id', '=', 0)
+                                                                ->where('child_status_id', '=', 0)
+                                                                ->where('created_at', 'NOT LIKE', '%' . $today . '%')
+                                                                ->orderBy('lead_sl_no', 'ASC')
+                                                                ->offset($offset)
+                                                                ->limit($limit)
+                                                                ->get();
+                                    } else {
+                                        $leadNos = DB::table('branch_leads')
+                                                                        ->join('master_leads', 'branch_leads.lead_sl_no', '=', 'master_leads.sl_no')
+                                                                        ->select('branch_leads.lead_sl_no', 'branch_leads.parent_status_id', 'branch_leads.child_status_id', 'branch_leads.next_followup_date', 'branch_leads.next_followup_time', 'branch_leads.created_at', 'branch_leads.campaign_type_id', 'branch_leads.campaign_id')
+                                                                        ->where('branch_leads.status', '=', 1)
+                                                                        ->where('branch_leads.branch_id', '=', $branch_id)
+                                                                        ->where('branch_leads.assigned_telecaller_id', '=', $assigned_telecaller_id)
+                                                                        ->where('branch_leads.parent_status_id', '=', 0)
+                                                                        ->where('branch_leads.child_status_id', '=', 0)
+                                                                        ->where('branch_leads.created_at', 'NOT LIKE', '%' . $today . '%')
+                                                                        ->where('master_leads.header_value', 'LIKE', '%' . $search_text. '%')
+                                                                        ->orderBy('branch_leads.lead_sl_no', 'ASC')
+                                                                        ->offset($offset)
+                                                                        ->limit($limit)
+                                                                        ->get();
+                                    }
                                 }
                             } elseif($parent_status != '' && $child_status == ''){
                                 if($lead_type == 0){
@@ -1887,14 +1911,14 @@ class ApiController extends Controller
                                     }
 
                                     
-                                    $getDataSearch  = MasterLead::where('status', '=', 1)->where('sl_no', '=', $leadNo->lead_sl_no)->where('header_value', 'LIKE', '%' . $search_text. '%')->count();
-                                    if($getDataSearch > 0){
-                                        $isShow         = 1;
-                                    } else {
-                                        $isShow         = 0;
-                                    }
+                                    // $getDataSearch  = MasterLead::where('status', '=', 1)->where('sl_no', '=', $leadNo->lead_sl_no)->where('header_value', 'LIKE', '%' . $search_text. '%')->count();
+                                    // if($getDataSearch > 0){
+                                    //     $isShow         = 1;
+                                    // } else {
+                                    //     $isShow         = 0;
+                                    // }
 
-                                    if($isShow){
+                                    // if($isShow){
                                         $apiResponse[]      = [
                                             'sl_no'                 => $leadNo->lead_sl_no,
                                             'lead_no'               => (($getMasterLead)?$getMasterLead->lead_no:''),
@@ -1919,7 +1943,7 @@ class ApiController extends Controller
                                             'telecaller_name'       => $getUser->first_name . ' ' . $getUser->last_name,
                                             'lead_type'             => $lead_type,
                                         ];
-                                    }
+                                    // }
                                 }
                             }
 
