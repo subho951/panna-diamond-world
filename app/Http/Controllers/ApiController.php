@@ -1722,14 +1722,7 @@ class ApiController extends Controller
                                 $offset         = (($limit * $page_no) - $limit); // ((15 * 3) - 15)
                             }
 
-                            $today          = date('Y-m-d');
-
-                            $getDataSearch  = MasterLead::where('status', '=', 1)->where('sl_no', '=', $leadNo->lead_sl_no)->where('header_value', 'LIKE', '%' . $search_text. '%')->count();
-                            if($getDataSearch > 0){
-                                $isShow         = 1;
-                            } else {
-                                $isShow         = 0;
-                            }
+                            $today          = date('Y-m-d');                            
 
                             if($parent_status == '' && $child_status == ''){
                                 if($lead_type == 0){
