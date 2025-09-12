@@ -36,7 +36,7 @@ class WpApiController extends Controller
             {
                 $mobile   = $request->whatsappNo; 
                 $apiKey   = "983676c03c1876759052b25e388271ac"; 
-                $msg      = "Bhalo Acho ? Barir Sobai Valo Ache ?";
+                $msg      = "Test Message";
     
                 // Call the API
                 $response = Http::get("https://demo.digitalsms.biz/api/", [
