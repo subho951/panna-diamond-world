@@ -1940,6 +1940,8 @@ class ApiController extends Controller
                                 }
                             }
 
+                            $apiResponse = collect($apiResponse)->unique('sl_no')->values()->all();
+
                             $apiStatus          = TRUE;
                             http_response_code(200);
                             $apiMessage         = 'Data Available !!!';
