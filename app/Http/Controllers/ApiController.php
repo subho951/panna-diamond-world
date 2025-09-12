@@ -1761,8 +1761,8 @@ class ApiController extends Controller
                                                                         ->where('branch_leads.child_status_id', '=', 0)
                                                                         ->where('branch_leads.created_at', 'NOT LIKE', '%' . $today . '%')
                                                                         ->where('master_leads.header_value', 'LIKE', '%' . $search_text. '%')
-                                                                        ->orderBy('branch_leads.lead_sl_no', 'ASC')
                                                                         ->groupBy('master_leads.sl_no')
+                                                                        ->orderBy('branch_leads.lead_sl_no', 'ASC')
                                                                         ->offset($offset)
                                                                         ->limit($limit)
                                                                         ->get();
