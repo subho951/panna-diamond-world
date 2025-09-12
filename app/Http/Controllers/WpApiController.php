@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 
 class WpApiController extends Controller
 {
@@ -20,38 +21,47 @@ class WpApiController extends Controller
 
     public function wpMessage(Request $request)
     {
-        if ($request->isMethod('post')) {
-            $request->validate([
-                'name'       => 'required|string|max:100',
+        if ($request->isMethod('post')) 
+        {
+            $validator = Validator::make($request->all(), [
+                'name'       => 'required',
                 'whatsappNo' => 'required|digits:10',
             ]);
 
-            $mobile   = "91" . $request->whatsappNo; // prefix country code (India = 91)
-            $apiKey   = "983676c03c1876759052b25e388271ac"; 
-            $msg      = "testmsg";
-
-            // Call the API
-            $response = Http::get("https://demo.digitalsms.biz/api/", [
-                'apikey' => $apiKey,
-                'mobile' => $mobile,
-                'msg'    => $msg,
-            ]);
-
-            $result = $response->json();
-
-            if ($result && isset($result['status']) && $result['status'] == 1) 
+            if ($validator->fails()) 
             {
-                return back()->with('success', 'WhatsApp message sent successfully!');
-            } else {
-                return back()->with('error', 'Failed to send WhatsApp message.');
+                return back()->with('error_message', 'All Fields Are Required With Proper Data !!!');
             }
+            else
+            {
+                $mobile   = $request->whatsappNo; 
+                $apiKey   = "983676c03c1876759052b25e388271ac"; 
+                $msg      = "Bhalo Acho ? Barir Sobai Valo Ache ?";
+    
+                // Call the API
+                $response = Http::get("https://demo.digitalsms.biz/api/", [
+                    'apikey' => strip_tags($apiKey),
+                    'mobile' => strip_tags($mobile),
+                    'msg'    => strip_tags($msg),
+                ]);
+    
+                // dd($response->body());
+    
+                $result = $response->json();
+    
+                if ($result && isset($result['status']) && $result['status'] == 1) 
+                {
+                    return back()->with('success_message', 'WhatsApp message sent successfully !!!');
+                } else {
+                    return back()->with('error_message', 'Failed to send WhatsApp message !!!');
+                }
+            }
+
         }
 
-        $title     = $this->data['title'];
+
         $page_name = 'whatsapp.wp-message';
 
-        return view('maincontents.' . $page_name, [
-            'module' => $this->data,
-        ]);
+        return view('maincontents.' . $page_name);
     }
 }
