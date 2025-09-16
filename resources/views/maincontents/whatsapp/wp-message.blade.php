@@ -62,7 +62,7 @@
 
             <div class="mb-3">
               <label for="wpImage" class="form-label">Image </label>
-              <input type="file" id="wpImage" name="wpImage" class="form-control" >
+              <input type="file" id="wpImage" name="wpImage" class="form-control" accept="image/*">
            </div>
         
             <div class="d-grid">
