@@ -27,37 +27,48 @@
     </div>
  <?php }?>
 
-<div class="container my-5">
-  <div class="row justify-content-center">
+<div class="container my-3">
+  <div class="row justify-content-center align-items-center">
     <div class="col-md-6 col-lg-4">
       <div class="card shadow-lg rounded-4">
         <div class="card-body p-4">
           <h4 class="text-center mb-4">User Details</h4>
-          <form method="POST" action="{{ url('wp-message') }}">
+          <form method="POST" action="{{ url('wp-message') }}" enctype="multipart/form-data">
             @csrf
+
+              <div class="mb-3">
+                  <label for="name" class="form-label">Name <small class="text-danger">*</small></label>
+                  <input type="text" id="name" name="name" class="form-control" placeholder="Enter name" required>
+              </div>
+          
+              <div class="mb-3">
+                  <label for="whatsappNo" class="form-label">Whatsapp No. <small class="text-danger">*</small></label>
+                  <input type="tel" id="whatsappNo" name="whatsappNo" class="form-control" placeholder="Enter whatsapp number"
+                  minlength="10" 
+                  maxlength="10" 
+                  oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10);" 
+                  onblur="if(this.value!=='' && this.value.length!==10){ 
+                      alert('Please enter a valid whatsapp number !'); 
+                      this.value=''; 
+                      this.focus(); 
+                  }" required>
+                  <small class="form-text">Enter 10-digit whatsapp number</small>
+              </div>
+
             <div class="mb-3">
-                <label for="name" class="form-label">Name<small class="text-danger">*</small></label>
-                <input type="text" id="name" name="name" class="form-control" placeholder="Enter name" required>
+              <label for="wpMessage" class="form-label">Message </label>
+              <textarea class="form-control" id="wpMessage" name="wpMessage" rows="2"></textarea>
             </div>
-        
+
             <div class="mb-3">
-                <label for="whatsappNo" class="form-label">Whatsapp No.<small class="text-danger">*</small></label>
-                <input type="tel" id="whatsappNo" name="whatsappNo" class="form-control" placeholder="Enter whatsapp number"
-                minlength="10" 
-                maxlength="10" 
-                oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10);" 
-                onblur="if(this.value!=='' && this.value.length!==10){ 
-                    alert('Please enter a valid whatsapp number !'); 
-                    this.value=''; 
-                    this.focus(); 
-                }" required>
-                <div class="form-text">Enter 10-digit whatsapp number</div>
-            </div>
+              <label for="wpImage" class="form-label">Image </label>
+              <input type="file" id="wpImage" name="wpImage" class="form-control" >
+           </div>
         
             <div class="d-grid">
                 <button type="submit" class="btn btn-success rounded-pill"><i class="fa-brands fa-whatsapp"></i> Send</button>
             </div>
-        </form>
+          </form>
         
         </div>
       </div>
