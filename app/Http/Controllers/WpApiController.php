@@ -80,9 +80,13 @@ class WpApiController extends Controller
 
                     // dd($result);
 
-                    if (!empty($path)) // delete uploaded image if exists
+                    if (!empty($imageUrl)) // delete uploaded image if exists
                     {
-                        Storage::disk('public')->delete($path); 
+                        $filePath = public_path('wp-images/' . $wpImageName);
+                    
+                        if (file_exists($filePath)) {
+                            unlink($filePath);
+                        }
                     }
 
                     if ($result && isset($result['status']) && $result['status'] == 1) 
