@@ -58,22 +58,26 @@ class WpApiController extends Controller
 
                     $wpImageName = time() . "_" . strip_tags($wpImageFile->getClientOriginalName());
 
-                    // inside storage/app/public/wp-images/
-                    $path = $wpImageFile->storeAs('wp-images', $wpImageName, 'public');
-
-                    $imageUrl = asset('storage/' . $path);
-
-                    $params['img1'] = $imageUrl;
+                    
+                    // into /public/wp-images/
+                    $wpImageFile->move(public_path('wp-images'), $wpImageName);
+                    
+                    // $imageUrl = asset('wp-images/' . $wpImageName);
+                    $imageUrl = asset('public/wp-images/' . $wpImageName);
 
                     // dd($imageUrl);
+
+                    $params['img1'] = $imageUrl;
                 }
 
-              
+                // dd($params);
+
                 try 
                 {
                     // Call the API
                     $response = Http::get('https://demo.digitalsms.biz/api/', $params);
                     $result = $response->json();
+
                     // dd($result);
 
                     if (!empty($path)) // delete uploaded image if exists
