@@ -266,7 +266,10 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-    /* WP API testing */
-    Route::match(['get', 'post'], 'wp-message', [WpApiController::class, 'wpMessage']);
-    /* WP API testing */
+    
 });
+
+
+/* WP API testing */
+Route::match(['get', 'post'], 'wp-message', [WpApiController::class, 'wpMessage']);
+/* WP API testing */

@@ -48,26 +48,39 @@ class WpApiController extends Controller
 
                 if(!empty($request->file('wpImage')))
                 {
-                    $wpImageFile = $request->file('wpImage');
-                    $wpImageExt = $wpImageFile->getClientOriginalExtension();
-                    if($wpImageExt != 'jpg' && $wpImageExt != 'jpeg' && $wpImageExt != 'png' && $wpImageExt != 'webp')
+                    // dd($request->file('wpImage'));
+                    $count = 1;
+                    $wpImageName_Arr = [];
+                    foreach($request->file('wpImage') as $eachFile)
                     {
-                        return back()->with('error_message', 'Please upload a valid image file !!!');
+                        // $wpImageFile = $request->file('wpImage');
+                        $wpImageFile = $eachFile;
+                        $wpImageExt = $wpImageFile->getClientOriginalExtension();
+                        if($wpImageExt != 'jpg' && $wpImageExt != 'jpeg' && $wpImageExt != 'png' && $wpImageExt != 'webp')
+                        {
+                            return back()->with('error_message', 'Please upload a valid image file !!!');
+                        }
+                        
+    
+                        $wpImageName = time() . "_" . strip_tags($wpImageFile->getClientOriginalName());
+    
+                        
+                        // into /public/wp-images/
+                        $wpImageFile->move(public_path('wp-images'), $wpImageName);
+                        
+                        // $imageUrl = asset('wp-images/' . $wpImageName);
+                        $imageUrl = asset('public/wp-images/' . $wpImageName);
+    
+                        // dd($imageUrl);
+                        $key = 'img' . $count;
+
+                        $params[$key] = $imageUrl;
+                        
+                        $wpImageName_Arr[] = $wpImageName;
+
+                        $count++;
                     }
                     
-
-                    $wpImageName = time() . "_" . strip_tags($wpImageFile->getClientOriginalName());
-
-                    
-                    // into /public/wp-images/
-                    $wpImageFile->move(public_path('wp-images'), $wpImageName);
-                    
-                    // $imageUrl = asset('wp-images/' . $wpImageName);
-                    $imageUrl = asset('public/wp-images/' . $wpImageName);
-
-                    // dd($imageUrl);
-
-                    $params['img1'] = $imageUrl;
                 }
 
                 // dd($params);
@@ -80,12 +93,15 @@ class WpApiController extends Controller
 
                     // dd($result);
 
-                    if (!empty($imageUrl)) // delete uploaded image if exists
+                    if (!empty($wpImageName_Arr)) // delete uploaded image if exists
                     {
-                        $filePath = public_path('wp-images/' . $wpImageName);
-                    
-                        if (file_exists($filePath)) {
-                            unlink($filePath);
+                        foreach($wpImageName_Arr as $eachFileName)
+                        {
+                            $filePath = public_path('wp-images/' . $eachFileName);
+                        
+                            if (file_exists($filePath)) {
+                                unlink($filePath);
+                            }
                         }
                     }
 
