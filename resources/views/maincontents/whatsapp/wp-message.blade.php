@@ -77,5 +77,13 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.getElementById('wpImage').addEventListener('change', function () {
+      if (this.files.length > 4) {
+          alert('Maximum 4 images allowed !!!');
+          this.value = ""; // clear selection
+      }
+  });
+</script>
 </body>
 </html>

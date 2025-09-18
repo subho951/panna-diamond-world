@@ -32,7 +32,7 @@ class WpApiController extends Controller
 
             if ($validator->fails()) 
             {
-                return back()->with('error_message', 'Star Marked Fields Are Required With Proper Data !!!');
+                return redirect()->back()->with('error_message', 'Star Marked Fields Are Required With Proper Data !!!');
             }
             else
             {
@@ -48,37 +48,50 @@ class WpApiController extends Controller
 
                 if(!empty($request->file('wpImage')))
                 {
-                    // dd($request->file('wpImage'));
-                    $count = 1;
-                    $wpImageName_Arr = [];
-                    foreach($request->file('wpImage') as $eachFile)
+                    if(count($request->file('wpImage')) <= 4)
                     {
-                        // $wpImageFile = $request->file('wpImage');
-                        $wpImageFile = $eachFile;
-                        $wpImageExt = $wpImageFile->getClientOriginalExtension();
-                        if($wpImageExt != 'jpg' && $wpImageExt != 'jpeg' && $wpImageExt != 'png' && $wpImageExt != 'webp')
+                        $count = 1;
+                        $wpImageName_Arr = [];
+                        foreach($request->file('wpImage') as $eachFile)
                         {
-                            return back()->with('error_message', 'Please upload a valid image file !!!');
+                            // $wpImageFile = $request->file('wpImage');
+                            $wpImageFile = $eachFile;
+                            $wpImageExt = $wpImageFile->getClientOriginalExtension();
+                            if($wpImageExt != 'jpg' && $wpImageExt != 'jpeg' && $wpImageExt != 'png' && $wpImageExt != 'webp')
+                            {
+                                return redirect()->back()->with('error_message', 'Please upload a valid image file !!!');
+                            }
+                            
+        
+                            // $wpImageName = time() . "_" . strip_tags($wpImageFile->getClientOriginalName());
+                            $wpImageName = time() . "_" . preg_replace('/[^a-zA-Z0-9_\.-]/', '', $wpImageFile->getClientOriginalName());
+        
+                            
+                            // into /public/wp-images/
+                            $wpImageFile->move(public_path('wp-images'), $wpImageName);
+                            
+                            // $imageUrl = asset('wp-images/' . $wpImageName);
+                            $imageUrl = asset('public/wp-images/' . $wpImageName);
+        
+                            // dd($imageUrl);
+                            $key = 'img' . $count;
+    
+                            $params[$key] = $imageUrl;
+                            
+                            $wpImageName_Arr[] = $wpImageName;
+    
+                            $count++;
                         }
-                        
-    
-                        $wpImageName = time() . "_" . strip_tags($wpImageFile->getClientOriginalName());
-    
-                        
-                        // into /public/wp-images/
-                        $wpImageFile->move(public_path('wp-images'), $wpImageName);
-                        
-                        // $imageUrl = asset('wp-images/' . $wpImageName);
-                        $imageUrl = asset('public/wp-images/' . $wpImageName);
-    
-                        // dd($imageUrl);
-                        $key = 'img' . $count;
+                    }
+                    else
+                    {
+                        return redirect()->back()->with('error_message', 'Maximum 4 images allowed !!!');
+                    }
 
-                        $params[$key] = $imageUrl;
-                        
-                        $wpImageName_Arr[] = $wpImageName;
-
-                        $count++;
+                    // handling problem: if we select multiple images without message then it's taking an empty string 
+                    if(empty($request->wpMessage))
+                    {
+                        unset($params['msg']);
                     }
                     
                 }
@@ -107,16 +120,16 @@ class WpApiController extends Controller
 
                     if ($result && isset($result['status']) && $result['status'] == 1) 
                     {
-                        return back()->with('success_message', 'WhatsApp message sent successfully !!!');
+                        return redirect()->back()->with('success_message', 'WhatsApp message sent successfully !!!');
                     } 
                     else 
                     {
-                        return back()->with('error_message', 'Failed to send WhatsApp message !!!');
+                        return redirect()->back()->with('error_message', 'Failed to send WhatsApp message !!!');
                     }
                 } 
                 catch (\Exception $e)
                 {
-                    return back()->with('error_message', 'Exception: ' . $e->getMessage());
+                    return redirect()->back()->with('error_message', 'Exception: ' . $e->getMessage());
                 }
                 
                 
