@@ -178,7 +178,7 @@ class FaqSubCategoryController extends Controller
                     'user_type'         => 'ADMIN',
                     'ip_address'        => $request->ip(),
                     'activity_type'     => 3,
-                    'activity_details'  => $model->name . ' ' . $this->data['title'] . ' Deleted',
+                    'activity_details'  => $this->data['title'] . ' Deleted',
                     'platform_type'     => 'WEB',
                 ];
                 UserActivity::insert($activityData);
