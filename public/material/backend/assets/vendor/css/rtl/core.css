@@ -29608,7 +29608,10 @@ html:not(.layout-footer-fixed) .content-wrapper {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    opacity: 0;
+    opacity: 1;
+  }
+  .layout-menu-collapsed:not(.layout-menu-hover):not(.layout-menu-offcanvas):not(.layout-menu-fixed-offcanvas) .layout-menu .app-brand.justify-content-between {
+    justify-content: center !important;
   }
   .layout-menu-collapsed:not(.layout-menu-hover):not(.layout-menu-offcanvas):not(.layout-menu-fixed-offcanvas) .layout-menu .app-brand-img {
     display: none;

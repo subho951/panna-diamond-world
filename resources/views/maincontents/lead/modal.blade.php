@@ -105,9 +105,9 @@
             </div>
     
             <div class="mb-5">
-            <label for="leadStatus" class="form-label fw-bold">Update Lead Status <span class="text-danger">*</span></label>
+            <label for="leadStatus" class="form-label fw-bold">Update Call Outcome <span class="text-danger">*</span></label>
             <select id="leadStatus" name="leadStatus" class="select2 form-select border-primary text-primary" required>
-                <option value="" selected disabled>Select Status</option>
+                <option value="" selected disabled>Select Call Outcome</option>
                 @foreach($ChildParentStatusArr as $leadstatus)
                     <option value="{{$leadstatus['name']}}" data-parent_status_id="{{$leadstatus['parent_status_id']}}" data-child_status_id="{{$leadstatus['child_status_id']}}">{{$leadstatus['name']}}</option>
                 @endforeach
@@ -136,9 +136,9 @@
                 </select>
             </div>
             <div class="col-md-6 mb-3">
-                <label for="mood" class="form-label fw-bold">Mood <span class="text-danger">*</span></label>
+                <label for="mood" class="form-label fw-bold">Customer Mood <span class="text-danger">*</span></label>
                 <select id="mood" name="mood" class="select2 form-select border-primary text-primary" required>
-                    <option value="" selected disabled>Select Mood</option>
+                    <option value="" selected disabled>Select Customer Mood</option>
                     @foreach($moodArr as $mood)
                         <option value="{{$mood['id']}}"  @if($mood['name'] == 'Neutral') selected @endif >{{$mood['emoji']}} {{$mood['name']}}</option>
                     @endforeach

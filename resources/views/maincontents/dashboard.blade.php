@@ -8,9 +8,40 @@ use App\Helpers\Helper;
 <div class="container-fluid flex-grow-1 container-p-y">
   <div class="row g-6">
     <div class="col-lg-12">
-      <h3 class="mt-2 main_heading">Welcome to <?=Helper::getSettingValue('site_name')?> masteradmin panel</h2>
+      <h3 class="mt-2 main_heading">Welcome to <?=Helper::getSettingValue('site_name')?></h2>
+    </div>
+     
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Total Contacts</h5>
+            <p class="card-text">{{ $noOfUniqueLeads }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Branches</h5>
+            <p class="card-text">{{ $noOfBranches }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Telecallers</h5>
+            <p class="card-text">{{ $noOfTelecallers }}</p>
+          </div>
+        </div>
+      </div>
     </div>
 
+
+    
+
+    
     {{-- <!-- Average Daily Sales -->
     <div class="col-xxl-2 col-xl-2 col-md-6 col-sm-6">
       <div class="card h-100">

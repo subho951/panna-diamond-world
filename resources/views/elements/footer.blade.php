@@ -2,7 +2,7 @@
   <div
     class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
     <div class="text-body">
-      © <script>document.write(new Date().getFullYear())</script> | Developed & maintained by <a href="https://keylines.net/" target="_blank" class="footer-link fw-medium">Keylines</a>
+      © <script>document.write(new Date().getFullYear())</script> | Developed & maintained by <a href="https://keylines.net/" target="_blank" class="footer-link fw-medium">Keyline</a>
     </div>
     <!-- <div class="d-none d-lg-inline-block">
       <a href="https://themeforest.net/licenses/standard" class="footer-link me-4" target="_blank"

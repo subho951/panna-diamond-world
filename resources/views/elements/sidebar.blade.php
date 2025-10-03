@@ -8,8 +8,8 @@ $pageFunction = ((count($pageName)>1)?$pageName[1]:'');
 $user_id      = session('user_id');
 $role_id      = (($user)?$user->role_id:0);
 ?>
-<div class="app-brand demo">
-  <a href="<?=url('/dashboard')?>" class="app-brand-link">
+<div class="app-brand demo justify-content-between">
+  <a href="<?=url('/dashboard')?>" class="app-brand-link d-block d-xl-none">
     <!-- <span class="app-brand-logo demo">
       <svg width="32" height="22" viewBox="0 0 32 22" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
@@ -40,9 +40,9 @@ $role_id      = (($user)?$user->role_id:0);
     <!-- <span class="app-brand-text demo menu-text fw-bold"><?=Helper::getSettingValue('site_name')?></span> -->
   </a>
 
-  <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
-    <i class="fa fa-bars d-none d-xl-block"></i>
-    <i class="fa fa-times d-xl-none align-middle"></i>
+  <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large">
+    <i class="fa fa-bars d-none d-xl-block align-middle"></i>
+    <i class="fa fa-times d-block d-xl-none ti-md align-middle"></i>
   </a>
 </div>
 
@@ -230,6 +230,47 @@ $role_id      = (($user)?$user->role_id:0);
     </a>
   </li>
   <?php }?>
+
+
+
+  
+
+
+  <?php if(in_array(29, $moduleIds) || in_array(28, $moduleIds)){?>
+    <!-- Report -->
+    <li class="menu-item active <?=(($pageSegment == 'assign-report' || $pageSegment == 'activity-report')?'open':'')?>">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon fa-solid fa-clipboard-list"></i>
+        <div data-i18n="Report">Report</div>
+      </a>
+      <ul class="menu-sub">
+        <?php if(in_array(29, $moduleIds)){?>
+          {{-- Assign Report --}}
+          <li class="menu-item <?=(($pageSegment == 'assign-report')?'active':'')?>">
+            <a href="<?=url('/assign-report')?>" class="menu-link">
+              <div data-i18n="Assign Report"><i class="fa-solid fa-arrow-right"></i>Assign Report</div>
+            </a>
+          </li>
+        <?php }?>
+
+        <?php if(in_array(28, $moduleIds)){?>
+          {{-- Activity Report --}}
+          <li class="menu-item <?=(($pageSegment == 'activity-report')?'active':'')?>">
+            <a href="<?=url('/activity-report')?>" class="menu-link">
+              <div data-i18n="Activity Report"><i class="fa-solid fa-arrow-right"></i>Activity Report</div>
+            </a>
+          </li>
+          <?php }?>
+
+        
+
+      </ul>
+    </li>
+  <?php }?>
+
+
+
+
 
   <?php if(in_array(10, $moduleIds) || in_array(11, $moduleIds) || in_array(12, $moduleIds)){?>
     <!-- Logs -->

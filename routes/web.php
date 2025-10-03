@@ -25,6 +25,8 @@ use App\Http\Controllers\IndividualLeadController;
 use App\Http\Controllers\LeadListController;
 use App\Http\Controllers\FeedbackTagController;
 use App\Http\Controllers\PurposeController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\WpApiController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -229,9 +231,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('lead-list/fetch-lead-added-updated', [LeadListController::class, 'fetchLeadAddedUpdated']);
         Route::post('lead-list/fetch-lead-activity-count', [LeadListController::class, 'fetchLeadActivityCount']);
         Route::get('lead-list/view-lead/{id}', [LeadListController::class, 'viewLead']);
-        // call modal
         Route::post('lead-list/get-lead-call-data', [LeadListController::class, 'getLeadCallData']);
-
+        Route::post('lead-list/individual-lead-transfer-modal-data', [LeadListController::class, 'individualLeadTransferModalData']);
+        Route::post('lead-list/individual-lead-transfer', [LeadListController::class, 'individualLeadTransfer']);
+        Route::post('lead-list/bulk-lead-transfer', [LeadListController::class, 'bulkLeadTransfer']);
+        Route::post('lead-list/fetch-branch-wise-telecaller', [LeadListController::class, 'fetchBranchWiseTelecaller']);
+        Route::post('lead-list/fetch-parent-wise-child-status', [LeadListController::class, 'fetchParentWiseChildStatus']);
+        
+        Route::match(['get', 'post'],'lead-list/export-all-leads-as-csv', [LeadListController::class, 'exportAllLeadsAsCSV']);
     /* Lead List */
 
     /* Feedback Tags */
@@ -249,4 +256,20 @@ Route::middleware(['auth'])->group(function () {
         Route::get('purpose/delete/{id}', [PurposeController::class, 'delete']);
         Route::get('purpose/change-status/{id}', [PurposeController::class, 'change_status']);
     /* Purpose */
+
+
+
+    /* Report */
+        Route::get('activity-report', [ReportController::class, 'activityReport']);
+        Route::get('assign-report', [ReportController::class, 'assignReport']);
+    /* Report */
+
+
+
+    
 });
+
+
+/* WP API testing */
+Route::match(['get', 'post'], 'wp-message', [WpApiController::class, 'wpMessage']);
+/* WP API testing */

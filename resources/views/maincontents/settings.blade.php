@@ -40,21 +40,21 @@ $user_type = session('type');
            <li class="nav-item">
              <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-justified-email" aria-controls="navs-pills-justified-email" aria-selected="false"><i class="tf-icons bx bx-envelope me-1"></i> Email</button>
            </li>
-           <li class="nav-item">
+           <!-- <li class="nav-item">
              <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-justified-email-template" aria-controls="navs-pills-justified-email-template" aria-selected="false"><i class="tf-icons bx bx-message-square me-1"></i> Email Templates</button>
-           </li>
+           </li> -->
            <!-- <li class="nav-item">
              <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-justified-payment" aria-controls="navs-pills-justified-payment" aria-selected="false"><i class="tf-icons bx bx-dollar me-1"></i> Payment</button>
            </li> -->
-           <li class="nav-item">
+           <!-- <li class="nav-item">
              <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-justified-sms" aria-controls="navs-pills-justified-sms" aria-selected="false"><i class="tf-icons bx bx-mobile me-1"></i> SMS</button>
-           </li>
-           <li class="nav-item">
+           </li> -->
+           <!-- <li class="nav-item">
              <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-justified-footer" aria-controls="navs-pills-justified-footer" aria-selected="false"><i class="tf-icons bx bx-ball me-1"></i> Footer</button>
-           </li>
-           <li class="nav-item">
+           </li> -->
+           <!-- <li class="nav-item">
              <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-justified-seo" aria-controls="navs-pills-justified-seo" aria-selected="false"><i class="tf-icons bx bx-line-chart me-1"></i> SEO</button>
-           </li>
+           </li> -->
          </ul>
          <div class="tab-content">
             <div class="tab-pane fade show active" id="navs-pills-justified-profile" role="tabpanel">

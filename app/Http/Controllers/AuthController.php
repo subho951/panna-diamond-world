@@ -12,9 +12,13 @@ use Illuminate\Http\Request;
 
 use App\Models\EmailLog;
 use App\Models\User;
+use App\Models\Branch;
+use App\Models\LeadActivity;
 use App\Models\GeneralSetting;
 use App\Models\UserActivity;
 use App\Helpers\Helper;
+use App\Models\BranchLead;
+use App\Models\MasterLead;
 use Carbon\Carbon;
 use Session;
 use DB;
@@ -54,57 +58,103 @@ class AuthController extends Controller
         }
         public function login(Request $request)
         {
-            $authData = $request->validate([
-                        'email'     => ['required', 'email'],
-                        'password'  => ['required'],
-                    ]);
+            if ($request->isMethod('post'))
+            {
+                $postData = $request->all();                
+                // Get reCAPTCHA token from form POST data
+                $recaptchaResponse = $postData['g-recaptcha-response'];
 
-            // Add extra conditions to the authData array
-            $authData['status']  = 1;
-            // $authData['role_id'] = 1;
+                // Google reCAPTCHA verification URL
+                $verifyURL = 'https://www.google.com/recaptcha/api/siteverify';
 
-            if (Auth::attempt($authData)) {
-                $request->session()->regenerate();
+                // Your Google reCAPTCHA secret key 
+                $secretKey = '6Le9GMArAAAAAO1-3Pjo4OHxPb9ySll1MaRQe78l';
+                                                       
+                // Prepare the POST request
+                $data = array(
+                    'secret' => $secretKey,
+                    'response' => $recaptchaResponse,                       
+                );
 
-                // Store selected user info in session array
-                $user = Auth::user();
-                session([
-                        'user_data'     => [
-                            'user_id'       => $user->id,
-                            'name'          => $user->first_name . ' ' . $user->last_name,
-                            'email'         => $user->email,
-                            'role_id'       => $user->role_id,
-                            'is_user_login' => 1,
-                        ]
-                ]);
-                /* user activity */
-                    $activityData = [
-                        'user_email'        => $user->email,
-                        'user_name'         => $user->first_name . ' ' . $user->last_name,
-                        'user_type'         => 'ADMIN',
-                        'ip_address'        => $request->ip(),
-                        'activity_type'     => 1,
-                        'activity_details'  => 'Login Success',
-                        'platform_type'     => 'WEB',
-                    ];
-                    UserActivity::insert($activityData);
-                /* user activity */
-                return redirect('dashboard/')->with('success_message', 'Sign-in successfull');
+                // Initiate cURL
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $verifyURL);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                $response = curl_exec($ch);
+                curl_close($ch);
+
+                // Decode JSON response
+                $responseData = json_decode($response);
+
+                // Check if reCAPTCHA validation was successful
+                if ($responseData->success && $responseData->score >= 0.5)
+                {
+
+                    $authData = $request->validate([
+                                'email'     => ['required', 'email'],
+                                'password'  => ['required'],
+                            ]);
+        
+                    // Add extra conditions to the authData array
+                    $authData['status']  = 1;
+                    // $authData['role_id'] = 1;
+        
+                    if (Auth::attempt($authData)) {
+                        $request->session()->regenerate();
+        
+                        // Store selected user info in session array
+                        $user = Auth::user();
+                        session([
+                                'user_data'     => [
+                                    'user_id'       => $user->id,
+                                    'name'          => $user->first_name . ' ' . $user->last_name,
+                                    'email'         => $user->email,
+                                    'role_id'       => $user->role_id,
+                                    'is_user_login' => 1,
+                                ]
+                        ]);
+                        /* user activity */
+                            $activityData = [
+                                'user_email'        => $user->email,
+                                'user_name'         => $user->first_name . ' ' . $user->last_name,
+                                'user_type'         => 'ADMIN',
+                                'ip_address'        => $request->ip(),
+                                'activity_type'     => 1,
+                                'activity_details'  => 'Login Success',
+                                'platform_type'     => 'WEB',
+                            ];
+                            UserActivity::insert($activityData);
+                        /* user activity */
+                        return redirect('dashboard/')->with('success_message', 'Sign-in successfull');
+                    }
+                    /* user activity */
+                        $activityData = [
+                            'user_email'        => $authData['email'],
+                            'user_name'         => 'Master Admin',
+                            'user_type'         => 'ADMIN',
+                            'ip_address'        => $request->ip(),
+                            'activity_type'     => 0,
+                            'activity_details'  => 'Invalid Email Or Password',
+                            'platform_type'     => 'WEB',
+                        ];
+                        UserActivity::insert($activityData);
+                    /* user activity */
+                    return redirect()->back()->with('error_message', 'Invalid credentials or access denied.');
+                
+                }
+                else 
+                {                        
+                    return redirect()->back()->with('error_message', 'CAPTCHA validation failed. Please try again.');                        
+                } 
+
             }
-            /* user activity */
-                $activityData = [
-                    'user_email'        => $authData['email'],
-                    'user_name'         => 'Master Admin',
-                    'user_type'         => 'ADMIN',
-                    'ip_address'        => $request->ip(),
-                    'activity_type'     => 0,
-                    'activity_details'  => 'Invalid Email Or Password',
-                    'platform_type'     => 'WEB',
-                ];
-                UserActivity::insert($activityData);
-            /* user activity */
-            return redirect()->back()->with('error_message', 'Invalid credentials or access denied.');
+
+
+
         }
+
         public function logout(Request $request)
         {
             $user_email                             = Auth::user()->email;
@@ -257,9 +307,20 @@ class AuthController extends Controller
         }
     /* forgot password */
     /* dashboard */
-        public function dashboard()
+        public function dashboard(Request $request)
         {
             $data = [];
+            
+            // no. of unique leads
+            $data['noOfUniqueLeads'] = MasterLead::where('status', '=', '1')->distinct('sl_no')->count();
+            
+            // no. of branches
+            $data['noOfBranches'] = Branch::where('status', '=', '1')->count();
+
+            // no. of Telecallers
+            $data['noOfTelecallers'] = User::where('role_id', '=', 3)->where('status', '=', '1')->count();
+
+
             $title                                  = 'Dashboard';
             $page_name                              = 'dashboard';
             $data = $this->siteAuthService->admin_after_login_layout($title, $page_name, $data);
@@ -555,7 +616,7 @@ class AuthController extends Controller
             }
         }
         public function testEmail(){
-            $to = 'subhomoy.freelancer.samanta@gmail.com';
+            $to = 'kulavisudip@gmail.com';
             $subject = "Test Email Subject On " . date('Y-m-d H:i:s');
             $message = "Test Email Body On " . date('Y-m-d H:i:s');
             $this->sendMail($to,$subject,$message);

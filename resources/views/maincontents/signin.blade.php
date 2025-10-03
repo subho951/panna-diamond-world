@@ -36,6 +36,9 @@ use App\Helpers\Helper;
         <span class="input-group-text cursor-pointer"><i class="fa-solid fa-eye-slash"></i></span>
       </div>
     </div>
+    {{-- Hidden input for reCAPTCHA token --}}
+    <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
+
     <button type="submit" class="btn btn-outline-dark d-grid w-100">Sign in</button>
     <div class="my-8">
       <div class="d-flex justify-content-between">
@@ -43,9 +46,9 @@ use App\Helpers\Helper;
           <!-- <input class="form-check-input" type="checkbox" id="remember-me" />
           <label class="form-check-label" for="remember-me"> Remember Me </label> -->
         </div>
-        <a href="{{url('forgot-password')}}">
+        {{-- <a href="{{url('forgot-password')}}">
           <p class="mb-0 text-dark">Forgot Password?</p>
-        </a>
+        </a> --}}
       </div>
     </div>
   </form>
@@ -53,4 +56,14 @@ use App\Helpers\Helper;
     © <script>document.write(new Date().getFullYear())</script>, Developed & maintained by <a href="https://keylines.net/" target="_blank" class="footer-link fw-medium text-dark">Keylines</a>
   </div>
 </div>
+<script src="https://www.google.com/recaptcha/api.js?render=6Le9GMArAAAAAIjfufBOGrjKyI4kbWU-5l0-fqmw"></script>
+<script>
+grecaptcha.ready(function() {
+    grecaptcha.execute('6Le9GMArAAAAAIjfufBOGrjKyI4kbWU-5l0-fqmw', {action: 'submit'}).then(function(token) {
+        // Add the token to your form submission
+        document.getElementById('g-recaptcha-response').value = token;
+    });
+});
+</script>
+
 @endsection
