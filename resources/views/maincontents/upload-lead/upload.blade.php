@@ -78,7 +78,7 @@ $controllerRoute = $module['controller_route'];
 
                                 <div class="col-md-6 mb-3">
                                     <label for="lead_date" class="form-label">Lead Date <small class="text-danger">*</small></label>
-                                    <input class="form-control" type="date" id="lead_date" name="lead_date" value="<?= date('Y-m-d') ?>" min="<?=date('Y-m-d')?>" required />
+                                    <input class="form-control" readonly type="date" id="lead_date" name="lead_date" value="<?= date('Y-m-d') ?>" min="<?=date('Y-m-d')?>" required />
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="lead_file" class="form-label">Lead File <small class="text-danger">*</small>
