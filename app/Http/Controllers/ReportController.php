@@ -87,24 +87,25 @@ class ReportController extends Controller
 
                 $tellecallerWisePendingCount = BranchLead::where('assigned_telecaller_id', '=', $eachTelecaller->id)->where('parent_status_id', '=', 0)->where('child_status_id', '=', 0)->where('status', '!=', 3)->count();
 
-                // how many times the telecaller called (koto bar call koreche)
-                // $telecallerWiseLeads = (clone $query)->where('assigned_telecaller_id', '=', $eachTelecaller->id)->get();
+                
+                if (!empty($request->input('unique')))
+                {
+                    $data['unique_check'] = 'checked';
 
-
-            
-                // if (!empty($request->input('unique'))) // call to unique leads
-                // {
-                //     // dd($request->input('unique'));
-                //     $data['unique_check'] = 'checked' ;
-
-                //     // how many unique leads the telecaller called (koto jon k call koreche)
-                //     //here 
-                // }
-                // else
-                // {
+                    // how many unique leads the telecaller called (koto jon k call koreche setar last activity)
+                    $telecallerWiseLeads = (clone $query)
+                        ->where('assigned_telecaller_id', $eachTelecaller->id)
+                        ->whereIn('id', function ($sub) use ($eachTelecaller) {
+                            $sub->selectRaw('MAX(id)')
+                                ->from('lead_activities')
+                                ->where('assigned_telecaller_id', $eachTelecaller->id)
+                                ->groupBy('lead_sl_no');
+                        })
+                        ->get();
+                } else {
                     // how many times the telecaller called (koto bar call koreche)
                     $telecallerWiseLeads = (clone $query)->where('assigned_telecaller_id', '=', $eachTelecaller->id)->get();
-                // }
+                }
 
 
 
@@ -200,8 +201,8 @@ class ReportController extends Controller
 
                     $leadHistory['lead_sl_no'] = str_pad($leadActivity->lead_sl_no, 8, '0', STR_PAD_LEFT);
 
-                    $leadHistory['contact-person-name'] = MasterLead::withTrashed()->where('sl_no', '=', $leadActivity->lead_sl_no)->where('header_id', '=', 2)->value('header_value') ?? '' ;
-                    $leadHistory['phone'] = MasterLead::withTrashed()->where('sl_no', '=', $leadActivity->lead_sl_no)->where('header_id', '=', 4)->value('header_value') ?? '' ;
+                    $leadHistory['contact-person-name'] = MasterLead::withTrashed()->where('sl_no', '=', $leadActivity->lead_sl_no)->where('header_id', '=', 2)->value('header_value') ?? '';
+                    $leadHistory['phone'] = MasterLead::withTrashed()->where('sl_no', '=', $leadActivity->lead_sl_no)->where('header_id', '=', 4)->value('header_value') ?? '';
 
                     $leadHistory['branch_name'] = Branch::withTrashed()->where('id', '=', $leadActivity->branch_id)->value('name') ?? '';
                     $leadHistory['campaign_type_name'] = CampaignType::withTrashed()->where('id', '=', $leadActivity->campaign_type_id)->value('name') ?? '';
@@ -259,22 +260,18 @@ class ReportController extends Controller
 
             }
 
-    
+
             $data = [];
-            if(!empty($leadHistoryArr))
-            {
+            if (!empty($leadHistoryArr)) {
                 $data["branch_name"] = $leadHistoryArr[0]["branch_name"];
 
                 // dd($request->total);
-                if($request->total == "false")
-                {
+                if ($request->total == "false") {
                     $data["assigned_telecaller_name"] = $leadHistoryArr[0]["assigned_telecaller_name"];
-                }
-                elseif($request->total == "true")
-                {
+                } elseif ($request->total == "true") {
                     $data["assigned_telecaller_name"] = '';
                 }
-             
+
             }
 
             $page_name = 'report.activity-report-modal';

@@ -40,11 +40,11 @@ $controllerRoute = $module['controller_route'];
                         @csrf
                         <div class="row">
                             <div class="col-md-2 mt-3 d-flex align-items-center">
-                                {{-- <div class="form-check form-switch ps-0">
+                                <div class="form-check form-switch ps-0">
                                     <label class="form-check-label" for="uniqueCall">Unique Calls</label>
                                     <input class="form-check-input float-none ms-0" type="checkbox" name="uniqueCall" role="switch" id="uniqueCall"
                                     @if(!empty($unique_check)) checked @endif>
-                                </div> --}}
+                                </div>
                             </div>
                             <div class="col-md-7">
                                 <div class="row">
