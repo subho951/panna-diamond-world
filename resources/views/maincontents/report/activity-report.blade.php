@@ -39,7 +39,14 @@ $controllerRoute = $module['controller_route'];
                     <form>
                         @csrf
                         <div class="row">
-                            <div class="col-md-9">
+                            <div class="col-md-2 mt-3 d-flex align-items-center">
+                                {{-- <div class="form-check form-switch ps-0">
+                                    <label class="form-check-label" for="uniqueCall">Unique Calls</label>
+                                    <input class="form-check-input float-none ms-0" type="checkbox" name="uniqueCall" role="switch" id="uniqueCall"
+                                    @if(!empty($unique_check)) checked @endif>
+                                </div> --}}
+                            </div>
+                            <div class="col-md-7">
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="call_from_date" class="form-label">Call From </label>
@@ -439,6 +446,7 @@ $controllerRoute = $module['controller_route'];
             });
 
 
+
             // show reset button iff any filter is applied
             const currentUrl = new URL(window.location.href);
             if ((currentUrl.searchParams.has('call-from-date')) || (currentUrl.searchParams.has('call-to-date'))) {
@@ -459,6 +467,29 @@ $controllerRoute = $module['controller_route'];
                 window.location.href = url.toString();
             });
 
+
+
+            // unique calls
+            $(document).on('change', '#uniqueCall', function ()
+            {
+                let url = new URL(window.location.href);
+
+                if ($(this).is(':checked'))
+                {
+                    // alert('checked');
+                    let uniqueCall = $(this).is(':checked');
+                    url.searchParams.set('unique', uniqueCall);
+                } 
+                else
+                {
+                    // alert('unchecked');
+                    url.searchParams.delete('unique');
+                }
+
+                window.location.href = url.toString();
+            });
+
+            
 
 
 

@@ -88,8 +88,25 @@ class ReportController extends Controller
                 $tellecallerWisePendingCount = BranchLead::where('assigned_telecaller_id', '=', $eachTelecaller->id)->where('parent_status_id', '=', 0)->where('child_status_id', '=', 0)->where('status', '!=', 3)->count();
 
                 // how many times the telecaller called (koto bar call koreche)
-                $telecallerWiseLeads = (clone $query)->where('assigned_telecaller_id', '=', $eachTelecaller->id)->get();
-                
+                // $telecallerWiseLeads = (clone $query)->where('assigned_telecaller_id', '=', $eachTelecaller->id)->get();
+
+
+            
+                // if (!empty($request->input('unique'))) // call to unique leads
+                // {
+                //     // dd($request->input('unique'));
+                //     $data['unique_check'] = 'checked' ;
+
+                //     // how many unique leads the telecaller called (koto jon k call koreche)
+                //     //here 
+                // }
+                // else
+                // {
+                    // how many times the telecaller called (koto bar call koreche)
+                    $telecallerWiseLeads = (clone $query)->where('assigned_telecaller_id', '=', $eachTelecaller->id)->get();
+                // }
+
+
 
                 $parentStatus_new_count = 0;
                 $parentStatus_new_count_idArr = [];
