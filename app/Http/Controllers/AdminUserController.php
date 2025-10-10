@@ -134,7 +134,7 @@ class AdminUserController extends Controller
                 $postData = $request->all();
                 $rules = [
                     'role_id'               => 'required',
-                    'branch_id'             => 'required',
+                    // 'branch_id'             => 'required',
                     'first_name'            => 'required',
                     'last_name'             => 'required',
                     'email'                 => 'required',
@@ -146,7 +146,7 @@ class AdminUserController extends Controller
                     if($postData['password'] != ''){
                         $fields = [
                             'role_id'               => strip_tags($postData['role_id']),
-                            'branch_id'             => strip_tags($postData['branch_id']),
+                            // 'branch_id'             => strip_tags($postData['branch_id']),
                             'first_name'            => strip_tags($postData['first_name']),
                             'last_name'             => strip_tags($postData['last_name']),
                             'email'                 => strip_tags($postData['email']),
@@ -158,7 +158,7 @@ class AdminUserController extends Controller
                     } else {
                         $fields = [
                             'role_id'               => strip_tags($postData['role_id']),
-                            'branch_id'             => strip_tags($postData['branch_id']),
+                            // 'branch_id'             => strip_tags($postData['branch_id']),
                             'first_name'            => strip_tags($postData['first_name']),
                             'last_name'             => strip_tags($postData['last_name']),
                             'email'                 => strip_tags($postData['email']),
