@@ -71,7 +71,11 @@ $controllerRoute = $module['controller_route'];
                         
                         <div class="col-md-6 mb-3">
                             <label for="branch_id" class="form-label">Branch <small class="text-danger">*</small></label>
-                            <select class="select2 form-select" type="text" id="branch_id" name="branch_id"  required>
+                            <select class="select2 form-select" type="text" id="branch_id" name="branch_id" 
+                            @if(!empty($row))
+                                disabled
+                            @endif
+                            required>
                                 <option value="" selected disabled>Select Branch</option>
                                 <?php if($branches){ foreach($branches as $branch){?>
                                     <option value="<?=$branch->id?>" <?=(($branch->id === $branch_id)? 'selected':'')?>><?=$branch->name?></option>

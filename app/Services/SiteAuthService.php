@@ -45,7 +45,7 @@ class SiteAuthService
         else:
             $mailLibrary->addAddress($email);
         endif;
-        $mailLibrary->AddCC('subhomoy.freelancer.samanta@gmail.com', 'Subhomoy Samanta');
+        // $mailLibrary->AddCC('subhomoy.freelancer.samanta@gmail.com', 'Subhomoy Samanta');
         $mailLibrary->WordWrap      = 5000;
         $mailLibrary->Subject       = $subject;
         $mailLibrary->Body          = $message;

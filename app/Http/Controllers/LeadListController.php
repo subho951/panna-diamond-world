@@ -150,6 +150,85 @@ class LeadListController extends Controller
             $query->whereDate('created_at', '<=', $assignedToDate);
         }
 
+        if(!empty($request->input('call-from-date')) || !empty($request->input('call-to-date')))
+        {
+            $selected_call_from_date = "";
+            $selected_call_to_date = "";
+
+           if(!empty($request->input('call-from-date')))
+           {
+                $selected_call_from_date = $request->input('call-from-date');
+                $data['callFromDate'] = $selected_call_from_date;
+           }
+
+           if(!empty($request->input('call-to-date')))
+           {
+                $selected_call_to_date = $request->input('call-to-date');
+                $data['callToDate'] = $selected_call_to_date;
+           }
+
+           if(!empty($selected_call_from_date) || !empty($selected_call_to_date))
+            {
+                $query->whereHas('leadActivities', function ($qry) {
+                    $qry->where('status', '!=', 3);
+                })
+                ->when(!empty($selected_call_from_date) || !empty($selected_call_to_date), function ($qry) use ($selected_call_from_date, $selected_call_to_date) {
+                    $qry->whereIn('lead_sl_no', function ($subQuery) use ($selected_call_from_date, $selected_call_to_date) {
+                        $subQuery->select('lead_sl_no')
+                            ->from('lead_activities as la')
+                            ->where('status', '!=', 3)
+                            ->when(!empty($selected_call_from_date), function ($q) use ($selected_call_from_date) {
+                                $q->whereDate('created_at', '>=' , $selected_call_from_date);
+                            })
+                            ->when(!empty($selected_call_to_date), function ($q) use ($selected_call_to_date) {
+                                $q->whereDate('created_at', '<=' , $selected_call_to_date);
+                            })
+                            ->whereRaw('la.id = (
+                                SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                            )');
+                    });
+                });
+                
+            }
+           
+        }
+
+        if(!empty($request->input('campaign_type')))
+        {
+            $selected_campaign_type_id = Helper::decoded($request->input('campaign_type'));
+            $data['typeWisecampaign'] = Campaign::where('campaign_type_id', '=', $selected_campaign_type_id)->where('status', '!=', 3)->get();
+            $data['selected_campaign_type_id'] = $selected_campaign_type_id ;
+
+            $query->where('campaign_type_id', '=', $selected_campaign_type_id);
+        }
+
+        if(!empty($request->input('campaign')))
+        {
+            $selected_campaign_id = Helper::decoded($request->input('campaign'));
+            $data['selected_campaign_id'] = $selected_campaign_id ;
+
+            $query->where('campaign_id', '=', $selected_campaign_id);
+        }
+
+
+        
+        if(!empty($request->input('search')))
+        {
+            $searchVal = strip_tags($request->input('search'));
+            $data['searchVal'] = $searchVal;
+            
+            $searchableHeaderIds = [2, 4]; // which master_leads.header_id(s) we want to search on
+
+            $query->whereIn('lead_sl_no', function ($subQuery) use ($searchVal, $searchableHeaderIds) {
+                $subQuery->select('sl_no')
+                        ->from('master_leads')
+                        ->whereIn('header_id', $searchableHeaderIds)
+                        ->where('header_value', 'like', "%{$searchVal}%")
+                        ->where('status', '!=', 3);
+            });
+        }
+
+        
 
 
         // for telecaller
@@ -165,7 +244,7 @@ class LeadListController extends Controller
         $branchleadPaginated = $query->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
 
         
-        // search here
+
 
         // dd($branchleadPaginated);
 
@@ -264,6 +343,20 @@ class LeadListController extends Controller
                 $branchlead['childStatus'] = $childStatus;
             }
 
+            // check for the lead is new or not
+            if($branchlead->parent_status_id == 0 && $branchlead->child_status_id == 0)
+            {
+                $parentStatus_NEW = [];
+                $parentStatus_NEW['name'] = LeadStatus::where('id', '=', 12)->where('parent_id', '=', 0)->where('status', '!=', 3)->value('name') ?? '';
+                $parentStatus_NEW['background_color'] = LeadStatus::where('id', '=', 12)->where('parent_id', '=', 0)->where('status', '!=', 3)->value('background_color') ?? '';
+                $parentStatus_NEW['font_color'] = LeadStatus::where('id', '=', 12)->where('parent_id', '=', 0)->where('status', '!=', 3)->value('font_color') ?? '';
+                $branchlead['parentStatus_NEW'] = $parentStatus_NEW;
+                $childStatus_NEW = [];
+                $childStatus_NEW['name'] = LeadStatus::where('id', '=', 13)->where('parent_id', '=', 12)->where('status', '!=', 3)->value('name') ?? '';
+                $childStatus_NEW['background_color'] = LeadStatus::where('id', '=', 13)->where('parent_id', '=', 12)->where('status', '!=', 3)->value('background_color') ?? '';
+                $childStatus_NEW['font_color'] = LeadStatus::where('id', '=', 13)->where('parent_id', '=', 12)->where('status', '!=', 3)->value('font_color') ?? '';
+                $branchlead['childStatus_NEW'] = $childStatus_NEW;
+            }
 
 
             $totalLeadArr[] = $branchlead ?? [];
@@ -276,6 +369,8 @@ class LeadListController extends Controller
         $data['allTelecallers']   = User::where('role_id', '=', 3)->where('status', '!=', 3)->get();
         $data['allParentStatus']  = LeadStatus::where('parent_id', '=', 0)->where('status', '!=', 3)->orderBy('rank', 'asc')->get();
         $data['allChildStatus']   = LeadStatus::where('parent_id', '!=', 0)->where('status', '!=', 3)->orderBy('rank', 'asc')->get();
+        $data['campaign_types']   = CampaignType::where('status', '!=', 3)->get();
+        $data['campaigns']        = Campaign::where('status', '!=', 3)->get();
 
         $title                = $this->data['title'].' List';
         $page_name            = 'lead.list';
@@ -1536,6 +1631,22 @@ class LeadListController extends Controller
         }
     }
 
+    public function fetchCampaign(Request $request)
+    {
+        if ($request->isMethod('post')) {
+            $campaign_type_id = Helper::decoded($request->campaign_type_id);
+            $typeWisecampaign = [];
+            $arr = Campaign::where('campaign_type_id', '=', $campaign_type_id)->where('status', '!=', 3)->get();
+            foreach($arr as $campaign)
+            {
+                $typeWisecampaign[] = [
+                   'id' => Helper::encoded($campaign->id),
+                   'name' => $campaign->name,
+                ];
+            }
+            return response()->json($typeWisecampaign);
+        }
+    }
 
     public function exportAllLeadsAsCSV(Request $request)
     {
@@ -1632,6 +1743,87 @@ class LeadListController extends Controller
             $query->whereDate('created_at', '<=', $assignedToDate);
         }
 
+        if(!empty($request->input('call-from-date')) || !empty($request->input('call-to-date')))
+        {
+            $selected_call_from_date = "";
+            $selected_call_to_date = "";
+
+           if(!empty($request->input('call-from-date')))
+           {
+                $selected_call_from_date = $request->input('call-from-date');
+                $data['callFromDate'] = $selected_call_from_date;
+           }
+
+           if(!empty($request->input('call-to-date')))
+           {
+                $selected_call_to_date = $request->input('call-to-date');
+                $data['callToDate'] = $selected_call_to_date;
+           }
+
+           if(!empty($selected_call_from_date) || !empty($selected_call_to_date))
+            {
+                $query->whereHas('leadActivities', function ($qry) {
+                    $qry->where('status', '!=', 3);
+                })
+                ->when(!empty($selected_call_from_date) || !empty($selected_call_to_date), function ($qry) use ($selected_call_from_date, $selected_call_to_date) {
+                    $qry->whereIn('lead_sl_no', function ($subQuery) use ($selected_call_from_date, $selected_call_to_date) {
+                        $subQuery->select('lead_sl_no')
+                            ->from('lead_activities as la')
+                            ->where('status', '!=', 3)
+                            ->when(!empty($selected_call_from_date), function ($q) use ($selected_call_from_date) {
+                                $q->whereDate('created_at', '>=' , $selected_call_from_date);
+                            })
+                            ->when(!empty($selected_call_to_date), function ($q) use ($selected_call_to_date) {
+                                $q->whereDate('created_at', '<=' , $selected_call_to_date);
+                            })
+                            ->whereRaw('la.id = (
+                                SELECT MAX(id) FROM lead_activities WHERE lead_sl_no = la.lead_sl_no
+                            )');
+                    });
+                });
+                
+            }
+           
+        }
+
+        if(!empty($request->input('campaign_type')))
+        {
+            $selected_campaign_type_id = Helper::decoded($request->input('campaign_type'));
+            $data['typeWisecampaign'] = Campaign::where('campaign_type_id', '=', $selected_campaign_type_id)->where('status', '!=', 3)->get();
+            $data['selected_campaign_type_id'] = $selected_campaign_type_id ;
+
+            $query->where('campaign_type_id', '=', $selected_campaign_type_id);
+        }
+
+        if(!empty($request->input('campaign')))
+        {
+            $selected_campaign_id = Helper::decoded($request->input('campaign'));
+            $data['selected_campaign_id'] = $selected_campaign_id ;
+
+            $query->where('campaign_id', '=', $selected_campaign_id);
+        }
+
+
+        
+        if(!empty($request->input('search')))
+        {
+            $searchVal = strip_tags($request->input('search'));
+            $data['searchVal'] = $searchVal;
+            
+            $searchableHeaderIds = [2, 4]; // which master_leads.header_id(s) we want to search on
+
+            $query->whereIn('lead_sl_no', function ($subQuery) use ($searchVal, $searchableHeaderIds) {
+                $subQuery->select('sl_no')
+                        ->from('master_leads')
+                        ->whereIn('header_id', $searchableHeaderIds)
+                        ->where('header_value', 'like', "%{$searchVal}%")
+                        ->where('status', '!=', 3);
+            });
+        }
+
+        
+
+
         // for telecaller
         if(session('user_data')['role_id'] == 3) // for telecaller
         {
@@ -1641,6 +1833,7 @@ class LeadListController extends Controller
 
 
         $query->where('status', '!=', 3);
+
         // Final execution
         $branchleadPaginated = $query->orderBy('id', 'desc')->get();
 
