@@ -87,7 +87,7 @@ $controllerRoute = $module['controller_route'];
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <div>
                                         <span
-                                            class="card-header fw-bold h6 ps-0">{{ $eachBranchWiseTelecallerActivity["branch_name"] }}</span>
+                                            class="branchName card-header fw-bold h6 ps-0">{{ $eachBranchWiseTelecallerActivity["branch_name"] }}</span>
                                     </div>
                                 </div>
                                 <div class="table-responsive text-nowrap">
@@ -114,7 +114,7 @@ $controllerRoute = $module['controller_route'];
                                                                 <span class="badge badge-center rounded-pill bg-label-danger">
                                                                     <i class="fa-solid fa-user-tie"></i>
                                                                 </span>
-                                                                <strong>{{ $value["telecaller_name"] }} </strong>
+                                                                <strong class="telecallerName">{{ $value["telecaller_name"] }} </strong>
                                                                 <br>
                                                             @endif
                                                             @if(!empty($value["last_call_of_telecaller"]))
@@ -236,7 +236,7 @@ $controllerRoute = $module['controller_route'];
                                                             <span class="badge badge-center rounded-pill bg-label-danger">
                                                                 <i class="fa-solid fa-user-tie"></i>
                                                             </span>
-                                                            <strong>{{ $value["telecaller_name"] }} </strong><br>
+                                                            <strong class="telecallerName">{{ $value["telecaller_name"] }} </strong><br>
                                                         @endif
                                                         @if(!empty($value["last_call_of_telecaller"]))
                                                             <span class="badge badge-center rounded-pill bg-label-warning mt-1">
@@ -563,16 +563,27 @@ $controllerRoute = $module['controller_route'];
             $(document).on('click', '.activityReportModalBtn', function () {
                 leadActivityIdArr = $(this).data('leadactivityidarr');
 
+                let branchName = $(this).closest('.card').find('.branchName').text().trim();
+
+                let assignedTelecallerName = null;
+                
                 let total = false;
-                if ($(this).data('total')) {
+                if ($(this).data('total'))
+                {
                     total = true;
                 }
+                else
+                {
+                    assignedTelecallerName = $(this).closest('tr').find('.telecallerName').text().trim();
+                }
+
+                // alert(branchName + ' | ' + assignedTelecallerName);
                 // console.log(leadActivityIdArr);
 
                 $.ajax({
                     url: base_url + '/activity-report-modal',
                     type: 'POST',
-                    data: { leadActivityIdArr: leadActivityIdArr, total: total },
+                    data: { leadActivityIdArr: leadActivityIdArr, total: total , branchName: branchName , assignedTelecallerName: assignedTelecallerName },
                     beforeSend: function () {
                         // Show Bootstrap overlay
                         $('#loadingOverlay').removeClass('d-none');
@@ -613,65 +624,7 @@ $controllerRoute = $module['controller_route'];
             });
 
 
-            // activity report modal with sweet alert loader
-            // let leadActivityIdArr;
-            // $(document).on('click', '.activityReportModalBtn', function () {
-            //     leadActivityIdArr = $(this).data('leadactivityidarr');
-
-            //     // console.log(leadActivityIdArr);
-
-            //     $.ajax({
-            //         url: base_url + '/activity-report-modal',
-            //         type: 'POST',
-            //         data: { leadActivityIdArr: leadActivityIdArr },
-            //         beforeSend: function () {
-            //             Swal.fire({
-            //                 title: 'Please Wait',
-            //                 text: 'While We Process Your Request...',
-            //                 allowOutsideClick: false,
-            //                 allowEscapeKey: false,
-            //                 showConfirmButton: false,
-            //                 didOpen: () => {
-            //                     Swal.showLoading(); // adds spinner
-            //                 }
-            //             });
-            //         },
-
-            //         success: function (response) {
-
-            //             Swal.close();
-            //             document.body.style.paddingRight = '0px'; // fix scrollbar gap
-
-            //             // Remove any existing modal with same class
-            //             $('.activityReportModal').remove();
-
-            //             // Remove any leftover Bootstrap backdrop
-            //             // $('.modal-backdrop').remove();
-
-            //             // Append the modal HTML to body
-            //             $('body').append(response.html);
-
-            //             // Initialize and show Bootstrap modal
-            //             var myModal = new bootstrap.Modal(document.querySelector('.activityReportModal'));
-            //             myModal.show();
-
-            //             // Optional: remove modal from DOM after hidden to prevent accumulation
-            //             document.querySelector('.activityReportModal').addEventListener('hidden.bs.modal', function () {
-            //                 $(this).remove();
-            //             });
-
-            //         },
-            //         error: function (xhr) {
-            //             // alert('Error loading activity data.');
-            //             Swal.close(); // Close popup on error
-            //             document.body.style.paddingRight = '0px'; // fix scrollbar gap
-            //             Swal.fire('Error', 'Error loading activity data.', 'error');
-            //             console.log(xhr);
-            //         }
-
-            //     });
-
-            // });
+            
 
 
 
