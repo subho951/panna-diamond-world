@@ -262,12 +262,13 @@ class ReportController extends Controller
 
 
             $data = [];
-            if (!empty($leadHistoryArr)) {
-                $data["branch_name"] = $leadHistoryArr[0]["branch_name"];
+            if (!empty($leadHistoryArr)) 
+            {
+                $data["branch_name"] = strip_tags($request->branchName);
 
                 // dd($request->total);
                 if ($request->total == "false") {
-                    $data["assigned_telecaller_name"] = $leadHistoryArr[0]["assigned_telecaller_name"];
+                    $data["assigned_telecaller_name"] = strip_tags($request->assignedTelecallerName);
                 } elseif ($request->total == "true") {
                     $data["assigned_telecaller_name"] = '';
                 }
