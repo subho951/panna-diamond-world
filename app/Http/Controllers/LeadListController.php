@@ -1463,6 +1463,9 @@ class LeadListController extends Controller
                     BranchLead::where('id', '=', Helper::decoded($branchLead_id))->update([
                         'assigned_telecaller_id' => Helper::decoded($request->to_assigned_telecaller_id) ,
                         'updated_by' => session('user_data')['user_id'],
+                        'created_at' => Carbon::now(),
+                        'parent_status_id' => 0,
+                        'child_status_id' => 0
                     ]);
 
                 }
@@ -1560,6 +1563,9 @@ class LeadListController extends Controller
                         'assigned_telecaller_id' => $toTelecallerId,
                         'branch_id' => Helper::decoded($request->transfer_branch),
                         'updated_by' => session('user_data')['user_id'],
+                        'created_at' => Carbon::now(),
+                        'parent_status_id' => 0,
+                        'child_status_id' => 0
                     ]);
 
                     // Move to next telecaller (circular)

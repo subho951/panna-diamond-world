@@ -38,7 +38,7 @@ $controllerRoute = $module['controller_route'];
                 <div class="col-md-9">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                          <label for="assigned_from_date" class="form-label">Assigned From </label>
+                          <label for="assigned_from_date" class="form-label">Assign From </label>
                           <input class="form-control" type="date" id="assigned_from_date" name="assigned_from_date"
                             @if(!empty($assignedFromDate))
                               value="{{ $assignedFromDate }}" 
@@ -46,7 +46,7 @@ $controllerRoute = $module['controller_route'];
                             max="<?=date('Y-m-d')?>" />
                         </div>
                         <div class="col-md-6 mb-3">
-                          <label for="assigned_to_date" class="form-label">Assigned To </label>
+                          <label for="assigned_to_date" class="form-label">Assign To </label>
                           <input class="form-control" type="date" id="assigned_to_date" name="assigned_to_date"
                             @if(!empty($assignedToDate))
                               value="{{ $assignedToDate }}"
