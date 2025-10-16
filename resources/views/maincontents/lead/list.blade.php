@@ -53,7 +53,7 @@ $controllerRoute = $module['controller_route'];
                        
 
                         {{-- <h6 class="card-title">Filter</h6> --}}
-                        {{-- filter section --}}
+                        {{-- filter section start--}}
                         @if(session('user_data')['role_id'] != 3)
                             <div class="card mb-3 p-3" >
                                 <form>
@@ -161,7 +161,7 @@ $controllerRoute = $module['controller_route'];
                                         <div class="col-md-12">
                                             <div class="row">
                                                 <div class="col-md-3 mb-3">
-                                                <label for="assigned_from_date" class="form-label">Assigned From </label>
+                                                <label for="assigned_from_date" class="form-label">Assign From </label>
                                                 <input class="form-control" type="date" id="assigned_from_date" name="assigned_from_date"
                                                     @if(!empty($assignedFromDate))
                                                     value="{{ $assignedFromDate }}" 
@@ -169,7 +169,7 @@ $controllerRoute = $module['controller_route'];
                                                     max="<?=date('Y-m-d')?>" />
                                                 </div>
                                                 <div class="col-md-3 mb-3">
-                                                <label for="assigned_to_date" class="form-label">Assigned To </label>
+                                                <label for="assigned_to_date" class="form-label">Assign To </label>
                                                 <input class="form-control" type="date" id="assigned_to_date" name="assigned_to_date"
                                                     @if(!empty($assignedToDate))
                                                     value="{{ $assignedToDate }}"
@@ -271,6 +271,43 @@ $controllerRoute = $module['controller_route'];
                                 <form>
                                     @csrf
                                     <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-3 mb-3">
+                                                <label for="assigned_from_date" class="form-label">Assign From </label>
+                                                <input class="form-control" type="date" id="assigned_from_date" name="assigned_from_date"
+                                                    @if(!empty($assignedFromDate))
+                                                    value="{{ $assignedFromDate }}" 
+                                                    @endif
+                                                    max="<?=date('Y-m-d')?>" />
+                                                </div>
+                                                <div class="col-md-3 mb-3">
+                                                <label for="assigned_to_date" class="form-label">Assign To </label>
+                                                <input class="form-control" type="date" id="assigned_to_date" name="assigned_to_date"
+                                                    @if(!empty($assignedToDate))
+                                                    value="{{ $assignedToDate }}"
+                                                    @endif
+                                                    max="<?=date('Y-m-d')?>" />
+                                                </div>
+                                                
+                                                <div class="col-md-3 mb-3">
+                                                    <label for="call_from_date" class="form-label">Call From </label>
+                                                    <input class="form-control" type="date" id="call_from_date" name="call_from_date"
+                                                        @if(!empty($callFromDate))
+                                                         value="{{ $callFromDate }}"
+                                                        @endif max="<?=date('Y-m-d')?>" />
+                                                </div>
+                                                <div class="col-md-3 mb-3">
+                                                    <label for="call_to_date" class="form-label">Call To </label>
+                                                    <input class="form-control" type="date" id="call_to_date" name="call_to_date"
+                                                        @if(!empty($callToDate))
+                                                         value="{{ $callToDate }}"
+                                                        @endif max="<?=date('Y-m-d')?>" />
+                                                </div>
+                                            
+                                            </div>
+                                        </div>
+                                                                                
                                         <div class="col-md-9">
                                             <div class="row">
                                                 <div class="col-md-3 mb-3">
@@ -320,24 +357,58 @@ $controllerRoute = $module['controller_route'];
                                                         @endif
                                                     </select>
                                                 </div>
+ 
                                                 <div class="col-md-3 mb-3">
-                                                <label for="assigned_from_date" class="form-label">Assigned From </label>
-                                                <input class="form-control" type="date" id="assigned_from_date" name="assigned_from_date"
-                                                    @if(!empty($assignedFromDate))
-                                                    value="{{ $assignedFromDate }}" 
-                                                    @endif
-                                                    max="<?=date('Y-m-d')?>" />
+                                                    <label for="campaign_type_id" class="form-label">Campaign Type</label>
+                                                    <select class="select2 form-select" id="campaign_type_id" name="campaign_type_id">
+                                                        <option value="" selected disabled>Select Campaign Type</option>
+                                                        @if(!empty($campaign_types))
+                                                            @foreach($campaign_types as $campaign_type)
+                                                                <option
+                                                                    value="{{ Helper::encoded($campaign_type->id) }}"
+                                                            
+                                                                    @if(!empty($selected_campaign_type_id))                                                  
+                                                                        @if(Helper::encoded($campaign_type->id) == Helper::encoded($selected_campaign_type_id))
+                                                                            selected
+                                                                        @endif                                                     
+                                                                    @endif >{{ $campaign_type->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
                                                 </div>
                                                 <div class="col-md-3 mb-3">
-                                                <label for="assigned_to_date" class="form-label">Assigned To </label>
-                                                <input class="form-control" type="date" id="assigned_to_date" name="assigned_to_date"
-                                                    @if(!empty($assignedToDate))
-                                                    value="{{ $assignedToDate }}"
-                                                    @endif
-                                                    max="<?=date('Y-m-d')?>" />
+                                                    <label for="campaign_id" class="form-label">Campaign</label>
+                                                    <select class="select2 form-select" id="campaign_id" name="campaign_id">
+                                                        <option value="" selected disabled>Select Campaign</option>
+                                                        @if(!empty($typeWisecampaign))
+                                                            @foreach($typeWisecampaign as $campaign)
+                                                                <option
+                                                                    value="{{ Helper::encoded($campaign->id) }}"
+                                                                    @if(!empty($selected_campaign_id))
+                                                                        @if(Helper::encoded($campaign->id) == Helper::encoded($selected_campaign_id))
+                                                                        selected
+                                                                        @endif
+                                                                    @endif
+                                                                    >{{ $campaign->name }}</option>
+                                                            @endforeach
+                                                        @elseif(!empty($campaigns))
+                                                            @foreach($campaigns as $campaign)
+                                                                <option
+                                                                    value="{{ Helper::encoded($campaign->id) }}"
+                                                                    @if(!empty($selected_campaign_id))
+                                                                        @if(Helper::encoded($campaign->id) == Helper::encoded($selected_campaign_id))
+                                                                        selected
+                                                                        @endif
+                                                                    @endif
+                                                                    >{{ $campaign->name }}</option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
+
                                         <div class="col-md-3 mt-3">
                                             <div class="row">
                                                 <div class="col-md-12 d-flex gap-2 mt-3">
@@ -354,7 +425,7 @@ $controllerRoute = $module['controller_route'];
                                 </form>
                             </div>
                         @endif
-
+                        {{-- filter section end--}}
                         
                         {{-- bulk lead transfer section --}}
                         @if(session('user_data')['role_id'] != 3)
@@ -443,7 +514,7 @@ $controllerRoute = $module['controller_route'];
                                                 type="text"
                                                 class="searchBar form-control"
                                                 placeholder="Search by name or phone"
-                                                aria-label="Search by contact person name or phone"
+                                                aria-label="Search by name or phone"
                                                 aria-describedby="basic-addon-search31" />
 
                                             @if(!empty($searchVal))
@@ -475,9 +546,9 @@ $controllerRoute = $module['controller_route'];
                                     <thead>
                                         <tr>
                                             @if(!empty($totalLeadArr))
-                                        
+                                                @if(session('user_data')['role_id'] != 3)
                                                     <th><input type="checkbox" id="selectAll"></th>
-
+                                                @endif
                                             @endif
                                             <th>#</th>
                                             <th>Lead No</th>
@@ -500,14 +571,14 @@ $controllerRoute = $module['controller_route'];
                                         @foreach($totalLeadArr as $eachLeadArr)
                                         {{-- @dd($eachLeadArr); --}}
                                         <tr>
-                                            
+                                            @if(session('user_data')['role_id'] != 3)  
                                                 <td>
                                                     <input type="checkbox"
                                                     name="branchLead_id_Arr[]" 
                                                     class="lead-checkbox" 
                                                     value="{{ Helper::encoded($eachLeadArr->id) }}">
                                                 </td>
-                                            
+                                            @endif
 
 
                                             <td>{{ ($loop->iteration) + ($perPage * ($page - 1)) }}</td>
@@ -545,14 +616,14 @@ $controllerRoute = $module['controller_route'];
                                                             }
                                                         @endphp
                                                     @endforeach
-                                                    <span class="badge me-1 mt-1" style="background-color: {{ $background }}; color: {{ $color }};">{{ $name }}</span>
+                                                    <span class="badge me-0 mt-0" style="background-color: {{ $background }}; color: {{ $color }};">{{ $name }}</span>
                                                     <br>
                                                 @endif
                                                 
-                                                {{ $eachLeadArr->lead_no }}
+                                              <span class="searchHighlightSection">{{ $eachLeadArr->lead_no }}</span>
                                             </td>
 
-                                            <td>
+                                            <td class="searchHighlightSection">
                                                @foreach($eachLeadArr->eachLeadDetailsArr as $key => $value)
                                                {{-- @dd($key, $value); --}}
                                                     @if( ($value["is_visible_in_lead_list"] == "YES") && !empty($value["contact-person-name"]) )
@@ -741,7 +812,7 @@ $controllerRoute = $module['controller_route'];
                         
                                 <div class="row">
                                     <div class="col-md-6 d-flex align-items-center">
-                                        <p class="mb-0 mt-3" style="color: #b2a2df; font-size: small;">Showing {{ $branchleadPaginated->lastItem() - $branchleadPaginated->firstItem() + 1 }}  ({{ $branchleadPaginated->firstItem() }} to {{ $branchleadPaginated->lastItem() }}) of {{ $branchleadPaginated->total() }} entries</p>
+                                        <p class="mb-0 mt-3" style="color: #b2a2df; font-size: small;">Showing {{ $branchleadPaginated->lastItem() - $branchleadPaginated->firstItem() + 1 }}  ({{ $branchleadPaginated->firstItem() }} to {{ $branchleadPaginated->lastItem() }}) of {{ $branchleadPaginated->total() }} records</p>
                                     </div>
                                     <div class="col-md-6">
 
@@ -2039,7 +2110,7 @@ $controllerRoute = $module['controller_route'];
             // Escape regex special chars so search works with symbols too
             let regex = new RegExp("(" + searchValFromUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", "gi");
 
-            document.querySelectorAll('.leadListContent td').forEach(td => {
+            document.querySelectorAll('.searchHighlightSection').forEach(td => {
                 // Only update if it has matching text
                 if (regex.test(td.innerHTML)) {
                     // td.innerHTML = td.innerHTML.replace(regex, '<mark>$1</mark>');
