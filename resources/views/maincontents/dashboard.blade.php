@@ -10,7 +10,7 @@ use App\Helpers\Helper;
     <div class="col-lg-12">
       <h3 class="mt-2 main_heading">Welcome to <?=Helper::getSettingValue('site_name')?></h2>
     </div>
-     
+  </div>
     <div class="row">
       <div class="col-md-4 mb-3">
         <div class="card">
@@ -191,7 +191,7 @@ use App\Helpers\Helper;
       </div>
     </div>
     <!--/ Projects table --> --}}
-  </div>
+  
 </div>
 <!-- / Content -->
 @endsection
