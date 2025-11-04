@@ -8,8 +8,8 @@ $pageFunction = ((count($pageName)>1)?$pageName[1]:'');
 $user_id      = session('user_id');
 $role_id      = (($user)?$user->role_id:0);
 ?>
-<div class="app-brand demo justify-content-between">
-  <a href="<?=url('/dashboard')?>" class="app-brand-link d-block d-xl-none">
+<div class="app-brand demo justify-content-center p-0">
+  <a href="<?=url('/dashboard')?>" class="app-brand-link d-block">
     <!-- <span class="app-brand-logo demo">
       <svg width="32" height="22" viewBox="0 0 32 22" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
@@ -36,22 +36,19 @@ $role_id      = (($user)?$user->role_id:0);
           fill="#7367F0" />
       </svg>
     </span> -->
-    <img src="<?=((Helper::getSettingValue('site_logo') != '')?config('constants.app_url') . config('constants.uploads_url_path') . Helper::getSettingValue('site_logo'):config('constants.no_image'))?>" alt="<?=Helper::getSettingValue('site_name')?>" class="d-block" style="margin-top: 10px;height: 50px;width: 150px;" />
+    <img src="<?=((Helper::getSettingValue('site_logo') != '')?config('constants.app_url') . config('constants.uploads_url_path') . Helper::getSettingValue('site_logo'):config('constants.no_image'))?>" alt="<?=Helper::getSettingValue('site_name')?>" class="d-block" style="height: 60px;width: 100%; padding: 5px;" />
     <!-- <span class="app-brand-text demo menu-text fw-bold"><?=Helper::getSettingValue('site_name')?></span> -->
   </a>
 
-  <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large">
-    <i class="fa fa-bars d-none d-xl-block align-middle"></i>
-    <i class="fa fa-times d-block d-xl-none ti-md align-middle"></i>
-  </a>
+  
 </div>
 
 <div class="menu-inner-shadow"></div>
 
-<ul class="menu-inner py-1">
+<ul class="menu-inner py-0">
   <?php if(in_array(1, $moduleIds)){?>
     <!-- Dashboards -->
-    <li class="menu-item <?=(($pageSegment == 'dashboard')?'active':'')?>">
+    <li class="menu-item mt-0 <?=(($pageSegment == 'dashboard')?'active':'')?>">
       <a href="<?=url('/dashboard')?>" class="menu-link">
         <i class="menu-icon fa-solid fa-house"></i>
         <div data-i18n="Dashboard">Dashboard</div>
