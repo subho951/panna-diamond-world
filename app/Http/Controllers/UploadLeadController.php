@@ -61,8 +61,14 @@ class UploadLeadController extends Controller
 
             $telecallerArr = json_decode($leadRow->telecaller_id, true);
             $telecallerNameArr = [];
-            foreach ($telecallerArr as $telecaller_id) {
-                $telecallerNameArr[] = User::where('id', '=', $telecaller_id)->first()->first_name . ' ' . User::where('id', '=', $telecaller_id)->first()->last_name;
+            foreach ($telecallerArr as $telecaller_id)
+            {
+                // dd($telecaller_id);
+                // $telecallerNameArr[] = User::where('id', '=', $telecaller_id)->first()->first_name ?? '' . ' ' . User::where('id', '=', $telecaller_id)->first()->last_name ?? '';
+                // $userArr = User::find( $telecaller_id);
+                $userArr = User::withTrashed()->find( $telecaller_id);
+                // dd($userArr);
+                $telecallerNameArr[] = $userArr ? $userArr->first_name . ' ' . $userArr->last_name : 'Telecaller Name';
             }
             $leadRow['telecaller_name_arr'] = $telecallerNameArr ?? 'N/A';
 

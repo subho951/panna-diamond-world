@@ -237,7 +237,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('lead-list/bulk-lead-transfer', [LeadListController::class, 'bulkLeadTransfer']);
         Route::post('lead-list/fetch-branch-wise-telecaller', [LeadListController::class, 'fetchBranchWiseTelecaller']);
         Route::post('lead-list/fetch-parent-wise-child-status', [LeadListController::class, 'fetchParentWiseChildStatus']);
-        
+        Route::post( 'lead-list/fetch-campaign', [LeadListController::class, 'fetchCampaign']);
         Route::match(['get', 'post'],'lead-list/export-all-leads-as-csv', [LeadListController::class, 'exportAllLeadsAsCSV']);
     /* Lead List */
 

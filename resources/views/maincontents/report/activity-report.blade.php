@@ -4,6 +4,11 @@ $controllerRoute = $module['controller_route'];
 ?>
 @extends('layouts.main')
 @section('content')
+    <style>
+        .swal2-container {
+            z-index: 9999 !important;
+        }
+    </style>
     <div class="container-fluid flex-grow-1 container-p-y">
         <div class="row g-6">
             <h4><?=$page_header?></h4>
@@ -34,7 +39,14 @@ $controllerRoute = $module['controller_route'];
                     <form>
                         @csrf
                         <div class="row">
-                            <div class="col-md-9">
+                            <div class="col-md-2 mt-3 d-flex align-items-center">
+                                <div class="form-check form-switch ps-0">
+                                    <label class="form-check-label" for="uniqueCall">Unique Calls</label>
+                                    <input class="form-check-input float-none ms-0" type="checkbox" name="uniqueCall" role="switch" id="uniqueCall"
+                                    @if(!empty($unique_check)) checked @endif>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="call_from_date" class="form-label">Call From </label>
@@ -75,7 +87,7 @@ $controllerRoute = $module['controller_route'];
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <div>
                                         <span
-                                            class="card-header fw-bold h6 ps-0">{{ $eachBranchWiseTelecallerActivity["branch_name"] }}</span>
+                                            class="branchName card-header fw-bold h6 ps-0">{{ $eachBranchWiseTelecallerActivity["branch_name"] }}</span>
                                     </div>
                                 </div>
                                 <div class="table-responsive text-nowrap">
@@ -88,6 +100,7 @@ $controllerRoute = $module['controller_route'];
                                                 <th class="text-center">Follow Up</th>
                                                 <th class="text-center">Success</th>
                                                 <th class="text-center">Dump</th>
+                                                <th class="text-center">All Time Pending</th>
                                             </tr>
                                         </thead>
                                         <tbody class="table-border-bottom-0">
@@ -101,7 +114,7 @@ $controllerRoute = $module['controller_route'];
                                                                 <span class="badge badge-center rounded-pill bg-label-danger">
                                                                     <i class="fa-solid fa-user-tie"></i>
                                                                 </span>
-                                                                <strong>{{ $value["telecaller_name"] }} </strong>
+                                                                <strong class="telecallerName">{{ $value["telecaller_name"] }} </strong>
                                                                 <br>
                                                             @endif
                                                             @if(!empty($value["last_call_of_telecaller"]))
@@ -111,11 +124,29 @@ $controllerRoute = $module['controller_route'];
                                                                 <strong class="text-muted">{{ $value["last_call_of_telecaller"]}}</strong>
                                                             @endif
                                                         </td>
-                                                        <td class="text-center">{{ $value["total_call_count"] }}</td>
+                                                        <td class="text-center"><span
+                                                                class="badge bg-label-primary cursor-pointer activityReportModalBtn"
+                                                                data-bs-toggle="modal" data-bs-target=".activityReportModal"
+                                                                data-leadactivityidarr='@json($value['total_call_count_idArr'])'>{{ $value["total_call_count"] }}</span>
+                                                        </td>
                                                         {{-- <td class="text-center">{{ $value["parentStatus_new_count"] }}</td> --}}
-                                                        <td class="text-center">{{ $value["parentStatus_followUp_count"] }}</td>
-                                                        <td class="text-center">{{ $value["parentStatus_success_count"] }}</td>
-                                                        <td class="text-center">{{ $value["parentStatus_dumb_count"] }}</td>
+                                                        <td class="text-center"><span
+                                                                class="badge bg-label-info cursor-pointer activityReportModalBtn"
+                                                                data-bs-toggle="modal" data-bs-target=".activityReportModal"
+                                                                data-leadactivityidarr='@json($value['parentStatus_followUp_count_idArr'])'>{{ $value["parentStatus_followUp_count"] }}</span>
+                                                        </td>
+                                                        <td class="text-center"><span
+                                                                class="badge bg-label-success cursor-pointer activityReportModalBtn"
+                                                                data-bs-toggle="modal" data-bs-target=".activityReportModal"
+                                                                data-leadactivityidarr='@json($value['parentStatus_success_count_idArr'])'>{{ $value["parentStatus_success_count"] }}</span>
+                                                        </td>
+                                                        <td class="text-center"><span
+                                                                class="badge bg-label-danger cursor-pointer activityReportModalBtn"
+                                                                data-bs-toggle="modal" data-bs-target=".activityReportModal"
+                                                                data-leadactivityidarr='@json($value['parentStatus_dumb_count_idArr'])'>{{ $value["parentStatus_dumb_count"] }}</span>
+                                                        </td>
+                                                        <td class="text-center"><span class="badge rounded-pill bg-label-warning">
+                                                                {{ $value['tellecallerWisePendingCount'] }} </span></td>
                                                     </tr>
                                                 @endforeach
                                             @else
@@ -157,6 +188,8 @@ $controllerRoute = $module['controller_route'];
                                             <th class="text-center">Follow Up</th>
                                             <th class="text-center">Success</th>
                                             <th class="text-center">Dump</th>
+                                            <th class="text-center">All Time Pending</th>
+
                                         </tr>
                                     </thead>
                                     <tbody class="table-border-bottom-0">
@@ -168,6 +201,14 @@ $controllerRoute = $module['controller_route'];
                                                 $SUM_parentStatus_followUp_count = 0;
                                                 $SUM_parentStatus_success_count = 0;
                                                 $SUM_parentStatus_dumb_count = 0;
+
+                                                $SUM_tellecallerWisePendingCount = 0;
+
+                                                $MERGE_parentStatus_new_count_idArr = [];
+                                                $MERGE_parentStatus_dumb_count_idArr = [];
+                                                $MERGE_parentStatus_followUp_count_idArr = [];
+                                                $MERGE_parentStatus_success_count_idArr = [];
+                                                $MERGE_total_call_count_idArr = [];
                                             @endphp
 
                                             @foreach($eachBranchWiseTelecallerActivity["telecallerActivity"] as $key => $value)
@@ -177,7 +218,15 @@ $controllerRoute = $module['controller_route'];
                                                     $SUM_parentStatus_new_count = $SUM_parentStatus_new_count + $value["parentStatus_new_count"];
                                                     $SUM_parentStatus_followUp_count = $SUM_parentStatus_followUp_count + $value["parentStatus_followUp_count"];
                                                     $SUM_parentStatus_success_count = $SUM_parentStatus_success_count + $value["parentStatus_success_count"];
-                                                    $SUM_parentStatus_dumb_count = $SUM_parentStatus_dumb_count + $value["parentStatus_dumb_count"];    
+                                                    $SUM_parentStatus_dumb_count = $SUM_parentStatus_dumb_count + $value["parentStatus_dumb_count"];
+
+                                                    $SUM_tellecallerWisePendingCount = $SUM_tellecallerWisePendingCount + $value['tellecallerWisePendingCount'];
+
+                                                    $MERGE_total_call_count_idArr = array_merge($MERGE_total_call_count_idArr, $value["total_call_count_idArr"]);
+                                                    $MERGE_parentStatus_new_count_idArr = array_merge($MERGE_parentStatus_new_count_idArr, $value["parentStatus_new_count_idArr"]);
+                                                    $MERGE_parentStatus_followUp_count_idArr = array_merge($MERGE_parentStatus_followUp_count_idArr, $value["parentStatus_followUp_count_idArr"]);
+                                                    $MERGE_parentStatus_success_count_idArr = array_merge($MERGE_parentStatus_success_count_idArr, $value["parentStatus_success_count_idArr"]);
+                                                    $MERGE_parentStatus_dumb_count_idArr = array_merge($MERGE_parentStatus_dumb_count_idArr, $value["parentStatus_dumb_count_idArr"]);
                                                 @endphp
 
                                                 <tr>
@@ -187,7 +236,7 @@ $controllerRoute = $module['controller_route'];
                                                             <span class="badge badge-center rounded-pill bg-label-danger">
                                                                 <i class="fa-solid fa-user-tie"></i>
                                                             </span>
-                                                            <strong>{{ $value["telecaller_name"] }} </strong><br>
+                                                            <strong class="telecallerName">{{ $value["telecaller_name"] }} </strong><br>
                                                         @endif
                                                         @if(!empty($value["last_call_of_telecaller"]))
                                                             <span class="badge badge-center rounded-pill bg-label-warning mt-1">
@@ -196,11 +245,37 @@ $controllerRoute = $module['controller_route'];
                                                             <strong class="text-muted">{{ $value["last_call_of_telecaller"]}}</strong>
                                                         @endif
                                                     </td>
-                                                    <td class="text-center">{{ $value["total_call_count"] }}</td>
+
+
+
+                                                    <td class="text-center"><span
+                                                            class="badge bg-label-primary cursor-pointer activityReportModalBtn"
+                                                            data-bs-toggle="modal" data-bs-target=".activityReportModal"
+                                                            data-leadactivityidarr='@json($value['total_call_count_idArr'])'>
+                                                            {{ $value["total_call_count"] }} </span></td>
+
                                                     {{-- <td class="text-center">{{ $value["parentStatus_new_count"] }}</td> --}}
-                                                    <td class="text-center">{{ $value["parentStatus_followUp_count"] }}</td>
-                                                    <td class="text-center">{{ $value["parentStatus_success_count"] }}</td>
-                                                    <td class="text-center">{{ $value["parentStatus_dumb_count"] }}</td>
+
+                                                    <td class="text-center"><span
+                                                            class="badge bg-label-info cursor-pointer activityReportModalBtn"
+                                                            data-bs-toggle="modal" data-bs-target=".activityReportModal"
+                                                            data-leadactivityidarr='@json($value['parentStatus_followUp_count_idArr'])'>
+                                                            {{ $value["parentStatus_followUp_count"] }} </span></td>
+
+                                                    <td class="text-center"><span
+                                                            class="badge bg-label-success cursor-pointer activityReportModalBtn"
+                                                            data-bs-toggle="modal" data-bs-target=".activityReportModal"
+                                                            data-leadactivityidarr='@json($value['parentStatus_success_count_idArr'])'>
+                                                            {{ $value["parentStatus_success_count"] }} </span></td>
+
+                                                    <td class="text-center"><span
+                                                            class="badge bg-label-danger cursor-pointer activityReportModalBtn"
+                                                            data-bs-toggle="modal" data-bs-target=".activityReportModal"
+                                                            data-leadactivityidarr='@json($value['parentStatus_dumb_count_idArr'])'>
+                                                            {{ $value["parentStatus_dumb_count"] }} </span></td>
+
+                                                    <td class="text-center"><span class="badge rounded-pill bg-label-warning">
+                                                            {{ $value['tellecallerWisePendingCount'] }} </span></td>
                                                 </tr>
                                             @endforeach
                                             <tr>
@@ -213,12 +288,37 @@ $controllerRoute = $module['controller_route'];
                                                         Total
                                                     </strong>
                                                 </td>
-                                                <td class="text-center text-primary fw-bold">{{ $SUM_total_call_count }}</td>
+                                                <td class="text-center text-primary fw-bold"><span
+                                                        class="badge bg-primary bg-glow cursor-pointer activityReportModalBtn"
+                                                        data-bs-toggle="modal" data-bs-target=".activityReportModal" data-total="total"
+                                                        data-leadactivityidarr='@json($MERGE_total_call_count_idArr)'>
+                                                        {{ $SUM_total_call_count }} </span></td>
+
                                                 {{-- <td class="text-center text-primary fw-bold">{{ $SUM_parentStatus_new_count }}</td>
                                                 --}}
-                                                <td class="text-center text-primary fw-bold">{{ $SUM_parentStatus_followUp_count }}</td>
-                                                <td class="text-center text-primary fw-bold">{{ $SUM_parentStatus_success_count }}</td>
-                                                <td class="text-center text-primary fw-bold">{{ $SUM_parentStatus_dumb_count }}</td>
+
+                                                <td class="text-center text-primary fw-bold"><span
+                                                        class="badge bg-info bg-glow cursor-pointer activityReportModalBtn"
+                                                        data-bs-toggle="modal" data-bs-target=".activityReportModal" data-total="total"
+                                                        data-leadactivityidarr='@json($MERGE_parentStatus_followUp_count_idArr)'>
+                                                        {{ $SUM_parentStatus_followUp_count }} </span></td>
+
+                                                <td class="text-center text-primary fw-bold"><span
+                                                        class="badge bg-success bg-glow cursor-pointer activityReportModalBtn"
+                                                        data-bs-toggle="modal" data-bs-target=".activityReportModal" data-total="total"
+                                                        data-leadactivityidarr='@json($MERGE_parentStatus_success_count_idArr)'>
+                                                        {{ $SUM_parentStatus_success_count }} </span></td>
+
+                                                <td class="text-center text-primary fw-bold"><span
+                                                        class="badge bg-danger bg-glow cursor-pointer activityReportModalBtn"
+                                                        data-bs-toggle="modal" data-bs-target=".activityReportModal" data-total="total"
+                                                        data-leadactivityidarr='@json($MERGE_parentStatus_dumb_count_idArr)'>
+                                                        {{ $SUM_parentStatus_dumb_count }} </span></td>
+
+                                                <td class="text-center text-primary fw-bold"><span
+                                                        class="badge rounded-pill bg-warning bg-glow">
+                                                        {{ $SUM_tellecallerWisePendingCount }} </span></td>
+
                                             </tr>
                                         @else
                                             <tr>
@@ -240,19 +340,44 @@ $controllerRoute = $module['controller_route'];
         </div>
     </div>
 
-    <button type="button" class="btn btn-primary activityReportModalBtn" data-bs-toggle="modal"
+    {{-- <button type="button" class="btn btn-primary activityReportModalBtn" data-bs-toggle="modal"
         data-bs-target=".activityReportModal">
         Open
-    </button>
+    </button> --}}
+
+
+    <div id="loadingOverlay"
+        class="d-none position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-flex flex-column justify-content-center align-items-center"
+        style="z-index: 9999;">
+
+        <div class="spinner-border text-white mb-3" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+
+        <h5 class="text-white fw-semibold">Please Wait ☕</h5>
+        <h6 class="text-white mb-0">Processing Activity Data…</h6>
+
+        {{-- <div class="card">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                <div class="spinner-border text-dark mb-3" style="width: 3rem; height: 3rem;" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+
+                <h5 class="text-dark fw-semibold">Please Wait ☕</h5>
+                <h6 class="text-dark mb-0">Processing Activity Data…</h6>
+            </div>
+        </div> --}}
+
+    </div>
 
 
 
 @endsection
 
 @section('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function () {
-
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
@@ -343,6 +468,29 @@ $controllerRoute = $module['controller_route'];
 
 
 
+            // unique calls
+            $(document).on('change', '#uniqueCall', function ()
+            {
+                let url = new URL(window.location.href);
+
+                if ($(this).is(':checked'))
+                {
+                    // alert('checked');
+                    let uniqueCall = $(this).is(':checked');
+                    url.searchParams.set('unique', uniqueCall);
+                } 
+                else
+                {
+                    // alert('unchecked');
+                    url.searchParams.delete('unique');
+                }
+
+                window.location.href = url.toString();
+            });
+
+            
+
+
 
             // download as CSV
             $(document).on('click', '.exportAsCSV', function () {
@@ -408,19 +556,48 @@ $controllerRoute = $module['controller_route'];
 
 
 
-            // activity report modal
+
+            // activity report modal with custom loader
+            let leadActivityIdArr;
             $(document).on('click', '.activityReportModalBtn', function () {
+                leadActivityIdArr = $(this).data('leadactivityidarr');
+
+                let branchName = $(this).closest('.card').find('.branchName').text().trim();
+
+                let assignedTelecallerName = null;
+                
+                let total = false;
+                if ($(this).data('total'))
+                {
+                    total = true;
+                }
+                else
+                {
+                    assignedTelecallerName = $(this).closest('tr').find('.telecallerName').text().trim();
+                }
+
+                // alert(branchName + ' | ' + assignedTelecallerName);
+                // console.log(leadActivityIdArr);
 
                 $.ajax({
                     url: base_url + '/activity-report-modal',
-                    type: 'GET',
+                    type: 'POST',
+                    data: { leadActivityIdArr: leadActivityIdArr, total: total , branchName: branchName , assignedTelecallerName: assignedTelecallerName },
+                    beforeSend: function () {
+                        // Show Bootstrap overlay
+                        $('#loadingOverlay').removeClass('d-none');
+                    },
+
                     success: function (response) {
+
+                        // Hide overlay
+                        $('#loadingOverlay').addClass('d-none');
 
                         // Remove any existing modal with same class
                         $('.activityReportModal').remove();
 
                         // Remove any leftover Bootstrap backdrop
-                        $('.modal-backdrop').remove();
+                        // $('.modal-backdrop').remove();
 
                         // Append the modal HTML to body
                         $('body').append(response.html);
@@ -436,16 +613,82 @@ $controllerRoute = $module['controller_route'];
 
                     },
                     error: function (xhr) {
-                        alert('Error loading lead data.');
+                        $('#loadingOverlay').addClass('d-none');
+                        alert('Error Loading Activity data.');
                         console.log(xhr);
                     }
+
                 });
 
             });
 
 
+            
 
 
+
+
+            // download as CSV (activity report modal)
+            $(document).on('click', '.exportAsCSVInDetail', function () {
+                let csvName = $(this).data('csvname');
+                let card = $(this).closest('.detailActivityReportModal');
+                let table = card.find('table');
+                let csv = [];
+
+                // Table headers
+                let headers = [];
+                table.find('thead th').each(function () {
+                    let text = $(this).text().replace(/\s+/g, ' ').trim();
+                    headers.push(text);
+                });
+                csv.push(headers.join(','));
+
+                // Table rows
+                table.find('tbody tr').each(function () {
+                    let rowData = [];
+                    $(this).find('td').each(function () {
+                        let html = $(this).html() || '';
+                        let text = html.replace(/<br\s*\/?>/gi, '\n');
+
+                        text = $('<div>').html(text).text();
+
+                        text = text
+                            .replace(/[ \t]+/g, ' ')
+                            .replace(/\n\s*/g, '\n')
+                            .replace(/^\n+|\n+$/g, '')
+                            .trim()
+                            .replace(/"/g, '""');
+
+                        // ✅ Only wrap in quotes if not empty
+                        if (text.length > 0) {
+                            rowData.push(`"${text}"`);
+                        } else {
+                            rowData.push(""); // keep cell empty without extra quotes
+                        }
+                    });
+
+                    csv.push(rowData.join(','));
+                });
+
+                // Add BOM for Excel and download
+                let csvContent = "\uFEFF" + csv.join('\n');
+                let blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+                let link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+
+                let now = new Date();
+                let formattedDateTime = now.getFullYear() + '-' +
+                    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                    String(now.getDate()).padStart(2, '0') + '_' +
+                    String(now.getHours()).padStart(2, '0') + '-' +
+                    String(now.getMinutes()).padStart(2, '0') + '-' +
+                    String(now.getSeconds()).padStart(2, '0');
+
+                link.download = csvName + "_detailed-activity-report_" + formattedDateTime + ".csv";
+                link.click();
+
+                toastAlert('success', 'File Exported Successfully !!!');
+            });
 
 
         });

@@ -10,6 +10,14 @@ $controllerRoute = $module['controller_route'];
     .swal2-container{
         z-index: 9999 !important;
     }
+
+    /* highlight searched value */
+    .highlight {
+    background-color: orange;
+    padding: 0 1px;
+    border-radius: 3px;
+}
+
 </style>
 
     <div class="container-fluid flex-grow-1 container-p-y">
@@ -35,16 +43,17 @@ $controllerRoute = $module['controller_route'];
                     </button>
                 </div>
                 <?php }?>
-                <div class="card mb-4">
-                    {{-- <div class="card-header">
+
+                {{-- <div class="card mb-4">
+                    <div class="card-header">
                         <a href="<?= url($controllerRoute . '/add/') ?>"
                             class="btn btn-outline-success btn-sm float-end">Add <?= $module['title'] ?></a>
-                    </div> --}}
-                    <div class="card-body">
+                    </div>
+                    <div class="card-body"> --}}
                        
 
                         {{-- <h6 class="card-title">Filter</h6> --}}
-                        {{-- filter section --}}
+                        {{-- filter section start--}}
                         @if(session('user_data')['role_id'] != 3)
                             <div class="card mb-3 p-3" >
                                 <form>
@@ -149,26 +158,98 @@ $controllerRoute = $module['controller_route'];
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-9">
+                                        <div class="col-md-12">
                                             <div class="row">
-                                                <div class="col-md-6 mb-3">
-                                                <label for="assigned_from_date" class="form-label">Assigned From </label>
+                                                <div class="col-md-3 mb-3">
+                                                <label for="assigned_from_date" class="form-label">Assign From </label>
                                                 <input class="form-control" type="date" id="assigned_from_date" name="assigned_from_date"
                                                     @if(!empty($assignedFromDate))
                                                     value="{{ $assignedFromDate }}" 
                                                     @endif
                                                     max="<?=date('Y-m-d')?>" />
                                                 </div>
-                                                <div class="col-md-6 mb-3">
-                                                <label for="assigned_to_date" class="form-label">Assigned To </label>
+                                                <div class="col-md-3 mb-3">
+                                                <label for="assigned_to_date" class="form-label">Assign To </label>
                                                 <input class="form-control" type="date" id="assigned_to_date" name="assigned_to_date"
                                                     @if(!empty($assignedToDate))
                                                     value="{{ $assignedToDate }}"
                                                     @endif
                                                     max="<?=date('Y-m-d')?>" />
                                                 </div>
+                                                
+                                                <div class="col-md-3 mb-3">
+                                                    <label for="call_from_date" class="form-label">Call From </label>
+                                                    <input class="form-control" type="date" id="call_from_date" name="call_from_date"
+                                                        @if(!empty($callFromDate))
+                                                         value="{{ $callFromDate }}"
+                                                        @endif max="<?=date('Y-m-d')?>" />
+                                                </div>
+                                                <div class="col-md-3 mb-3">
+                                                    <label for="call_to_date" class="form-label">Call To </label>
+                                                    <input class="form-control" type="date" id="call_to_date" name="call_to_date"
+                                                        @if(!empty($callToDate))
+                                                         value="{{ $callToDate }}"
+                                                        @endif max="<?=date('Y-m-d')?>" />
+                                                </div>
+                                            
                                             </div>
                                         </div>
+                                        
+                                        <div class="col-md-9">
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="campaign_type_id" class="form-label">Campaign Type</label>
+                                                    <select class="select2 form-select" id="campaign_type_id" name="campaign_type_id">
+                                                        <option value="" selected disabled>Select Campaign Type</option>
+                                                        @if(!empty($campaign_types))
+                                                            @foreach($campaign_types as $campaign_type)
+                                                                <option
+                                                                    value="{{ Helper::encoded($campaign_type->id) }}"
+                                                            
+                                                                    @if(!empty($selected_campaign_type_id))                                                  
+                                                                        @if(Helper::encoded($campaign_type->id) == Helper::encoded($selected_campaign_type_id))
+                                                                            selected
+                                                                        @endif                                                     
+                                                                    @endif >{{ $campaign_type->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="campaign_id" class="form-label">Campaign</label>
+                                                    <select class="select2 form-select" id="campaign_id" name="campaign_id">
+                                                        <option value="" selected disabled>Select Campaign</option>
+                                                        @if(!empty($typeWisecampaign))
+                                                            @foreach($typeWisecampaign as $campaign)
+                                                                <option
+                                                                    value="{{ Helper::encoded($campaign->id) }}"
+                                                                    @if(!empty($selected_campaign_id))
+                                                                        @if(Helper::encoded($campaign->id) == Helper::encoded($selected_campaign_id))
+                                                                        selected
+                                                                        @endif
+                                                                    @endif
+                                                                    >{{ $campaign->name }}</option>
+                                                            @endforeach
+                                                        @elseif(!empty($campaigns))
+                                                            @foreach($campaigns as $campaign)
+                                                                <option
+                                                                    value="{{ Helper::encoded($campaign->id) }}"
+                                                                    @if(!empty($selected_campaign_id))
+                                                                        @if(Helper::encoded($campaign->id) == Helper::encoded($selected_campaign_id))
+                                                                        selected
+                                                                        @endif
+                                                                    @endif
+                                                                    >{{ $campaign->name }}</option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
                                         <div class="col-md-3 mt-3">
                                             <div class="row">
                                                 <div class="col-md-12 d-flex gap-2 mt-3">
@@ -190,6 +271,43 @@ $controllerRoute = $module['controller_route'];
                                 <form>
                                     @csrf
                                     <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-3 mb-3">
+                                                <label for="assigned_from_date" class="form-label">Assign From </label>
+                                                <input class="form-control" type="date" id="assigned_from_date" name="assigned_from_date"
+                                                    @if(!empty($assignedFromDate))
+                                                    value="{{ $assignedFromDate }}" 
+                                                    @endif
+                                                    max="<?=date('Y-m-d')?>" />
+                                                </div>
+                                                <div class="col-md-3 mb-3">
+                                                <label for="assigned_to_date" class="form-label">Assign To </label>
+                                                <input class="form-control" type="date" id="assigned_to_date" name="assigned_to_date"
+                                                    @if(!empty($assignedToDate))
+                                                    value="{{ $assignedToDate }}"
+                                                    @endif
+                                                    max="<?=date('Y-m-d')?>" />
+                                                </div>
+                                                
+                                                <div class="col-md-3 mb-3">
+                                                    <label for="call_from_date" class="form-label">Call From </label>
+                                                    <input class="form-control" type="date" id="call_from_date" name="call_from_date"
+                                                        @if(!empty($callFromDate))
+                                                         value="{{ $callFromDate }}"
+                                                        @endif max="<?=date('Y-m-d')?>" />
+                                                </div>
+                                                <div class="col-md-3 mb-3">
+                                                    <label for="call_to_date" class="form-label">Call To </label>
+                                                    <input class="form-control" type="date" id="call_to_date" name="call_to_date"
+                                                        @if(!empty($callToDate))
+                                                         value="{{ $callToDate }}"
+                                                        @endif max="<?=date('Y-m-d')?>" />
+                                                </div>
+                                            
+                                            </div>
+                                        </div>
+                                                                                
                                         <div class="col-md-9">
                                             <div class="row">
                                                 <div class="col-md-3 mb-3">
@@ -239,24 +357,58 @@ $controllerRoute = $module['controller_route'];
                                                         @endif
                                                     </select>
                                                 </div>
+ 
                                                 <div class="col-md-3 mb-3">
-                                                <label for="assigned_from_date" class="form-label">Assigned From </label>
-                                                <input class="form-control" type="date" id="assigned_from_date" name="assigned_from_date"
-                                                    @if(!empty($assignedFromDate))
-                                                    value="{{ $assignedFromDate }}" 
-                                                    @endif
-                                                    max="<?=date('Y-m-d')?>" />
+                                                    <label for="campaign_type_id" class="form-label">Campaign Type</label>
+                                                    <select class="select2 form-select" id="campaign_type_id" name="campaign_type_id">
+                                                        <option value="" selected disabled>Select Campaign Type</option>
+                                                        @if(!empty($campaign_types))
+                                                            @foreach($campaign_types as $campaign_type)
+                                                                <option
+                                                                    value="{{ Helper::encoded($campaign_type->id) }}"
+                                                            
+                                                                    @if(!empty($selected_campaign_type_id))                                                  
+                                                                        @if(Helper::encoded($campaign_type->id) == Helper::encoded($selected_campaign_type_id))
+                                                                            selected
+                                                                        @endif                                                     
+                                                                    @endif >{{ $campaign_type->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
                                                 </div>
                                                 <div class="col-md-3 mb-3">
-                                                <label for="assigned_to_date" class="form-label">Assigned To </label>
-                                                <input class="form-control" type="date" id="assigned_to_date" name="assigned_to_date"
-                                                    @if(!empty($assignedToDate))
-                                                    value="{{ $assignedToDate }}"
-                                                    @endif
-                                                    max="<?=date('Y-m-d')?>" />
+                                                    <label for="campaign_id" class="form-label">Campaign</label>
+                                                    <select class="select2 form-select" id="campaign_id" name="campaign_id">
+                                                        <option value="" selected disabled>Select Campaign</option>
+                                                        @if(!empty($typeWisecampaign))
+                                                            @foreach($typeWisecampaign as $campaign)
+                                                                <option
+                                                                    value="{{ Helper::encoded($campaign->id) }}"
+                                                                    @if(!empty($selected_campaign_id))
+                                                                        @if(Helper::encoded($campaign->id) == Helper::encoded($selected_campaign_id))
+                                                                        selected
+                                                                        @endif
+                                                                    @endif
+                                                                    >{{ $campaign->name }}</option>
+                                                            @endforeach
+                                                        @elseif(!empty($campaigns))
+                                                            @foreach($campaigns as $campaign)
+                                                                <option
+                                                                    value="{{ Helper::encoded($campaign->id) }}"
+                                                                    @if(!empty($selected_campaign_id))
+                                                                        @if(Helper::encoded($campaign->id) == Helper::encoded($selected_campaign_id))
+                                                                        selected
+                                                                        @endif
+                                                                    @endif
+                                                                    >{{ $campaign->name }}</option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
+
                                         <div class="col-md-3 mt-3">
                                             <div class="row">
                                                 <div class="col-md-12 d-flex gap-2 mt-3">
@@ -273,7 +425,7 @@ $controllerRoute = $module['controller_route'];
                                 </form>
                             </div>
                         @endif
-
+                        {{-- filter section end--}}
                         
                         {{-- bulk lead transfer section --}}
                         @if(session('user_data')['role_id'] != 3)
@@ -317,15 +469,16 @@ $controllerRoute = $module['controller_route'];
                             @endif
                         @endif
                          
+                         
                         {{-- lead list section --}}
                         <div class="card p-3">
                             {{-- <h5 class="card-header fw-bold text-success p-2">Lead List</h5> --}}
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <div>
+                            <div class="row mb-2">
+                                <div class="col-md-3 mt-1 mb-1 d-flex align-items-center">
                                     {{-- <span class="card-header fw-bold text-success h5 ps-0">Lead List</span>  --}}
                                     @if(!empty($totalLeadArr))
-                                        <label for="perPageSelect" class="form-label me-2" style="font-size: 12px;">Show</label>
-                                        <select id="perPageSelect" class="form-select d-inline-block" style="width: 70px !important;padding: 2px !important;font-size: 12px;">
+                                        <label for="perPageSelect" class="form-label me-1" style="font-size: 12px;">Show</label>
+                                        <select id="perPageSelect" class="form-select d-inline-block me-1" style="width: 70px !important;padding: 2px !important;font-size: 12px;">
                                             <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
                                             <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25</option>
                                             <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50</option>
@@ -336,12 +489,53 @@ $controllerRoute = $module['controller_route'];
                                         <span style="font-size: 12px;">entries</span>
                                     @endif
                                 </div>
+
+                                {{-- @if(!empty($totalLeadArr)) --}}
+                                    <div class="
+                                    @if(session('user_data')['role_id'] != 3)
+                                        col-md-6
+                                    @else
+                                        col-md-9
+                                    @endif
+                                    mt-1 mb-1 d-flex align-items-center">
+                                    <div class="input-group input-group-merge rounded-pill overflow-hidden w-100">
+                                            <span class="input-group-text" id="basic-addon-search31">
+                                                @if(!empty($searchVal))
+                                                    <i class="fa-solid fa-magnifying-glass fa-fade searchBtn" style="cursor: pointer; color: #b2a2df;"></i>
+                                                @else
+                                                    <i class="fa-solid fa-magnifying-glass searchBtn" style="cursor: pointer; color: #b2a2df;"></i>
+                                                @endif
+                                            </span>
+
+                                            <input
+                                                @if(!empty($searchVal))
+                                                    value="{{ $searchVal }}"
+                                                @endif
+                                                type="text"
+                                                class="searchBar form-control"
+                                                placeholder="Search by name or phone"
+                                                aria-label="Search by name or phone"
+                                                aria-describedby="basic-addon-search31" />
+
+                                            @if(!empty($searchVal))
+                                                <span class="input-group-text" id="">
+                                                    <i class="fa-solid fa-xmark clearSearch" style="cursor: pointer; color: #d1c3f7;"></i>
+                                                </span>
+                                            @endif                                                
+                                        </div>
+                                    </div>
+                                    
+                                {{-- @endif --}}
+                                
+
                                 @if(!empty($totalLeadArr))
                                     @if(session('user_data')['role_id'] != 3)
-                                        <button class="exportAllLeadsAsCSV btn btn-sm"
-                                            style="border: 1px solid green; background-color: green; color: #FFF;">
-                                            <i class="fa-solid fa-file-csv"></i>&nbsp;Export CSV
-                                        </button>
+                                        <div class="col-md-3 mt-1 mb-1 d-flex justify-content-end align-items-center">
+                                            <button class="exportAllLeadsAsCSV btn btn-sm"
+                                                style="border: 1px solid green; background-color: green; color: #FFF;">
+                                                <i class="fa-solid fa-file-csv"></i>&nbsp;Export CSV
+                                            </button>
+                                        </div>
                                     @endif
                                 @endif
                             </div>
@@ -352,9 +546,9 @@ $controllerRoute = $module['controller_route'];
                                     <thead>
                                         <tr>
                                             @if(!empty($totalLeadArr))
-                                        
+                                                @if(session('user_data')['role_id'] != 3)
                                                     <th><input type="checkbox" id="selectAll"></th>
-
+                                                @endif
                                             @endif
                                             <th>#</th>
                                             <th>Lead No</th>
@@ -370,27 +564,66 @@ $controllerRoute = $module['controller_route'];
                                             <th style="text-align: center">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="table-border-bottom-0">
+                                    <tbody class="table-border-bottom-0 leadListContent">
 
                                         @if(!empty($totalLeadArr))
 
                                         @foreach($totalLeadArr as $eachLeadArr)
                                         {{-- @dd($eachLeadArr); --}}
                                         <tr>
-                                            
+                                            @if(session('user_data')['role_id'] != 3)  
                                                 <td>
                                                     <input type="checkbox"
                                                     name="branchLead_id_Arr[]" 
                                                     class="lead-checkbox" 
                                                     value="{{ Helper::encoded($eachLeadArr->id) }}">
                                                 </td>
-                                            
+                                            @endif
 
 
                                             <td>{{ ($loop->iteration) + ($perPage * ($page - 1)) }}</td>
-                                            <td>{{ $eachLeadArr->lead_no }}</td>
 
-                                            <td>
+                                            <td class="text-center">
+                                                {{-- @if(!empty($eachLeadArr->parentStatus_NEW))
+                                                    @foreach ($eachLeadArr->parentStatus_NEW as $key => $value)
+                                                        @php
+                                                            if($key == 'name') {
+                                                                $name = $value;
+                                                            }
+                                                            if($key == 'background_color') {
+                                                                $background = $value;
+                                                            }
+                                                            if($key == 'font_color'){
+                                                                $color = $value;
+                                                            }
+                                                        @endphp
+                                                    @endforeach
+                                                    <span class="badge me-1 mt-1" style="background-color: {{ $background }}; color: {{ $color }};">{{ $name }}</span>
+                                                    <br>
+                                                @endif --}}
+
+                                                @if(!empty($eachLeadArr->childStatus_NEW))
+                                                    @foreach ($eachLeadArr->childStatus_NEW as $key => $value)
+                                                        @php
+                                                            if($key == 'name') {
+                                                                $name = $value;
+                                                            }
+                                                            if($key == 'background_color') {
+                                                                $background = $value;
+                                                            }
+                                                            if($key == 'font_color'){
+                                                                $color = $value;
+                                                            }
+                                                        @endphp
+                                                    @endforeach
+                                                    <span class="badge me-0 mt-0" style="background-color: {{ $background }}; color: {{ $color }};">{{ $name }}</span>
+                                                    <br>
+                                                @endif
+                                                
+                                              <span class="searchHighlightSection">{{ $eachLeadArr->lead_no }}</span>
+                                            </td>
+
+                                            <td class="searchHighlightSection">
                                                @foreach($eachLeadArr->eachLeadDetailsArr as $key => $value)
                                                {{-- @dd($key, $value); --}}
                                                     @if( ($value["is_visible_in_lead_list"] == "YES") && !empty($value["contact-person-name"]) )
@@ -577,50 +810,59 @@ $controllerRoute = $module['controller_route'];
                                     }
                                 @endphp
                         
-                                <nav class="mt-2">
-                                    <ul class="pagination pagination-sm">
-                                        
-                                        {{-- First --}}
-                                        <li class="page-item first {{ $currentPage == 1 ? 'disabled' : '' }}" 
-                                            title="First" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary">
-                                            <a class="page-link" href="{{ $currentPage == 1 ? 'javascript:void(0);' : $branchleadPaginated->url(1) }}">
-                                                <i class="fa fa-angle-double-left fa-xs"></i>
-                                            </a>
-                                        </li>
-                                
-                                        {{-- Prev --}}
-                                        <li class="page-item prev {{ $currentPage == 1 ? 'disabled' : '' }}" 
-                                            title="Prev" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary">
-                                            <a class="page-link" href="{{ $currentPage == 1 ? 'javascript:void(0);' : $branchleadPaginated->previousPageUrl() }}">
-                                                <i class="fa-solid fa-chevron-left fa-xs"></i>
-                                            </a>
-                                        </li>
-                                
-                                        {{-- Page Numbers (max 3) --}}
-                                        @for ($i = $start; $i <= $end; $i++)
-                                            <li class="page-item {{ $i == $currentPage ? 'active' : '' }}">
-                                                <a class="page-link" href="{{ $branchleadPaginated->url($i) }}">{{ $i }}</a>
+                                <div class="row">
+                                    <div class="col-md-6 d-flex align-items-center">
+                                        <p class="mb-0 mt-3" style="color: #b2a2df; font-size: small;">Showing {{ $branchleadPaginated->lastItem() - $branchleadPaginated->firstItem() + 1 }}  ({{ $branchleadPaginated->firstItem() }} to {{ $branchleadPaginated->lastItem() }}) of {{ $branchleadPaginated->total() }} records</p>
+                                    </div>
+                                    <div class="col-md-6">
+
+                                        <ul class="pagination pagination-sm mb-0 mt-3">
+                                            
+                                            {{-- First --}}
+                                            <li class="page-item first {{ $currentPage == 1 ? 'disabled' : '' }}" 
+                                                title="First" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary">
+                                                <a class="page-link" href="{{ $currentPage == 1 ? 'javascript:void(0);' : $branchleadPaginated->url(1) }}">
+                                                    <i class="fa fa-angle-double-left fa-xs"></i>
+                                                </a>
                                             </li>
-                                        @endfor
-                                
-                                        {{-- Next --}}
-                                        <li class="page-item next {{ $currentPage == $lastPage ? 'disabled' : '' }}" 
-                                            title="Next" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary">
-                                            <a class="page-link" href="{{ $currentPage == $lastPage ? 'javascript:void(0);' : $branchleadPaginated->nextPageUrl() }}">
-                                                <i class="fa-solid fa-chevron-right fa-xs"></i>
-                                            </a>
-                                        </li>
-                                
-                                        {{-- Last --}}
-                                        <li class="page-item last {{ $currentPage == $lastPage ? 'disabled' : '' }}" 
-                                            title="Last" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary">
-                                            <a class="page-link" href="{{ $currentPage == $lastPage ? 'javascript:void(0);' : $branchleadPaginated->url($lastPage) }}">
-                                                <i class="fa fa-angle-double-right fa-xs"></i>
-                                            </a>
-                                        </li>
-                                
-                                    </ul>
-                                </nav>                        
+                                    
+                                            {{-- Prev --}}
+                                            <li class="page-item prev {{ $currentPage == 1 ? 'disabled' : '' }}" 
+                                                title="Prev" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary">
+                                                <a class="page-link" href="{{ $currentPage == 1 ? 'javascript:void(0);' : $branchleadPaginated->previousPageUrl() }}">
+                                                    <i class="fa-solid fa-chevron-left fa-xs"></i>
+                                                </a>
+                                            </li>
+                                    
+                                            {{-- Page Numbers (max 3) --}}
+                                            @for ($i = $start; $i <= $end; $i++)
+                                                <li class="page-item {{ $i == $currentPage ? 'active' : '' }}">
+                                                    <a class="page-link" href="{{ $branchleadPaginated->url($i) }}">{{ $i }}</a>
+                                                </li>
+                                            @endfor
+                                    
+                                            {{-- Next --}}
+                                            <li class="page-item next {{ $currentPage == $lastPage ? 'disabled' : '' }}" 
+                                                title="Next" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary">
+                                                <a class="page-link" href="{{ $currentPage == $lastPage ? 'javascript:void(0);' : $branchleadPaginated->nextPageUrl() }}">
+                                                    <i class="fa-solid fa-chevron-right fa-xs"></i>
+                                                </a>
+                                            </li>
+                                    
+                                            {{-- Last --}}
+                                            <li class="page-item last {{ $currentPage == $lastPage ? 'disabled' : '' }}" 
+                                                title="Last" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary">
+                                                <a class="page-link" href="{{ $currentPage == $lastPage ? 'javascript:void(0);' : $branchleadPaginated->url($lastPage) }}">
+                                                    <i class="fa fa-angle-double-right fa-xs"></i>
+                                                </a>
+                                            </li>
+                                    
+                                        </ul>
+
+                                    </div>
+                                    
+                                </div>
+                                                        
                             @endif
 
                                                       
@@ -657,8 +899,11 @@ $controllerRoute = $module['controller_route'];
                         </div>
                         {{-- individual lead transfer modal --}}
 
-                    </div>
-                </div>
+
+                    {{-- </div>
+                </div> --}}
+
+
             </div>
         </div>
     </div>
@@ -1178,6 +1423,35 @@ $controllerRoute = $module['controller_route'];
             selected_telecaller_id = $(this).val();
         });
 
+        // select Campaign Type
+        let selected_campaign_type_id = "";
+        $(document).on('change', '#campaign_type_id', function () {
+            selected_campaign_type_id = $(this).val();
+            
+                $.ajax({
+                    url: base_url + '/lead-list/fetch-campaign',
+                    type: 'POST',
+                    data: { campaign_type_id: selected_campaign_type_id },
+                    success: function (res) {
+
+                        $('#campaign_id').empty();
+                        $('#campaign_id').append(`<option value="" selected disabled>Select Campaign</option>`);
+                        res.forEach(campaign => {
+                            $('#campaign_id').append(`<option value="${campaign.id}">${campaign.name}</option>`);
+                        });
+                    },
+                    error: function (err) {
+                        console.error('Fetch failed:', err);
+                    }
+                });
+            
+        });
+        // select campaign
+        let selected_campaign_id = "";
+        $(document).on('change', '#campaign_id', function(){
+            selected_campaign_id = $(this).val();
+        });
+
 
         // get url params
         let urlParams = new URLSearchParams(window.location.search);
@@ -1238,6 +1512,8 @@ $controllerRoute = $module['controller_route'];
             let childStatus = $('#child_status_id').val();
             let selected_assigned_from_date = $('#assigned_from_date').val();
             let selected_assigned_to_date = $('#assigned_to_date').val();
+            let selected_call_from_date = $('#call_from_date').val();
+            let selected_call_to_date = $('#call_to_date').val();
 
             // Check if all are empty
             if ((!branch || branch === "") &&
@@ -1245,7 +1521,9 @@ $controllerRoute = $module['controller_route'];
                 (!parentStatus || parentStatus === "") &&
                 (!childStatus || childStatus === "") && 
                 (!selected_assigned_from_date || selected_assigned_from_date === "") &&
-                (!selected_assigned_to_date || selected_assigned_to_date === "") 
+                (!selected_assigned_to_date || selected_assigned_to_date === "") &&
+                (!selected_call_from_date || selected_call_from_date === "") &&
+                (!selected_call_to_date || selected_call_to_date === "")
             )
             {
                 $('.resetBtn').not('.d-none').addClass('d-none');
@@ -1261,16 +1539,24 @@ $controllerRoute = $module['controller_route'];
             let telecaller = $('#selected_telecaller_id').val();
             let parentStatus = $('#parent_status_id').val();
             let childStatus = $('#child_status_id').val();
+            let campaign_type_id = $('#campaign_type_id').val();
+            let campaign_id = $('#campaign_id').val();
             let selected_assigned_from_date = $('#assigned_from_date').val();
             let selected_assigned_to_date = $('#assigned_to_date').val();
+            let selected_call_from_date = $('#call_from_date').val();
+            let selected_call_to_date = $('#call_to_date').val();
 
             // Check if all are empty
             if ((!branch || branch === "") &&
                 (!telecaller || telecaller === "") &&
                 (!parentStatus || parentStatus === "") &&
                 (!childStatus || childStatus === "") && 
+                (!campaign_type_id || campaign_type_id === "") &&
+                (!campaign_id || campaign_id === "") &&
                 (!selected_assigned_from_date || selected_assigned_from_date === "") &&
-                (!selected_assigned_to_date || selected_assigned_to_date === "") 
+                (!selected_assigned_to_date || selected_assigned_to_date === "") &&
+                (!selected_call_from_date || selected_call_from_date === "") &&
+                (!selected_call_to_date || selected_call_to_date === "")
             ) {
 
                 toastAlert('error', 'Please Select Something To Apply Filter');
@@ -1339,7 +1625,51 @@ $controllerRoute = $module['controller_route'];
 
 
 
-                
+                // call date
+                if(selected_call_from_date != "" && selected_call_to_date != "")
+                {
+                    url.searchParams.set('call-from-date', selected_call_from_date);
+                    url.searchParams.set('call-to-date', selected_call_to_date);
+                }
+                else if(selected_call_from_date != "")
+                {
+                    url.searchParams.set('call-from-date', selected_call_from_date);
+                    url.searchParams.delete('call-to-date');
+                }
+                else if(selected_call_to_date != "")
+                {
+                    url.searchParams.set('call-to-date', selected_call_to_date);
+                    url.searchParams.delete('call-from-date');
+                }
+
+                // clear call date
+                if(selected_call_from_date == "" && selected_call_to_date == "")
+                {
+                    url.searchParams.delete('call-from-date');
+                    url.searchParams.delete('call-to-date');
+                }
+                else if(selected_call_from_date == "")
+                {
+                    url.searchParams.delete('call-from-date');
+                }
+                else if(selected_call_to_date == "")
+                {
+                    url.searchParams.delete('call-to-date');
+                }
+
+
+
+                if(selected_campaign_type_id != "")
+                {
+                    url.searchParams.set('campaign_type', selected_campaign_type_id);
+                    url.searchParams.delete('campaign');
+                }
+    
+                if(selected_campaign_id != "")
+                {
+                    url.searchParams.set('campaign', selected_campaign_id);
+                }
+
 
 
 
@@ -1360,7 +1690,7 @@ $controllerRoute = $module['controller_route'];
 
         // show reset button iff any filter is applied
         const currentUrl = new URL(window.location.href);
-        if( (currentUrl.searchParams.has('branch')) || (currentUrl.searchParams.has('telecaller')) || (currentUrl.searchParams.has('parent-status')) || (currentUrl.searchParams.has('child-status')) || (currentUrl.searchParams.has('assigned-from-date')) || (currentUrl.searchParams.has('assigned-to-date')))
+        if( (currentUrl.searchParams.has('branch')) || (currentUrl.searchParams.has('telecaller')) || (currentUrl.searchParams.has('parent-status')) || (currentUrl.searchParams.has('child-status')) || (currentUrl.searchParams.has('assigned-from-date')) || (currentUrl.searchParams.has('assigned-to-date')) || (currentUrl.searchParams.has('call-from-date')) || (currentUrl.searchParams.has('call-to-date')) || (currentUrl.searchParams.has('campaign_type')) || (currentUrl.searchParams.has('campaign')) )
         {
             $('.resetBtn').removeClass('d-none');
             // $('.resetBtn').addClass('d-block');
@@ -1379,6 +1709,10 @@ $controllerRoute = $module['controller_route'];
             url.searchParams.delete('child-status');
             url.searchParams.delete('assigned-from-date');
             url.searchParams.delete('assigned-to-date');
+            url.searchParams.delete('call-from-date');
+            url.searchParams.delete('call-to-date');
+            url.searchParams.delete('campaign_type');
+            url.searchParams.delete('campaign');
 
 
             url.searchParams.set('page', 1); // reset to first page
@@ -1562,18 +1896,56 @@ $controllerRoute = $module['controller_route'];
             }
             else
             {
+                // Get values of all filters
+                let branch = "";
+                let telecaller = "";
+                let parentStatus = "";
+                let childStatus = "";
+                let campaign_type_id = "";
+                let campaign_id = "";
+                let selected_assigned_from_date = "";
+                let selected_assigned_to_date = "";
+                let selected_call_from_date = "";
+                let selected_call_to_date = "";
+                let searchedValue = "";
+
+                branch = $('#selected_branch_id').val();
+                telecaller = $('#selected_telecaller_id').val();
+                parentStatus = $('#parent_status_id').val();
+                childStatus = $('#child_status_id').val();
+                campaign_type_id = $('#campaign_type_id').val();
+                campaign_id = $('#campaign_id').val();
+                selected_assigned_from_date = $('#assigned_from_date').val();
+                selected_assigned_to_date = $('#assigned_to_date').val();
+                selected_call_from_date = $('#call_from_date').val();
+                selected_call_to_date = $('#call_to_date').val();
+                searchedValue = $('.searchBar').val().trim();
 
                 $.ajax({
                     url: base_url + '/lead-list/export-all-leads-as-csv',
                     type: 'POST',
+                    // data: {
+                    //     'branch' : branchFromUrl ,
+                    //     'telecaller' : telecallerFromUrl ,
+                    //     'parent-status' : parentStatusFromUrl ,
+                    //     'child-status' : childStatusFromUrl ,
+                    //     'assigned-from-date' : assignedFromDateFromUrl ,
+                    //     'assigned-to-date' : assignedToDateFromUrl ,
+                    // },
                     data: {
-                        'branch' : branchFromUrl ,
-                        'telecaller' : telecallerFromUrl ,
-                        'parent-status' : parentStatusFromUrl ,
-                        'child-status' : childStatusFromUrl ,
-                        'assigned-from-date' : assignedFromDateFromUrl ,
-                        'assigned-to-date' : assignedToDateFromUrl ,
+                        'branch' : branch ,
+                        'telecaller' : telecaller ,
+                        'parent-status' : parentStatus ,
+                        'child-status' : childStatus ,
+                        'assigned-from-date' : selected_assigned_from_date ,
+                        'assigned-to-date' : selected_assigned_to_date ,
+                        'call-from-date' : selected_call_from_date ,
+                        'call-to-date' : selected_call_to_date ,
+                        'campaign_type' : campaign_type_id ,
+                        'campaign' : campaign_id ,
+                        'search' : searchedValue ,
                     },
+                    
                     xhrFields: {
                         responseType: 'blob'
                     },
@@ -1666,9 +2038,88 @@ $controllerRoute = $module['controller_route'];
 
         });
 
-        
-        
 
+        
+        
+        // search start
+        $(document).on('keydown', '.searchBar', function(e)
+        {
+            if (e.key === 'Enter')
+            {
+                let url = new URL(window.location.href);
+                let searchedValue = $(this).val().trim();
+
+                if(searchedValue != "")
+                {
+                    // alert(searchedValue);
+                    url.searchParams.set('search', searchedValue);
+                    url.searchParams.set('page', 1);
+                    window.location.href = url.toString();
+                }
+                else
+                {
+                   if(url.searchParams.has('search'))
+                   {
+                       url.searchParams.delete('search');
+                       url.searchParams.set('page', 1);
+                       window.location.href = url.toString();
+                   }
+                }
+            }
+        });
+        
+        $(document).on('click', '.searchBtn', function()
+        {
+            let url = new URL(window.location.href);
+            let searchedValue = $('.searchBar').val().trim();
+
+            if(searchedValue != "")
+            {
+                // alert(searchedValue);
+                url.searchParams.set('search', searchedValue);
+                url.searchParams.set('page', 1);
+                window.location.href = url.toString();
+            }
+            else
+            {
+                if(url.searchParams.has('search'))
+                {
+                    url.searchParams.delete('search');
+                    url.searchParams.set('page', 1);
+                    window.location.href = url.toString();
+                }
+                else
+                {
+                    toastAlert('error', 'Please Type Something To Search !!!');
+                }
+            }
+        });
+
+        $(document).on('click', '.clearSearch', function()
+        {
+            let url = new URL(window.location.href);
+            url.searchParams.delete('search');
+            url.searchParams.set('page', 1);
+            window.location.href = url.toString();
+        });
+
+        let url = new URL(window.location.href);
+        if(url.searchParams.has('search'))
+        {
+            let searchValFromUrl = url.searchParams.get('search');
+            // Escape regex special chars so search works with symbols too
+            let regex = new RegExp("(" + searchValFromUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", "gi");
+
+            document.querySelectorAll('.searchHighlightSection').forEach(td => {
+                // Only update if it has matching text
+                if (regex.test(td.innerHTML)) {
+                    // td.innerHTML = td.innerHTML.replace(regex, '<mark>$1</mark>');
+                    td.innerHTML = td.innerHTML.replace(regex, '<span class="highlight">$1</span>');
+                }
+            });
+        }
+        // search end
+       
 
     });
     </script>
