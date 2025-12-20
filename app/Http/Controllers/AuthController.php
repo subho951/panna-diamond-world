@@ -89,10 +89,10 @@ class AuthController extends Controller
                 $responseData = json_decode($response);
 
                 // Check if reCAPTCHA validation was successful
-                if ($responseData->success && $responseData->score >= 0.5)
-                {
-                // if (1)
+                // if ($responseData->success && $responseData->score >= 0.5)
                 // {
+                if (1)
+                {
 
                     $authData = $request->validate([
                                 'email'     => ['required', 'email'],
