@@ -1316,7 +1316,7 @@ class ApiController extends Controller
                             }
 
                             /* last 10 activities */
-                                $getActivities      = LeadActivity::where('status', '=', 1)->where('assigned_telecaller_id', '=', $uId)->orderBy('id', 'DESC')->limit(10)->get();
+                                $getActivities      = LeadActivity::where('status', '=', 1)->where('assigned_telecaller_id', '=', $uId)->orderBy('id', 'DESC')->limit(50)->get();
                                 if($getActivities){
                                     foreach($getActivities as $getActivity){
                                         $checkBranchLead    = BranchLead::where('lead_sl_no', '=', $getActivity->lead_sl_no)->where('status', '=', 1)->where('assigned_telecaller_id', '=', $uId)->count();
