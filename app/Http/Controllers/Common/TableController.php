@@ -111,15 +111,32 @@ class TableController extends Controller
             }
         }
 
-        // Search
+        // // Search
+        // if ($search) {
+        //     $query->where(function ($q) use ($columns, $search) {
+        //         foreach ($columns as $col) {
+        //             $baseCol = explode(' as ', $col)[0];
+        //             $q->orWhere($baseCol, 'ILIKE', "%{$search}%");
+        //         }
+        //     });
+        // }
+
+        // Search (MySQL)
         if ($search) {
             $query->where(function ($q) use ($columns, $search) {
                 foreach ($columns as $col) {
                     $baseCol = explode(' as ', $col)[0];
-                    $q->orWhere($baseCol, 'ILIKE', "%{$search}%");
+
+                    $q->orWhereRaw(
+                        "LOWER($baseCol) LIKE ?",
+                        ['%' . strtolower($search) . '%']
+                    );
                 }
             });
         }
+
+
+
 
         // Count before pagination
         $total = (clone $query)->count();

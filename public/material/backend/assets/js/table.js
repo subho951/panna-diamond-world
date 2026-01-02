@@ -121,7 +121,9 @@ function loadTable(config) {
     }
 
     function renderPagination(totalPages, current) {
+        current = Number(current); // 🔥 FIX: force number
         let html = '<div class="d-flex flex-wrap align-items-center gap-2 mt-3" style="float:right;">';
+        
 
         if (totalPages > 1) {
             if (current > 1) {
@@ -153,6 +155,7 @@ function loadTable(config) {
 
         html += '</div>';
         container.append(html);
+
     }
 
     container.on('click', '.page-btn', function () {
@@ -167,9 +170,16 @@ function loadTable(config) {
         }
     });
 
-    searchInput.on('keyup', function () {
+    // searchInput.on('keyup', function () {
+    //     fetchData(1, $(this).val());
+    // });
+
+    searchInput.on('change', function () {
         fetchData(1, $(this).val());
     });
+
+
+
 
     $(document).on('change', `select[id$='-perPage']`, function () {
         const newPerPage = this.value;
