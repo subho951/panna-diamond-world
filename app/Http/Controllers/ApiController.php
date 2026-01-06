@@ -2244,6 +2244,208 @@ class ApiController extends Controller
                 $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
             }
         /* lead list by dob & anniversary date */
+
+        /* Global Search */
+           public function globalSearch(Request $request)
+           {
+                $apiStatus          = TRUE;
+                $apiMessage         = '';
+                $apiResponse        = [];
+                $apiExtraField      = '';
+                $apiExtraData       = '';
+
+                $headerData         = $request->header();
+                $requestData        = $request->all();
+                $requiredFields     = [
+                    'key'          => 'required',
+                    'source'       => 'required',
+                    'page_no'      => 'required', 
+                    'per_page'     => 'required', 
+                    'search_text'  => 'required',
+                ];
+                
+                $validator = Validator::make($requestData, $requiredFields);
+                if($validator->fails())
+                {
+                   $apiStatus          = FALSE;
+                   $apiMessage         = 'All Data Are Not Present !!!';
+                }
+                else
+                {
+                   // $apiStatus          = TRUE;
+                   // $apiMessage         = 'All Data Are Present !!!';
+                   
+                   if($headerData['key'][0] == env('PROJECT_KEY'))
+                   {
+                        $app_access_token           = $headerData['authorization'][0];
+                        $getTokenValue              = $this->tokenAuth($app_access_token);
+                        if($getTokenValue['status'])
+                        {
+                            $uId                    = $getTokenValue['data'][1];
+                            $expiry                 = date('d/m/Y H:i:s', $getTokenValue['data'][4]);
+                            $getUser                = User::where('id', '=', $uId)->first();
+
+                            $page_no                = $requestData['page_no'];
+                            $per_page               = $requestData['per_page'];
+                            $search_text            = $requestData['search_text'];
+
+                            if(!empty($getUser))
+                            {
+                                // logic start
+                                $branch_id                      = $getUser->branch_id;
+                                $assigned_telecaller_id         = $uId;
+                                $limit                          = $per_page; // per page elements
+                                if($page_no == 1){
+                                    $offset         = 0;
+                                } else {
+                                    $offset         = (($limit * $page_no) - $limit); // ((15 * 3) - 15)
+                                }
+
+                                $searchableHeaderId = [2, 4] ;
+                                
+                                if($getUser->role_id == 3) // for telecaller
+                                {
+                                    $leadNos = DB::table('branch_leads')
+                                            ->join('master_leads', 'branch_leads.lead_sl_no', '=', 'master_leads.sl_no')
+                                            ->select('branch_leads.lead_sl_no', 'branch_leads.parent_status_id', 'branch_leads.child_status_id', 'branch_leads.next_followup_date', 'branch_leads.next_followup_time', 'branch_leads.created_at', 'branch_leads.campaign_type_id', 'branch_leads.campaign_id')
+                                            ->whereIn('master_leads.header_id', $searchableHeaderId)
+                                            ->where('master_leads.header_value', 'LIKE', "%{$search_text}%")
+                                            ->where('branch_leads.status', '!=', 3)
+                                            ->where('branch_leads.branch_id', '=', $branch_id)
+                                            ->orderBy('branch_leads.lead_sl_no', 'ASC')
+                                            ->offset($offset)
+                                            ->limit($limit)
+                                            ->get();
+                                }
+                                else   // for admin
+                                {
+                                    $leadNos = DB::table('branch_leads')
+                                            ->join('master_leads', 'branch_leads.lead_sl_no', '=', 'master_leads.sl_no')
+                                            ->select('branch_leads.lead_sl_no', 'branch_leads.parent_status_id', 'branch_leads.child_status_id', 'branch_leads.next_followup_date', 'branch_leads.next_followup_time', 'branch_leads.created_at', 'branch_leads.campaign_type_id', 'branch_leads.campaign_id')
+                                            ->whereIn('master_leads.header_id', $searchableHeaderId)
+                                            ->where('master_leads.header_value', 'LIKE', "%{$search_text}%")
+                                            ->where('branch_leads.status', '!=', 3)
+                                            ->orderBy('branch_leads.lead_sl_no', 'ASC')
+                                            ->offset($offset)
+                                            ->limit($limit)
+                                            ->get();
+                                }
+                                
+
+
+
+                                if(!empty($leadNos))
+                                {
+                                    foreach($leadNos as $leadNo)
+                                    {
+                                        $isShow         = 1;
+
+                                        $activity_count = LeadActivity::where('lead_sl_no', '=', $leadNo->lead_sl_no)->count();
+                                        $last_activity  = LeadActivity::where('lead_sl_no', '=', $leadNo->lead_sl_no)->orderBy('id', 'DESC')->first();
+                                        $next_schedule  = '';
+                                        if($activity_count > 0){
+                                            if($leadNo->next_followup_date != '' && $leadNo->next_followup_time != ''){
+                                                $next_schedule = date_format(date_create($leadNo->next_followup_date), "M d Y") . ', ' . date_format(date_create($leadNo->next_followup_time), "h:i a");
+                                            }
+                                        }
+                                        $getParentStatus    = LeadStatus::select('name')->where('id', '=', $leadNo->parent_status_id)->first();
+                                        $getChildStatus     = LeadStatus::select('name')->where('id', '=', $leadNo->child_status_id)->first();
+                                        $getMasterLead      = MasterLead::select('lead_no')->where('sl_no', '=', $leadNo->lead_sl_no)->first();
+                                        $getCampaignType    = CampaignType::select('name')->where('id', '=', $leadNo->campaign_type_id)->first();
+                                        $getCampaign        = Campaign::select('name')->where('id', '=', $leadNo->campaign_id)->first();
+
+                                        $dob_anni_curr_date = date('d-m');
+                                        /* birthday check */
+                                            $getBirthday = $this->getHeaderValueByID($leadNo->lead_sl_no, 12); // 15-08-2000
+                                            $formattedDOB = substr($getBirthday, 0, 5);  // Output: 15-08
+                                            $is_birthday = ($formattedDOB == $dob_anni_curr_date) ? 1 : 0;
+                                        /* birthday check */
+                                        /* anniversary check */
+                                            $getAnniversary = $this->getHeaderValueByID($leadNo->lead_sl_no, 13); // 15-08-2000
+                                            $formattedANNI = substr($getAnniversary, 0, 5);  // Output: 15-08
+                                            $is_anniversary = ($formattedANNI == $dob_anni_curr_date) ? 1 : 0;
+                                        /* anniversary check */
+
+                                        // $getDataSearch  = MasterLead::where('status', '=', 1)->where('sl_no', '=', $leadNo->lead_sl_no)->where('header_value', 'LIKE', '%' . $search_text. '%')->count();
+                                        // if($getDataSearch > 0){
+                                        //     $isShow         = 1;
+                                        // } else {
+                                        //     $isShow         = 0;
+                                        // }
+
+                                        if($isShow){
+                                            $apiResponse[]      = [
+                                                'sl_no'                 => $leadNo->lead_sl_no,
+                                                'lead_no'               => (($getMasterLead)?$getMasterLead->lead_no:''),
+                                                'company_name'          => $this->getHeaderValueByID($leadNo->lead_sl_no, 1),
+                                                'contact_person_name'   => $this->getHeaderValueByID($leadNo->lead_sl_no, 2),
+                                                'email'                 => $this->getHeaderValueByID($leadNo->lead_sl_no, 5),
+                                                'phone_no'              => '+' . $this->getHeaderValueByID($leadNo->lead_sl_no, 3) . $this->getHeaderValueByID($leadNo->lead_sl_no, 4),
+                                                'whatsapp_no'           => '+' . $this->getHeaderValueByID($leadNo->lead_sl_no, 3) . $this->getHeaderValueByID($leadNo->lead_sl_no, 14),
+                                                'is_vip'                => (int) $this->getHeaderValueByID($leadNo->lead_sl_no, 17),
+                                                'is_purchased'          => (int) $this->getHeaderValueByID($leadNo->lead_sl_no, 18),
+                                                'is_birthday'           => (int) $is_birthday,
+                                                'is_anniversary'        => (int) $is_anniversary,
+                                                'parent_status_id'      => (($leadNo->parent_status_id > 0)?$leadNo->parent_status_id:12),
+                                                'parent_status_name'    => (($getParentStatus)?$getParentStatus->name:'New'),
+                                                'child_status_id'       => (($leadNo->child_status_id > 0)?$leadNo->child_status_id:13),
+                                                'child_status_name'     => (($getChildStatus)?$getChildStatus->name:'New'),
+                                                'campaign_type_name'    => (($getCampaignType)?$getCampaignType->name:''),
+                                                'campaign_name'         => (($getCampaign)?$getCampaign->name:''),
+                                                'last_call'             => (($activity_count > 0)?date_format(date_create($last_activity->created_at), "M d Y, h:i a"):''),
+                                                'next_schedule'         => $next_schedule,
+                                                'activity_count'        => $activity_count,
+                                                'telecaller_name'       => $getUser->first_name . ' ' . $getUser->last_name,
+                                                'user_Id'               => $uId,
+                                                'user_role'             => $getUser->role_id
+                                            ];
+                                        }
+                                    }
+                                }
+                                // logic end
+
+                                $apiStatus          = TRUE;
+                                http_response_code(200);
+                                $apiMessage         = 'Data Available !!!';
+                                $apiExtraField      = 'response_code';
+                                $apiExtraData       = http_response_code();
+                            }
+                            else 
+                            {
+                                $apiStatus          = FALSE;
+                                http_response_code(200);
+                                $apiMessage         = 'User Not Found !!!';
+                                $apiExtraField      = 'response_code';
+                                $apiExtraData       = http_response_code();
+                            }
+
+                        }
+                        else 
+                        {
+                            http_response_code(200);
+                            $apiExtraField      = 'response_code';
+                            $apiExtraData       = http_response_code();
+                            $apiStatus          = FALSE;
+                            $apiMessage         = 'JWT Authorization Failed !!!';
+                        } 
+
+                   }
+                   else
+                   {
+                        http_response_code(200);
+                        $apiStatus          = FALSE;
+                        $apiMessage         = $this->getResponseCode(http_response_code());
+                        $apiExtraField      = 'response_code';
+                        $apiExtraData       = http_response_code();
+                   }
+
+                }
+ 
+
+                $this->response_to_json($apiStatus, $apiMessage, $apiResponse, $apiExtraField, $apiExtraData);
+           }
+        /* Global Search */
+
         /* lead list by campaign */
             public function leadListByCampaign(Request $request)
             {
