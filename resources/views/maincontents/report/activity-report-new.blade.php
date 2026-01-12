@@ -96,10 +96,14 @@ $controllerRoute = $module['controller_route'];
                                             <tr>
                                                 <th>Telecaller | Last Call</th>
                                                 <th class="text-center">Total Calls</th>
-                                                {{-- <th class="text-center">Pending</th> --}}
-                                                <th class="text-center">Follow Up</th>
-                                                <th class="text-center">Success</th>
-                                                <th class="text-center">Dump</th>
+
+                                                {{-- @dd($eachBranchWiseTelecallerActivity["totalParentStatusSlugArr"]) --}}
+                                                @foreach($eachBranchWiseTelecallerActivity["totalParentStatusSlugArr"] as $eachParentStatusHead)
+                                                    @if(!empty($eachParentStatusHead["name"]))
+                                                        <th class="text-center">{{ $eachParentStatusHead["name"] }}</th>
+                                                    @endif
+                                                @endforeach
+
                                                 <th class="text-center">All Time Pending</th>
                                             </tr>
                                         </thead>
@@ -129,22 +133,21 @@ $controllerRoute = $module['controller_route'];
                                                                 data-bs-toggle="modal" data-bs-target=".activityReportModal"
                                                                 data-leadactivityidarr='@json($value['total_call_count_idArr'])'>{{ $value["total_call_count"] }}</span>
                                                         </td>
-                                                        {{-- <td class="text-center">{{ $value["parentStatus_new_count"] }}</td> --}}
-                                                        <td class="text-center"><span
-                                                                class="badge bg-label-info cursor-pointer activityReportModalBtn"
+
+                                                        
+                                                        @foreach($value["parentStatusSlugArr"] as $eachparentStatusSlugArr)
+                                                        {{-- @dd($parentStatusSlugArr) --}}
+
+                                                            <td class="text-center"><span
+                                                                class="badge fw-bold cursor-pointer activityReportModalBtn"
                                                                 data-bs-toggle="modal" data-bs-target=".activityReportModal"
-                                                                data-leadactivityidarr='@json($value['parentStatus_followUp_count_idArr'])'>{{ $value["parentStatus_followUp_count"] }}</span>
-                                                        </td>
-                                                        <td class="text-center"><span
-                                                                class="badge bg-label-success cursor-pointer activityReportModalBtn"
-                                                                data-bs-toggle="modal" data-bs-target=".activityReportModal"
-                                                                data-leadactivityidarr='@json($value['parentStatus_success_count_idArr'])'>{{ $value["parentStatus_success_count"] }}</span>
-                                                        </td>
-                                                        <td class="text-center"><span
-                                                                class="badge bg-label-danger cursor-pointer activityReportModalBtn"
-                                                                data-bs-toggle="modal" data-bs-target=".activityReportModal"
-                                                                data-leadactivityidarr='@json($value['parentStatus_dumb_count_idArr'])'>{{ $value["parentStatus_dumb_count"] }}</span>
-                                                        </td>
+                                                                data-leadactivityidarr='@json($eachparentStatusSlugArr["slug_count_idArr"])'
+                                                                style="background-color: {{ $eachparentStatusSlugArr["background_color_modified"] }}; color: {{ $eachparentStatusSlugArr["font_color_modified"] }};">
+                                                                {{ $eachparentStatusSlugArr["slug_count"] }} </span></td>
+                                                                
+                                                        @endforeach
+
+
                                                         <td class="text-center"><span class="badge rounded-pill bg-label-warning">
                                                                 {{ $value['tellecallerWisePendingCount'] }} </span></td>
                                                     </tr>
@@ -184,10 +187,14 @@ $controllerRoute = $module['controller_route'];
                                             <th>#</th>
                                             <th>Telecaller | Last Call</th>
                                             <th class="text-center">Total Calls</th>
-                                            {{-- <th class="text-center">Pending</th> --}}
-                                            <th class="text-center">Follow Up</th>
-                                            <th class="text-center">Success</th>
-                                            <th class="text-center">Dump</th>
+
+                                            {{-- @dd($eachBranchWiseTelecallerActivity["totalParentStatusSlugArr"]) --}}
+                                            @foreach($eachBranchWiseTelecallerActivity["totalParentStatusSlugArr"] as $eachParentStatusHead)
+                                                @if(!empty($eachParentStatusHead["name"]))
+                                                    <th class="text-center">{{ $eachParentStatusHead["name"] }}</th>
+                                                @endif
+                                            @endforeach
+
                                             <th class="text-center">All Time Pending</th>
 
                                         </tr>
@@ -197,36 +204,16 @@ $controllerRoute = $module['controller_route'];
 
                                             @php
                                                 $SUM_total_call_count = 0;
-                                                $SUM_parentStatus_new_count = 0;
-                                                $SUM_parentStatus_followUp_count = 0;
-                                                $SUM_parentStatus_success_count = 0;
-                                                $SUM_parentStatus_dumb_count = 0;
-
                                                 $SUM_tellecallerWisePendingCount = 0;
-
-                                                $MERGE_parentStatus_new_count_idArr = [];
-                                                $MERGE_parentStatus_dumb_count_idArr = [];
-                                                $MERGE_parentStatus_followUp_count_idArr = [];
-                                                $MERGE_parentStatus_success_count_idArr = [];
                                                 $MERGE_total_call_count_idArr = [];
                                             @endphp
 
                                             @foreach($eachBranchWiseTelecallerActivity["telecallerActivity"] as $key => $value)
-                                                {{-- @dd($value); --}}
+                                                
                                                 @php
                                                     $SUM_total_call_count = $SUM_total_call_count + $value["total_call_count"];
-                                                    $SUM_parentStatus_new_count = $SUM_parentStatus_new_count + $value["parentStatus_new_count"];
-                                                    $SUM_parentStatus_followUp_count = $SUM_parentStatus_followUp_count + $value["parentStatus_followUp_count"];
-                                                    $SUM_parentStatus_success_count = $SUM_parentStatus_success_count + $value["parentStatus_success_count"];
-                                                    $SUM_parentStatus_dumb_count = $SUM_parentStatus_dumb_count + $value["parentStatus_dumb_count"];
-
                                                     $SUM_tellecallerWisePendingCount = $SUM_tellecallerWisePendingCount + $value['tellecallerWisePendingCount'];
-
                                                     $MERGE_total_call_count_idArr = array_merge($MERGE_total_call_count_idArr, $value["total_call_count_idArr"]);
-                                                    $MERGE_parentStatus_new_count_idArr = array_merge($MERGE_parentStatus_new_count_idArr, $value["parentStatus_new_count_idArr"]);
-                                                    $MERGE_parentStatus_followUp_count_idArr = array_merge($MERGE_parentStatus_followUp_count_idArr, $value["parentStatus_followUp_count_idArr"]);
-                                                    $MERGE_parentStatus_success_count_idArr = array_merge($MERGE_parentStatus_success_count_idArr, $value["parentStatus_success_count_idArr"]);
-                                                    $MERGE_parentStatus_dumb_count_idArr = array_merge($MERGE_parentStatus_dumb_count_idArr, $value["parentStatus_dumb_count_idArr"]);
                                                 @endphp
 
                                                 <tr>
@@ -249,32 +236,26 @@ $controllerRoute = $module['controller_route'];
 
 
                                                     <td class="text-center"><span
-                                                            class="badge bg-label-primary cursor-pointer activityReportModalBtn"
+                                                            class="badge fw-bold bg-label-primary cursor-pointer activityReportModalBtn"
                                                             data-bs-toggle="modal" data-bs-target=".activityReportModal"
                                                             data-leadactivityidarr='@json($value['total_call_count_idArr'])'>
                                                             {{ $value["total_call_count"] }} </span></td>
 
-                                                    {{-- <td class="text-center">{{ $value["parentStatus_new_count"] }}</td> --}}
 
-                                                    <td class="text-center"><span
-                                                            class="badge bg-label-info cursor-pointer activityReportModalBtn"
+                                                    @foreach($value["parentStatusSlugArr"] as $eachparentStatusSlugArr)
+                                                        {{-- @dd($parentStatusSlugArr) --}}
+
+                                                        <td class="text-center"><span
+                                                            class="badge fw-bold cursor-pointer activityReportModalBtn"
                                                             data-bs-toggle="modal" data-bs-target=".activityReportModal"
-                                                            data-leadactivityidarr='@json($value['parentStatus_followUp_count_idArr'])'>
-                                                            {{ $value["parentStatus_followUp_count"] }} </span></td>
+                                                            data-leadactivityidarr='@json($eachparentStatusSlugArr["slug_count_idArr"])'
+                                                            style="background-color: {{ $eachparentStatusSlugArr["background_color_modified"] }}; color: {{ $eachparentStatusSlugArr["font_color_modified"] }};">
+                                                            {{ $eachparentStatusSlugArr["slug_count"] }} </span></td>
+                                                            
+                                                    @endforeach
 
-                                                    <td class="text-center"><span
-                                                            class="badge bg-label-success cursor-pointer activityReportModalBtn"
-                                                            data-bs-toggle="modal" data-bs-target=".activityReportModal"
-                                                            data-leadactivityidarr='@json($value['parentStatus_success_count_idArr'])'>
-                                                            {{ $value["parentStatus_success_count"] }} </span></td>
 
-                                                    <td class="text-center"><span
-                                                            class="badge bg-label-danger cursor-pointer activityReportModalBtn"
-                                                            data-bs-toggle="modal" data-bs-target=".activityReportModal"
-                                                            data-leadactivityidarr='@json($value['parentStatus_dumb_count_idArr'])'>
-                                                            {{ $value["parentStatus_dumb_count"] }} </span></td>
-
-                                                    <td class="text-center"><span class="badge rounded-pill bg-label-warning">
+                                                    <td class="text-center"><span class="badge fw-bold rounded-pill bg-label-warning">
                                                             {{ $value['tellecallerWisePendingCount'] }} </span></td>
                                                 </tr>
                                             @endforeach
@@ -288,35 +269,26 @@ $controllerRoute = $module['controller_route'];
                                                         Total
                                                     </strong>
                                                 </td>
-                                                <td class="text-center text-primary fw-bold"><span
-                                                        class="badge bg-primary bg-glow cursor-pointer activityReportModalBtn"
+                                                <td class="text-center "><span
+                                                        class="badge fw-bold bg-primary bg-glow cursor-pointer activityReportModalBtn"
                                                         data-bs-toggle="modal" data-bs-target=".activityReportModal" data-total="total"
                                                         data-leadactivityidarr='@json($MERGE_total_call_count_idArr)'>
                                                         {{ $SUM_total_call_count }} </span></td>
 
-                                                {{-- <td class="text-center text-primary fw-bold">{{ $SUM_parentStatus_new_count }}</td>
-                                                --}}
-
-                                                <td class="text-center text-primary fw-bold"><span
-                                                        class="badge bg-info bg-glow cursor-pointer activityReportModalBtn"
+                                                {{-- @dd($eachBranchWiseTelecallerActivity["totalParentStatusSlugArr"]) --}}
+                                                @foreach($eachBranchWiseTelecallerActivity["totalParentStatusSlugArr"] as $eachtotalParentStatusSlugArr)
+                                                
+                                                    <td class="text-center "><span
+                                                        class="badge fw-bold cursor-pointer activityReportModalBtn"
                                                         data-bs-toggle="modal" data-bs-target=".activityReportModal" data-total="total"
-                                                        data-leadactivityidarr='@json($MERGE_parentStatus_followUp_count_idArr)'>
-                                                        {{ $SUM_parentStatus_followUp_count }} </span></td>
+                                                        data-leadactivityidarr='@json($eachtotalParentStatusSlugArr["MERGE_slug_count_idArr"])'
+                                                        style="background-color: {{ $eachtotalParentStatusSlugArr["background_color_modified"] }}; color: white;">
+                                                        {{ $eachtotalParentStatusSlugArr["SUM_slug_count"] }} </span></td>
+                                            
+                                                @endforeach
 
-                                                <td class="text-center text-primary fw-bold"><span
-                                                        class="badge bg-success bg-glow cursor-pointer activityReportModalBtn"
-                                                        data-bs-toggle="modal" data-bs-target=".activityReportModal" data-total="total"
-                                                        data-leadactivityidarr='@json($MERGE_parentStatus_success_count_idArr)'>
-                                                        {{ $SUM_parentStatus_success_count }} </span></td>
-
-                                                <td class="text-center text-primary fw-bold"><span
-                                                        class="badge bg-danger bg-glow cursor-pointer activityReportModalBtn"
-                                                        data-bs-toggle="modal" data-bs-target=".activityReportModal" data-total="total"
-                                                        data-leadactivityidarr='@json($MERGE_parentStatus_dumb_count_idArr)'>
-                                                        {{ $SUM_parentStatus_dumb_count }} </span></td>
-
-                                                <td class="text-center text-primary fw-bold"><span
-                                                        class="badge rounded-pill bg-warning bg-glow">
+                                                <td class="text-center "><span
+                                                        class="badge fw-bold rounded-pill bg-warning bg-glow">
                                                         {{ $SUM_tellecallerWisePendingCount }} </span></td>
 
                                             </tr>
@@ -326,6 +298,7 @@ $controllerRoute = $module['controller_route'];
                                             </tr>
                                         @endif
                                     </tbody>
+                                
                                 </table>
                             </div>
 
@@ -581,7 +554,7 @@ $controllerRoute = $module['controller_route'];
                 // console.log(leadActivityIdArr);
 
                 $.ajax({
-                    url: base_url + '/activity-report-modal',
+                    url: base_url + '/activity-report-modal-new',
                     type: 'POST',
                     data: { leadActivityIdArr: leadActivityIdArr, total: total , branchName: branchName , assignedTelecallerName: assignedTelecallerName },
                     beforeSend: function () {

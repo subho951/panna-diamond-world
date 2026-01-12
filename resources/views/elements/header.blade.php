@@ -1,5 +1,7 @@
 <?php
 use App\Helpers\Helper;
+use App\Models\Role;
+
 $role_id = (($user)?$user->role_id:0);
 ?>
 
@@ -425,12 +427,14 @@ $role_id = (($user)?$user->role_id:0);
               </div>
               <div class="flex-grow-1">
                 <h6 class="mb-0"><?=$user->first_name . ' ' . $user->last_name?></h6>
-                <?php if($user->role_id == 0){?>
-                  <small class="text-muted">Master Admin</small>
-                 <?php } ?>
-                 <?php if($user->role_id == 1){?>
-                  <small class="text-muted">Sub Admin</small>
-                 <?php } ?>
+
+                @php
+                  $role_name = Role::find($user->role_id)->role_name ?? '';
+                @endphp
+                
+                <small class="text-muted">{{ $role_name }}</small>
+                
+                
               </div>
             </div>
           </a>
