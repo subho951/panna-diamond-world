@@ -2307,7 +2307,7 @@ class ApiController extends Controller
                                 {
                                     $leadNos = DB::table('branch_leads')
                                             ->join('master_leads', 'branch_leads.lead_sl_no', '=', 'master_leads.sl_no')
-                                            ->select('branch_leads.lead_sl_no', 'branch_leads.parent_status_id', 'branch_leads.child_status_id', 'branch_leads.next_followup_date', 'branch_leads.next_followup_time', 'branch_leads.created_at', 'branch_leads.campaign_type_id', 'branch_leads.campaign_id')
+                                            ->select('branch_leads.lead_sl_no', 'branch_leads.parent_status_id', 'branch_leads.child_status_id', 'branch_leads.next_followup_date', 'branch_leads.next_followup_time', 'branch_leads.created_at', 'branch_leads.campaign_type_id', 'branch_leads.campaign_id', 'branch_leads.assigned_telecaller_id')
                                             ->whereIn('master_leads.header_id', $searchableHeaderId)
                                             ->where('master_leads.header_value', 'LIKE', "%{$search_text}%")
                                             ->where('branch_leads.status', '!=', 3)
@@ -2321,7 +2321,7 @@ class ApiController extends Controller
                                 {
                                     $leadNos = DB::table('branch_leads')
                                             ->join('master_leads', 'branch_leads.lead_sl_no', '=', 'master_leads.sl_no')
-                                            ->select('branch_leads.lead_sl_no', 'branch_leads.parent_status_id', 'branch_leads.child_status_id', 'branch_leads.next_followup_date', 'branch_leads.next_followup_time', 'branch_leads.created_at', 'branch_leads.campaign_type_id', 'branch_leads.campaign_id')
+                                            ->select('branch_leads.lead_sl_no', 'branch_leads.parent_status_id', 'branch_leads.child_status_id', 'branch_leads.next_followup_date', 'branch_leads.next_followup_time', 'branch_leads.created_at', 'branch_leads.campaign_type_id', 'branch_leads.campaign_id', 'branch_leads.assigned_telecaller_id')
                                             ->whereIn('master_leads.header_id', $searchableHeaderId)
                                             ->where('master_leads.header_value', 'LIKE', "%{$search_text}%")
                                             ->where('branch_leads.status', '!=', 3)
@@ -2353,6 +2353,8 @@ class ApiController extends Controller
                                         $getMasterLead      = MasterLead::select('lead_no')->where('sl_no', '=', $leadNo->lead_sl_no)->first();
                                         $getCampaignType    = CampaignType::select('name')->where('id', '=', $leadNo->campaign_type_id)->first();
                                         $getCampaign        = Campaign::select('name')->where('id', '=', $leadNo->campaign_id)->first();
+
+                                        $telecaller_name    = User::find($leadNo->assigned_telecaller_id) ?? '';
 
                                         $dob_anni_curr_date = date('d-m');
                                         /* birthday check */
@@ -2395,8 +2397,8 @@ class ApiController extends Controller
                                                 'last_call'             => (($activity_count > 0)?date_format(date_create($last_activity->created_at), "M d Y, h:i a"):''),
                                                 'next_schedule'         => $next_schedule,
                                                 'activity_count'        => $activity_count,
-                                                'telecaller_name'       => $getUser->first_name . ' ' . $getUser->last_name,
-                                                'user_Id'               => $uId,
+                                                'telecaller_name'       => !empty($telecaller_name)? ($telecaller_name->first_name . ' ' . $telecaller_name->last_name) : '',
+                                                'telecaller_Id'         => $leadNo->assigned_telecaller_id ?? '',
                                                 'user_role'             => $getUser->role_id
                                             ];
                                         }

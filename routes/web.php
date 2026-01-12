@@ -265,6 +265,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('assign-report', [ReportController::class, 'assignReport']);
 
         Route::get('activity-report-new', [ReportController::class, 'activityReportNew']);
+        Route::match(['get', 'post'],'activity-report-modal-new', [ReportController::class, 'activityReportModalNew']);
+
 
     /* Report */
 

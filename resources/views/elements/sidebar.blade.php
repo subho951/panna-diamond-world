@@ -252,8 +252,8 @@ $role_id      = (($user)?$user->role_id:0);
 
         <?php if(in_array(28, $moduleIds)){?>
           {{-- Activity Report --}}
-          <li class="menu-item <?=(($pageSegment == 'activity-report')?'active':'')?>">
-            <a href="<?=url('/activity-report')?>" class="menu-link">
+          <li class="menu-item <?=(($pageSegment == 'activity-report-new')?'active':'')?>">
+            <a href="<?=url('/activity-report-new')?>" class="menu-link">
               <div data-i18n="Activity Report"><i class="fa-solid fa-arrow-right"></i>Activity Report</div>
             </a>
           </li>

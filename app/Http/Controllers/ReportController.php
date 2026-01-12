@@ -251,39 +251,50 @@ class ReportController extends Controller
 
 
 
-                $parentStatus_new_count = 0;
-                $parentStatus_new_count_idArr = [];
 
-                $parentStatus_dumb_count = 0;
-                $parentStatus_dumb_count_idArr = [];
+                $parentStatus = LeadStatus::where('parent_id', '=', 0)->where('id', '!=', 12)->where('status', '=', 1)->orderBy('rank', 'desc')->get();
+                // dd($parentStatus);
+                $parentStatusSlugArr = [];
+                foreach($parentStatus as $eachParentStatus)
+                {
+                    $parentStatusSlugArr[] = [
+                       'id' => $eachParentStatus->id ,
+                       'name' => $eachParentStatus->name ,
+                       'background_color' => $eachParentStatus->background_color ,
+                       'font_color' => $eachParentStatus->font_color ,
 
-                $parentStatus_followUp_count = 0;
-                $parentStatus_followUp_count_idArr = [];
+                       'background_color_modified' => Helper::adjustHexColor($eachParentStatus->background_color, +99),
+                       'font_color_modified' => Helper::adjustHexColor($eachParentStatus->background_color, -99),
 
-                $parentStatus_success_count = 0;
-                $parentStatus_success_count_idArr = [];
+                       'slug' => strtolower(Helper::clean(strip_tags($eachParentStatus->name))) ,
+                       'slug_count' => 0 ,
+                       'slug_count_idArr' => [] ,
+                       'rank' => $eachParentStatus->rank ,
+                    ];
+    
+                }
+                // dd($parentStatusSlugArr);
+
 
                 $total_call_count = 0;
                 $total_call_count_idArr = [];
 
-                foreach ($telecallerWiseLeads as $eachLead) {
+                foreach ($telecallerWiseLeads as $eachLead) 
+                {
                     $total_call_count++;
-                    $total_call_count_idArr[] = $eachLead->id;
+                    $total_call_count_idArr[] = Helper::encoded($eachLead->id);
 
-                    if ($eachLead->parent_status_id == 0 || $eachLead->parent_status_id == 12) {
-                        $parentStatus_new_count++;
-                        $parentStatus_new_count_idArr[] = $eachLead->id;
-                    } elseif ($eachLead->parent_status_id == 1) {
-                        $parentStatus_dumb_count++;
-                        $parentStatus_dumb_count_idArr[] = $eachLead->id;
-                    } elseif ($eachLead->parent_status_id == 5) {
-                        $parentStatus_followUp_count++;
-                        $parentStatus_followUp_count_idArr[] = $eachLead->id;
-                    } elseif ($eachLead->parent_status_id == 10) {
-                        $parentStatus_success_count++;
-                        $parentStatus_success_count_idArr[] = $eachLead->id;
+                    foreach($parentStatusSlugArr as $key => $eachparentStatusSlugArr)
+                    {
+                        if ($eachLead->parent_status_id == $eachparentStatusSlugArr['id']) 
+                        {
+                            $parentStatusSlugArr[$key]['slug_count']++;        
+                            $parentStatusSlugArr[$key]['slug_count_idArr'][] = Helper::encoded($eachLead->id);    
+                        } 
                     }
                 }
+                // dd($parentStatusSlugArr);
+
 
                 // last call of of telecaller
                 $lastCallOfTelecaller = LeadActivity::where('assigned_telecaller_id', '=', $eachTelecaller->id)->where('status', '!=', 3)->orderBy('id', 'desc')->first();
@@ -298,22 +309,67 @@ class ReportController extends Controller
                     'last_call_of_telecaller' => $formatedLastCallOfTelecaller,
                     'total_call_count' => $total_call_count,
                     'total_call_count_idArr' => $total_call_count_idArr,
-                    'parentStatus_new_count' => $parentStatus_new_count,
-                    'parentStatus_new_count_idArr' => $parentStatus_new_count_idArr,
-                    'parentStatus_dumb_count' => $parentStatus_dumb_count,
-                    'parentStatus_dumb_count_idArr' => $parentStatus_dumb_count_idArr,
-                    'parentStatus_followUp_count' => $parentStatus_followUp_count,
-                    'parentStatus_followUp_count_idArr' => $parentStatus_followUp_count_idArr,
-                    'parentStatus_success_count' => $parentStatus_success_count,
-                    'parentStatus_success_count_idArr' => $parentStatus_success_count_idArr,
+                    'parentStatusSlugArr' => $parentStatusSlugArr,
                     'tellecallerWisePendingCount' => $tellecallerWisePendingCount,
                 ];
 
             }
 
+
+
+
+            $parentStatus = LeadStatus::where('parent_id', '=', 0)->where('id', '!=', 12)->where('status', '=', 1)->orderBy('rank', 'desc')->get();
+            $totalParentStatusSlugArr = [];
+            foreach($parentStatus as $eachParentStatus)
+            {
+                $totalParentStatusSlugArr[] = [
+                    'id' => $eachParentStatus->id ,
+                    'name' => $eachParentStatus->name ,
+                    'background_color' => $eachParentStatus->background_color ,
+                    'font_color' => $eachParentStatus->font_color ,
+
+                    'background_color_modified' => Helper::adjustHexColor($eachParentStatus->background_color, -80),
+                    'font_color_modified' => Helper::adjustHexColor($eachParentStatus->font_color, +99),
+
+                    'slug' => strtolower(Helper::clean(strip_tags($eachParentStatus->name))) ,
+                    'SUM_slug_count' => 0 ,
+                    'MERGE_slug_count_idArr' => [] ,
+                    'rank' => $eachParentStatus->rank ,
+                ];
+            }
+            // dd($totalParentStatusSlugArr);
+
+            
+            foreach($telecallerActivity as $key => $eachtelecallerActivity)
+            {
+                foreach($eachtelecallerActivity["parentStatusSlugArr"] as $keySuper => $eachTelecallerParentStatusSlugItem)
+                {
+                    // dd($eachTelecallerParentStatusSlugItem);
+                    foreach($totalParentStatusSlugArr as $keySub => $eachtotalParentStatusSlugArr)
+                    {
+                        if($eachTelecallerParentStatusSlugItem["id"] == $eachtotalParentStatusSlugArr["id"])
+                        {
+                            if($keySuper == $keySub)
+                            {
+                                $totalParentStatusSlugArr[$keySub]['SUM_slug_count'] += $eachTelecallerParentStatusSlugItem['slug_count'];
+
+                                $totalParentStatusSlugArr[$keySub]['MERGE_slug_count_idArr'] = array_merge(
+                                    $totalParentStatusSlugArr[$keySub]['MERGE_slug_count_idArr'],
+                                    $eachTelecallerParentStatusSlugItem['slug_count_idArr']
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+            // dd($totalParentStatusSlugArr);
+
+
+
             $branchWiseTelecallerActivity[] = [
                 'branch_name' => $eachBranch->name,
                 'telecallerActivity' => $telecallerActivity,
+                'totalParentStatusSlugArr' => $totalParentStatusSlugArr,
             ];
         }
 
@@ -331,7 +387,106 @@ class ReportController extends Controller
 
 
 
+    public function activityReportModalNew(Request $request)
+    {
+        if ($request->isMethod('post')) {
+            // dd($request->leadActivityIdArr);
+            $leadHistoryArr = [];
+            if (!empty($request->leadActivityIdArr)) {
+                foreach ($request->leadActivityIdArr as $leadActivityId) {
+                    // dd($leadActivityId);
+                    $leadActivity = LeadActivity::find(Helper::decoded($leadActivityId));
+                    // dd($leadActivity);
 
+                    $leadHistory = [];
+
+                    $leadHistory['lead_sl_no'] = str_pad($leadActivity->lead_sl_no, 8, '0', STR_PAD_LEFT);
+
+                    $leadHistory['contact-person-name'] = MasterLead::withTrashed()->where('sl_no', '=', $leadActivity->lead_sl_no)->where('header_id', '=', 2)->value('header_value') ?? '';
+                    $leadHistory['phone'] = MasterLead::withTrashed()->where('sl_no', '=', $leadActivity->lead_sl_no)->where('header_id', '=', 4)->value('header_value') ?? '';
+
+                    $leadHistory['branch_name'] = Branch::withTrashed()->where('id', '=', $leadActivity->branch_id)->value('name') ?? '';
+                    $leadHistory['campaign_type_name'] = CampaignType::withTrashed()->where('id', '=', $leadActivity->campaign_type_id)->value('name') ?? '';
+                    $leadHistory['campaign_name'] = Campaign::withTrashed()->where('id', '=', $leadActivity->campaign_id)->value('name') ?? '';
+
+                    //fetching parent status
+                    $parentStatus = [];
+                    $parentStatus['name'] = LeadStatus::withTrashed()->where('id', '=', $leadActivity->parent_status_id)->where('parent_id', '=', 0)->value('name') ?? '';
+                    $parentStatus['background_color'] = LeadStatus::withTrashed()->where('id', '=', $leadActivity->parent_status_id)->where('parent_id', '=', 0)->value('background_color') ?? '';
+                    $parentStatus['font_color'] = LeadStatus::withTrashed()->where('id', '=', $leadActivity->parent_status_id)->where('parent_id', '=', 0)->value('font_color') ?? '';
+                    $leadHistory['parentStatus'] = $parentStatus;
+
+                    //fetching child status
+                    $childStatus = [];
+                    $childStatus['name'] = LeadStatus::withTrashed()->where('id', '=', $leadActivity->child_status_id)->where('parent_id', '=', $leadActivity->parent_status_id)->value('name') ?? '';
+                    $childStatus['background_color'] = LeadStatus::withTrashed()->where('id', '=', $leadActivity->child_status_id)->where('parent_id', '=', $leadActivity->parent_status_id)->value('background_color') ?? '';
+                    $childStatus['font_color'] = LeadStatus::withTrashed()->where('id', '=', $leadActivity->child_status_id)->where('parent_id', '=', $leadActivity->parent_status_id)->value('font_color') ?? '';
+                    $leadHistory['childStatus'] = $childStatus;
+
+                    $leadHistory['comment'] = $leadActivity->comment ?? '';
+
+                    //fetching mood
+                    $mood = [];
+                    $mood['name'] = Mood::withTrashed()->where('id', '=', $leadActivity->mood)->value('name') ?? '';
+                    $mood['emoji'] = Mood::withTrashed()->where('id', '=', $leadActivity->mood)->value('emoji') ?? '';
+                    $mood['color'] = Mood::withTrashed()->where('id', '=', $leadActivity->mood)->value('color') ?? '';
+                    $leadHistory['mood'] = $mood;
+
+                    $leadHistory['purpose_name'] = Purpose::withTrashed()->where('id', '=', $leadActivity->purpose_id)->value('name') ?? '';
+
+                    //fetch feedback tags
+                    if (!empty($leadActivity->feedback_tag_ids)) {
+                        $feedbackTagNameArr = [];
+                        foreach (json_decode($leadActivity->feedback_tag_ids) as $feedbackTagId) {
+                            $feedbackTagNameArr[] = FeedbackTag::withTrashed()->where('id', '=', $feedbackTagId)->value('name') ?? '';
+                        }
+                        $leadHistory['feedbackTagNameArr'] = $feedbackTagNameArr;
+                    } else {
+                        $leadHistory['feedbackTagNameArr'] = [];
+                    }
+
+                    $leadHistory['note'] = $leadActivity->note ?? '';
+
+                    $leadHistory['next_followup_date'] = $leadActivity->next_followup_date ? Carbon::parse($leadActivity->next_followup_date)->format('M d, Y') : '';
+                    $leadHistory['next_followup_time'] = $leadActivity->next_followup_time ? Carbon::createFromFormat('H:i:s', $leadActivity->next_followup_time)->format('h:i A') : '';
+                    $leadHistory['last_call'] = $leadActivity->created_at ? $leadActivity->created_at->format('M d, Y h:i A') : '';
+
+                    $leadHistory['assigned_telecaller_name'] = (User::withTrashed()->where('id', '=', $leadActivity->assigned_telecaller_id)->value('first_name') . ' ' . User::withTrashed()->where('id', '=', $leadActivity->assigned_telecaller_id)->value('last_name')) ?? '';
+
+
+                    $leadHistoryArr[] = $leadHistory;
+
+
+                }
+
+            }
+
+
+            $data = [];
+            if (!empty($leadHistoryArr)) 
+            {
+                $data["branch_name"] = strip_tags($request->branchName);
+
+                // dd($request->total);
+                if ($request->total == "false") {
+                    $data["assigned_telecaller_name"] = strip_tags($request->assignedTelecallerName);
+                } elseif ($request->total == "true") {
+                    $data["assigned_telecaller_name"] = '';
+                }
+
+            }
+
+            $page_name = 'report.activity-report-modal';
+            $html = view('maincontents.' . $page_name, $data)->with(["leadHistoryArr" => $leadHistoryArr,])->render();
+
+            return response()->json([
+                'html' => $html
+            ]);
+
+            // return response()->json(['message' => 'Modal loaded successfully.']);
+        }
+
+    }
 
 
     public function activityReportModal(Request $request)
@@ -434,6 +589,8 @@ class ReportController extends Controller
         }
 
     }
+
+
 
     public function assignReport(Request $request)
     {

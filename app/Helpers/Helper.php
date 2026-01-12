@@ -202,5 +202,25 @@ class Helper{
         // echo '<pre>';print_r($generalSetting);die;
         return (($generalSetting)?$generalSetting->value:'');
     }
+
+
+    public static function adjustHexColor(string $hex, int $amount = 20): string
+    {
+        $hex = ltrim($hex, '#');
+
+        if (strlen($hex) !== 6) {
+            return '#000000'; // fallback safety
+        }
+
+        $r = max(0, min(255, hexdec(substr($hex, 0, 2)) + $amount));
+        $g = max(0, min(255, hexdec(substr($hex, 2, 2)) + $amount));
+        $b = max(0, min(255, hexdec(substr($hex, 4, 2)) + $amount));
+
+        return sprintf('#%02x%02x%02x', $r, $g, $b);
+    }
+
+
+
+
 }
 ?>
