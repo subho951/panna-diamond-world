@@ -87,9 +87,8 @@ class ReportController extends Controller
 
                 $tellecallerWisePendingCount = BranchLead::where('assigned_telecaller_id', '=', $eachTelecaller->id)->where('parent_status_id', '=', 0)->where('child_status_id', '=', 0)->where('status', '!=', 3)->count();
 
-                
-                if (!empty($request->input('unique')))
-                {
+
+                if (!empty($request->input('unique'))) {
                     $data['unique_check'] = 'checked';
 
                     // how many unique leads the telecaller called (koto jon k call koreche setar last activity)
@@ -229,9 +228,8 @@ class ReportController extends Controller
 
                 $tellecallerWisePendingCount = BranchLead::where('assigned_telecaller_id', '=', $eachTelecaller->id)->where('parent_status_id', '=', 0)->where('child_status_id', '=', 0)->where('status', '!=', 3)->count();
 
-                
-                if (!empty($request->input('unique')))
-                {
+
+                if (!empty($request->input('unique'))) {
                     $data['unique_check'] = 'checked';
 
                     // how many unique leads the telecaller called (koto jon k call koreche setar last activity)
@@ -255,23 +253,22 @@ class ReportController extends Controller
                 $parentStatus = LeadStatus::where('parent_id', '=', 0)->where('id', '!=', 12)->where('status', '=', 1)->orderBy('rank', 'desc')->get();
                 // dd($parentStatus);
                 $parentStatusSlugArr = [];
-                foreach($parentStatus as $eachParentStatus)
-                {
+                foreach ($parentStatus as $eachParentStatus) {
                     $parentStatusSlugArr[] = [
-                       'id' => $eachParentStatus->id ,
-                       'name' => $eachParentStatus->name ,
-                       'background_color' => $eachParentStatus->background_color ,
-                       'font_color' => $eachParentStatus->font_color ,
+                        'id' => $eachParentStatus->id,
+                        'name' => $eachParentStatus->name,
+                        'background_color' => $eachParentStatus->background_color,
+                        'font_color' => $eachParentStatus->font_color,
 
-                       'background_color_modified' => Helper::adjustHexColor($eachParentStatus->background_color, +99),
-                       'font_color_modified' => Helper::adjustHexColor($eachParentStatus->background_color, -99),
+                        'background_color_modified' => Helper::adjustHexColor($eachParentStatus->background_color, +99),
+                        'font_color_modified' => Helper::adjustHexColor($eachParentStatus->background_color, -99),
 
-                       'slug' => strtolower(Helper::clean(strip_tags($eachParentStatus->name))) ,
-                       'slug_count' => 0 ,
-                       'slug_count_idArr' => [] ,
-                       'rank' => $eachParentStatus->rank ,
+                        'slug' => strtolower(Helper::clean(strip_tags($eachParentStatus->name))),
+                        'slug_count' => 0,
+                        'slug_count_idArr' => [],
+                        'rank' => $eachParentStatus->rank,
                     ];
-    
+
                 }
                 // dd($parentStatusSlugArr);
 
@@ -279,18 +276,15 @@ class ReportController extends Controller
                 $total_call_count = 0;
                 $total_call_count_idArr = [];
 
-                foreach ($telecallerWiseLeads as $eachLead) 
-                {
+                foreach ($telecallerWiseLeads as $eachLead) {
                     $total_call_count++;
                     $total_call_count_idArr[] = Helper::encoded($eachLead->id);
 
-                    foreach($parentStatusSlugArr as $key => $eachparentStatusSlugArr)
-                    {
-                        if ($eachLead->parent_status_id == $eachparentStatusSlugArr['id']) 
-                        {
-                            $parentStatusSlugArr[$key]['slug_count']++;        
-                            $parentStatusSlugArr[$key]['slug_count_idArr'][] = Helper::encoded($eachLead->id);    
-                        } 
+                    foreach ($parentStatusSlugArr as $key => $eachparentStatusSlugArr) {
+                        if ($eachLead->parent_status_id == $eachparentStatusSlugArr['id']) {
+                            $parentStatusSlugArr[$key]['slug_count']++;
+                            $parentStatusSlugArr[$key]['slug_count_idArr'][] = Helper::encoded($eachLead->id);
+                        }
                     }
                 }
                 // dd($parentStatusSlugArr);
@@ -320,37 +314,31 @@ class ReportController extends Controller
 
             $parentStatus = LeadStatus::where('parent_id', '=', 0)->where('id', '!=', 12)->where('status', '=', 1)->orderBy('rank', 'desc')->get();
             $totalParentStatusSlugArr = [];
-            foreach($parentStatus as $eachParentStatus)
-            {
+            foreach ($parentStatus as $eachParentStatus) {
                 $totalParentStatusSlugArr[] = [
-                    'id' => $eachParentStatus->id ,
-                    'name' => $eachParentStatus->name ,
-                    'background_color' => $eachParentStatus->background_color ,
-                    'font_color' => $eachParentStatus->font_color ,
+                    'id' => $eachParentStatus->id,
+                    'name' => $eachParentStatus->name,
+                    'background_color' => $eachParentStatus->background_color,
+                    'font_color' => $eachParentStatus->font_color,
 
                     'background_color_modified' => Helper::adjustHexColor($eachParentStatus->background_color, -80),
                     'font_color_modified' => Helper::adjustHexColor($eachParentStatus->font_color, +99),
 
-                    'slug' => strtolower(Helper::clean(strip_tags($eachParentStatus->name))) ,
-                    'SUM_slug_count' => 0 ,
-                    'MERGE_slug_count_idArr' => [] ,
-                    'rank' => $eachParentStatus->rank ,
+                    'slug' => strtolower(Helper::clean(strip_tags($eachParentStatus->name))),
+                    'SUM_slug_count' => 0,
+                    'MERGE_slug_count_idArr' => [],
+                    'rank' => $eachParentStatus->rank,
                 ];
             }
             // dd($totalParentStatusSlugArr);
 
-            
-            foreach($telecallerActivity as $key => $eachtelecallerActivity)
-            {
-                foreach($eachtelecallerActivity["parentStatusSlugArr"] as $keySuper => $eachTelecallerParentStatusSlugItem)
-                {
+
+            foreach ($telecallerActivity as $key => $eachtelecallerActivity) {
+                foreach ($eachtelecallerActivity["parentStatusSlugArr"] as $keySuper => $eachTelecallerParentStatusSlugItem) {
                     // dd($eachTelecallerParentStatusSlugItem);
-                    foreach($totalParentStatusSlugArr as $keySub => $eachtotalParentStatusSlugArr)
-                    {
-                        if($eachTelecallerParentStatusSlugItem["id"] == $eachtotalParentStatusSlugArr["id"])
-                        {
-                            if($keySuper == $keySub)
-                            {
+                    foreach ($totalParentStatusSlugArr as $keySub => $eachtotalParentStatusSlugArr) {
+                        if ($eachTelecallerParentStatusSlugItem["id"] == $eachtotalParentStatusSlugArr["id"]) {
+                            if ($keySuper == $keySub) {
                                 $totalParentStatusSlugArr[$keySub]['SUM_slug_count'] += $eachTelecallerParentStatusSlugItem['slug_count'];
 
                                 $totalParentStatusSlugArr[$keySub]['MERGE_slug_count_idArr'] = array_merge(
@@ -463,8 +451,7 @@ class ReportController extends Controller
 
 
             $data = [];
-            if (!empty($leadHistoryArr)) 
-            {
+            if (!empty($leadHistoryArr)) {
                 $data["branch_name"] = strip_tags($request->branchName);
 
                 // dd($request->total);
@@ -565,8 +552,7 @@ class ReportController extends Controller
 
 
             $data = [];
-            if (!empty($leadHistoryArr)) 
-            {
+            if (!empty($leadHistoryArr)) {
                 $data["branch_name"] = strip_tags($request->branchName);
 
                 // dd($request->total);
@@ -865,6 +851,159 @@ class ReportController extends Controller
 
 
 
+    public function assignReportNew(Request $request)
+    {
+        $data['module'] = $this->data;
+
+        $query = BranchLead::query();
+
+        if (!empty($request->input('assigned-from-date'))) 
+        {
+            $assignedFromDate = $request->input('assigned-from-date');
+            $data['assignedFromDate'] = $assignedFromDate;
+
+            $query->whereDate('created_at', '>=', $assignedFromDate);
+        }
+
+        if (!empty($request->input('assigned-to-date'))) {
+            $assignedToDate = $request->input('assigned-to-date');
+            $data['assignedToDate'] = $assignedToDate;
+
+            $query->whereDate('created_at', '<=', $assignedToDate);
+        }
+
+
+        $allBranch = Branch::where('status', '!=', 3)->get();
+
+        $branchWiseTelecallerActivity = [];
+        foreach ($allBranch as $eachBranch) 
+        {
+            if (session('user_data')['role_id'] == 3) {
+                $this_telecaller_id = session('user_data')['user_id'];
+                $branchWiseTelecaller = User::where('id', '=', $this_telecaller_id)->where('branch_id', '=', $eachBranch->id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+            } else {
+                $branchWiseTelecaller = User::where('branch_id', '=', $eachBranch->id)->where('role_id', '=', 3)->where('status', '!=', 3)->get();
+            }
+
+            $telecallerActivity = [];
+            foreach ($branchWiseTelecaller as $eachTelecaller) 
+            {
+                $telecallerWiseLeads = (clone $query)->where('assigned_telecaller_id', '=', $eachTelecaller->id)->where('status', '!=', 3)->get();
+
+                $parentStatus = LeadStatus::where('parent_id', '=', 0)->where('id', '!=', 12)->where('status', '=', 1)->orderBy('rank', 'desc')->get();
+                // dd($parentStatus);
+                $parentStatusSlugArr = [];
+                foreach ($parentStatus as $eachParentStatus) {
+                    $parentStatusSlugArr[] = [
+                        'id' => $eachParentStatus->id,
+                        'name' => $eachParentStatus->name,
+
+                        'background_color' => $eachParentStatus->background_color,
+                        'font_color' => $eachParentStatus->font_color,
+
+                        'slug' => strtolower(Helper::clean(strip_tags($eachParentStatus->name))),
+                        'slug_count' => 0,
+                        
+                        'rank' => $eachParentStatus->rank,
+                    ];
+
+                }
+                // dd($parentStatusSlugArr);
+
+                $parentStatus_new_count = 0;
+                $total_call_count = 0;
+                foreach ($telecallerWiseLeads as $eachLead) 
+                {
+                    $total_call_count++;
+
+                    if ($eachLead->parent_status_id == 0 || $eachLead->parent_status_id == 12) 
+                    {
+                        $parentStatus_new_count++;
+                    }
+
+                    foreach ($parentStatusSlugArr as $key => $eachparentStatusSlugArr) 
+                    {
+                        if ($eachLead->parent_status_id == $eachparentStatusSlugArr['id']) 
+                        {
+                            $parentStatusSlugArr[$key]['slug_count']++;
+                        }
+                    }
+                }
+
+                // dd($parentStatusSlugArr);
+
+
+                // last call of of telecaller
+                $lastCallOfTelecaller = LeadActivity::where('assigned_telecaller_id', '=', $eachTelecaller->id)->where('status', '!=', 3)->orderBy('id', 'desc')->first();
+                if (!empty($lastCallOfTelecaller)) {
+                    $formatedLastCallOfTelecaller = $lastCallOfTelecaller->created_at->format('M d, Y h:i A');
+                } else {
+                    $formatedLastCallOfTelecaller = '';
+                }
+
+                $telecallerActivity[] = [
+                    'telecaller_name' => $eachTelecaller->first_name . ' ' . $eachTelecaller->last_name,
+                    'last_call_of_telecaller' => $formatedLastCallOfTelecaller,
+                    'total_call_count' => $total_call_count,
+                    'parentStatus_new_count' => $parentStatus_new_count,
+                    'parentStatusSlugArr' => $parentStatusSlugArr,
+                ];
+
+            }
+
+
+            $parentStatus = LeadStatus::where('parent_id', '=', 0)->where('id', '!=', 12)->where('status', '=', 1)->orderBy('rank', 'desc')->get();
+            $totalParentStatusSlugArr = [];
+            foreach ($parentStatus as $eachParentStatus) {
+                $totalParentStatusSlugArr[] = [
+                    'id' => $eachParentStatus->id,
+                    'name' => $eachParentStatus->name,
+
+                    'background_color' => $eachParentStatus->background_color,
+                    'font_color' => $eachParentStatus->font_color,
+
+                    'slug' => strtolower(Helper::clean(strip_tags($eachParentStatus->name))),
+                    'SUM_slug_count' => 0,
+                    
+                    'rank' => $eachParentStatus->rank,
+                ];
+            }
+            // dd($totalParentStatusSlugArr);
+
+
+            foreach ($telecallerActivity as $key => $eachtelecallerActivity) 
+            {
+                foreach ($eachtelecallerActivity["parentStatusSlugArr"] as $keySuper => $eachTelecallerParentStatusSlugItem) 
+                {
+                    // dd($eachTelecallerParentStatusSlugItem);
+                    foreach ($totalParentStatusSlugArr as $keySub => $eachtotalParentStatusSlugArr) 
+                    {
+                        if ($eachTelecallerParentStatusSlugItem["id"] == $eachtotalParentStatusSlugArr["id"]) 
+                        {
+                            if ($keySuper == $keySub) 
+                            {
+                                $totalParentStatusSlugArr[$keySub]['SUM_slug_count'] += $eachTelecallerParentStatusSlugItem['slug_count'];
+                            }
+                        }
+                    }
+                }
+            }
+            // dd($totalParentStatusSlugArr);
+
+            $branchWiseTelecallerActivity[] = [
+                'branch_name' => $eachBranch->name,
+                'telecallerActivity' => $telecallerActivity,
+                'totalParentStatusSlugArr' => $totalParentStatusSlugArr,
+            ];
+        }
+
+
+
+        $title = 'Assign ' . $this->data['title'];
+        $page_name = 'report.assign-report-new';
+        $data = $this->siteAuthService->admin_after_login_layout($title, $page_name, $data);
+        return view('maincontents.' . $page_name, $data)->with(['branchWiseTelecallerActivity' => $branchWiseTelecallerActivity]);
+    }
 
 
 

@@ -294,7 +294,8 @@ $controllerRoute = $module['controller_route'];
                                             </tr>
                                         @else
                                             <tr>
-                                                <td colspan="7" class="text-center text-danger">No Telecallers Found</td>
+                                                {{-- @dd(count($eachBranchWiseTelecallerActivity["totalParentStatusSlugArr"])+4) --}}
+                                                <td colspan="{{ count($eachBranchWiseTelecallerActivity["totalParentStatusSlugArr"])+4 }}" class="text-center text-danger">No Telecallers Found</td>
                                             </tr>
                                         @endif
                                     </tbody>
