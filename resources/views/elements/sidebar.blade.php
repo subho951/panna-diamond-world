@@ -235,7 +235,7 @@ $role_id      = (($user)?$user->role_id:0);
 
   <?php if(in_array(29, $moduleIds) || in_array(28, $moduleIds)){?>
     <!-- Report -->
-    <li class="menu-item active <?=(($pageSegment == 'assign-report' || $pageSegment == 'activity-report')?'open':'')?>">
+    <li class="menu-item active <?=(($pageSegment == 'assign-report-new' || $pageSegment == 'activity-report-new')?'open':'')?>">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon fa-solid fa-clipboard-list"></i>
         <div data-i18n="Report">Report</div>
@@ -243,8 +243,8 @@ $role_id      = (($user)?$user->role_id:0);
       <ul class="menu-sub">
         <?php if(in_array(29, $moduleIds)){?>
           {{-- Assign Report --}}
-          <li class="menu-item <?=(($pageSegment == 'assign-report')?'active':'')?>">
-            <a href="<?=url('/assign-report')?>" class="menu-link">
+          <li class="menu-item <?=(($pageSegment == 'assign-report-new')?'active':'')?>">
+            <a href="<?=url('/assign-report-new')?>" class="menu-link">
               <div data-i18n="Assign Report"><i class="fa-solid fa-arrow-right"></i>Assign Report</div>
             </a>
           </li>
